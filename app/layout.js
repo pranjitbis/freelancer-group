@@ -1,7 +1,7 @@
-import './globals.css'
-import Script from 'next/script'
+import "./globals.css";
+import Script from "next/script";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export default function RootLayout({ children }) {
   return (
@@ -20,8 +20,14 @@ export default function RootLayout({ children }) {
             gtag('config', '${GA_ID}');
           `}
         </Script>
+
+        {/* ✅ Razorpay Script (use Next.js Script, not raw <script>) */}
+        <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="beforeInteractive" // ensures Razorpay loads before any code calls it
+        />
       </head>
       <body>{children}</body>
     </html>
-  )
+  );
 }

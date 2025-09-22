@@ -1,92 +1,65 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "./Login.module.css";
 import { useRouter } from "next/navigation";
-import { FaEye, FaEyeSlash, FaGoogle, FaGithub, FaUser } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaUser } from "react-icons/fa";
 import Nav from "../home/component/Nav/page";
+
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [checkingAuth, setCheckingAuth] = useState(true); // 👈 NEW
+  const [isVisible, setIsVisible] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    setIsVisible(true);
-
-    // ✅ Check login only after mount
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-
-    if (token && role) {
-      // Optional: verify token with backend before redirect
-      router.push(role === "admin" ? "/dashboard/admin" : "/dashboard/user");
-    } else {
-      setCheckingAuth(false); // allow login form
-    }
-  }, [router]);
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!form.email || !form.password) {
-      setMessage("Please fill in all fields");
+  if (!form.email || !form.password) {
+    setMessage("Please fill in all fields");
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+    console.log("Login response:", data);
+
+    if (!res.ok) {
+      setMessage(data.error || "Invalid login");
       return;
     }
 
-    setIsLoading(true);
+    setMessage(data.message || "Login successful");
 
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-      setMessage(data.message);
-
-      if (res.ok && data.token) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("role", data.role);
-        localStorage.setItem("user", JSON.stringify(data.user));
-
-        router.push(data.role === "admin" ? "/wp-admin/" : "/dashboard/user/");
-      }
-    } catch (error) {
-      setMessage("An error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
+    // ✅ Redirect according to role
+    if (data.role === "admin") {
+      router.push("/wp-admin");
+    } else {
+      router.push("/dashboard");
     }
-  };
-
-  const handleSocialLogin = (provider) => {
-    window.location.href = `/api/auth/${provider}`;
-  };
-
-  const handleDemoLogin = (role) => {
-    setMessage(`Demo ${role} credentials filled. Click Sign in to continue.`);
-  };
-
-  if (checkingAuth) {
-    // 👇 Optional loading screen while checking token
-    return (
-      <div className={styles.loadingScreen}>
-        <p>Checking session...</p>
-      </div>
-    );
+  } catch (error) {
+    console.error(error);
+    setMessage("An error occurred. Please try again.");
+  } finally {
+    setIsLoading(false);
   }
+};
 
   return (
     <>
       <Nav />
       <div className={styles.container}>
         <div
-          className={`${styles.loginCard} ${
-            isVisible ? styles.cardVisible : ""
-          }`}
+          className={styles.loginCard}
         >
           <div className={styles.header}>
             <div className={styles.logo}>
@@ -113,8 +86,7 @@ export default function Login() {
             </div>
 
             <div className={styles.inputGroup}>
-              <label className={styles.label}>password</label>
-
+              <label className={styles.label}>Password</label>
               <div className={styles.passwordWrapper}>
                 <input
                   id={styles.password}
@@ -157,7 +129,8 @@ export default function Login() {
           {message && (
             <div
               className={
-                message.includes("error")
+                message.toLowerCase().includes("error") ||
+                message.toLowerCase().includes("invalid")
                   ? styles.errorMessage
                   : styles.successMessage
               }

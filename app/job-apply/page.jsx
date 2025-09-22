@@ -13,6 +13,9 @@ export default function JobApplicationForm() {
     resume: null,
     coverLetter: "",
   });
+  const [resumeUrl, setResumeUrl] = useState("");
+  const [resume, setResume] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -37,25 +40,64 @@ export default function JobApplicationForm() {
       ...prev,
       [name]: files ? files[0] : value,
     }));
+
+    if (files && files[0]) {
+      setSelectedFile(files[0]); // store file separately for upload
+    }
   };
 
-  const handleSubmit = (e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Job Application Submitted:", formData);
-    setIsSubmitted(true);
 
-    setTimeout(() => {
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        jobId: "",
-        experience: "",
-        resume: null,
-        coverLetter: "",
+    if (!selectedFile) {
+      alert("⚠️ Please upload your resume before submitting.");
+      return;
+    }
+
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append("resume", selectedFile);
+
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataUpload,
       });
-      setIsSubmitted(false);
-    }, 3000);
+      const uploadData = await uploadRes.json();
+
+      if (!uploadRes.ok) {
+        alert("❌ Resume upload failed: " + uploadData.error);
+        return;
+      }
+
+      const resumeUrl = uploadData.url;
+
+      const res = await fetch("/api/job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, resume: resumeUrl }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("✅ Application submitted!");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          jobId: "",
+          experience: "",
+          resume: null,
+          coverLetter: "",
+        });
+      } else {
+        alert("❌ Submission failed: " + data.error);
+      }
+    } catch (err) {
+      console.error("Submit error:", err);
+      alert("❌ Submit error");
+    }
   };
 
   return (
@@ -148,12 +190,13 @@ export default function JobApplicationForm() {
               <label htmlFor="resume">Upload Resume *</label>
               <input
                 type="file"
-                id="resume"
-                name="resume"
-                accept=".pdf,.doc,.docx"
                 onChange={handleChange}
-                required
+                accept=".pdf,.doc,.docx"
               />
+
+              {resumeUrl && (
+                <p className="text-green-600">Uploaded: {resumeUrl}</p>
+              )}
             </div>
 
             {/* Cover Letter */}

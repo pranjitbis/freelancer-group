@@ -4,24 +4,82 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL") // this should point to your MySQL DB
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
-  role     String  @default("user")
-  createdAt DateTime @default(now())
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  role      String    @default("user") // user, admin, editor
+  status    String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  orders    Order[]
+  jobs      Job[]
+}
+
+model Order {
+  id              Int       @id @default(autoincrement())
+  name            String
+  email           String
+  phone           String?   // optional
+  requirements    String?
+  quantity        Int       @default(1)
+  category        String?
+  subcategory     String?
+  urgency         String?   @default("standard")
+  duration        String?
+  resume          String?
+  experienceLevel String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt   // 👈 restored
+  status          String?   @default("Pending") // 👈 restored
+  service         String?   // 👈 restored
+  paymentId       String?   // 👈 restored
+
+  userId  Int?
+  user    User?   @relation(fields: [userId], references: [id])
 }
 
 
-model Order {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String
-  service   String
-  paymentId String
-  createdAt DateTime @default(now())
+model FormData {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String
+  phone           String?
+  serviceCategory String?
+  message         String?
+  status          String   @default("Pending")
+  createdAt       DateTime @default(now())
+}
+
+model VirtualAssistance {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String
+  phone           String?
+  service         String?
+  message         String?
+  status          String   @default("Pending")
+  createdAt       DateTime @default(now())
+}
+
+model Job {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String
+  phone           String
+  serviceCategory String?
+  experience      String?
+  resumeUrl       String?
+  letter          String?
+  status          String   @default("Pending")
+  createdAt       DateTime @default(now())
+
+  userId          Int?
+  user            User?    @relation(fields: [userId], references: [id])
 }

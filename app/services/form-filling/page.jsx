@@ -15,6 +15,7 @@ import Error from "../../../public/icons/Error-Free-Filling.png";
 import Professional from "../../../public/icons/Professional-Online-Application.png";
 import Custom from "../../../public/icons/Custom-Solutions.png";
 import Pricing from "../../../public/icons/pricing.png";
+
 import "aos/dist/aos.css";
 
 import Image from "next/image";
@@ -28,7 +29,9 @@ const ServiceDetail = () => {
     specificService: "",
     message: "",
   });
+  const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [successful, setSuuccessful] = useState("");
   const [activeCategory, setActiveCategory] = useState(0);
 
   useEffect(() => {
@@ -52,30 +55,29 @@ const ServiceDetail = () => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setIsSubmitted(true);
-
-    // Reset form after submission
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        serviceCategory: "",
-        specificService: "",
-        message: "",
-      });
-    }, 3000);
+    setSuuccessful("");
+    const res = await fetch("/api/formSubmit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    if (res.ok) {
+      setSuuccessful("Form submitted successfully!");
+      setTimeout(() => {
+        setSuuccessful("");
+      }, 5000);
+    } else {
+      const err = await res.json();
+      setError("Please try again later ");
+      setTimeout(() => {
+        setError("");
+      }, 5000);
+    }
   };
 
   const serviceCategories = [
@@ -422,7 +424,6 @@ const ServiceDetail = () => {
                     </select>
                   </div>
                 </div>
-              
 
                 <div className={styles.formGroup}>
                   <label htmlFor="message">Additional Details</label>
@@ -439,6 +440,10 @@ const ServiceDetail = () => {
                 <button type="submit" className={styles.submitButton}>
                   Get Assistance Now
                 </button>
+                {successful && (
+                  <p className={styles.successMessage}>{successful}</p>
+                )}
+                {error && <p className={styles.errorMessage}>{error}</p>}
               </form>
             )}
           </div>

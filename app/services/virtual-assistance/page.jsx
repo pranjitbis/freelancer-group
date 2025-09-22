@@ -22,6 +22,8 @@ const VirtualAssistance = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [activeService, setActiveService] = useState(0);
+  const [error, setError] = useState("");
+  const [successful, setSuccessful] = useState("");
 
   useEffect(() => {
     // Scroll animation effect
@@ -51,22 +53,15 @@ const VirtualAssistance = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setIsSubmitted(true);
+    setSuccessful("");
+    const res = await fetch("/api/VirtualAssistance", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify( formData ),
+    });
 
-    // Reset form after submission
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        service: "",
-        message: "",
-      });
-    }, 3000);
   };
 
   const services = [
