@@ -5,26 +5,14 @@ import styles from "./TrustedCompanies.module.css";
 import { FaCrown, FaAward, FaRocket, FaRegStar, FaStar } from "react-icons/fa";
 
 const companies = [
-  {
-    name: "Google",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-    tier: "premium",
-  },
+
   {
     name: "Microsoft",
     logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg",
     tier: "premium",
   },
-  {
-    name: "Amazon",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-    tier: "premium",
-  },
-  {
-    name: "Netflix",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
-    tier: "enterprise",
-  },
+
+
   {
     name: "Apple",
     logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
@@ -35,11 +23,7 @@ const companies = [
     logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
     tier: "enterprise",
   },
-  {
-    name: "Meta",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg",
-    tier: "premium",
-  },
+
   {
     name: "Instagram",
     logo: "https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg",
@@ -55,16 +39,7 @@ const companies = [
     logo: "https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg",
     tier: "premium",
   },
-  {
-    name: "YouTube",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg",
-    tier: "enterprise",
-  },
-  {
-    name: "Samsung",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
-    tier: "premium",
-  },
+
   {
     name: "Tesla",
     logo: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg",
@@ -75,11 +50,7 @@ const companies = [
     logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg",
     tier: "enterprise",
   },
-  {
-    name: "Cisco",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/6/64/Cisco_logo_blue_2016.svg",
-    tier: "enterprise",
-  },
+
 ];
 
 export default function TrustedCompanies() {
@@ -166,13 +137,7 @@ export default function TrustedCompanies() {
                     alt={company.name}
                     className={styles.trustedLogo}
                   />
-                  {company.tier === "premium" && (
-                    <div className={styles.premiumIndicator}>
-                      <FaRegStar />
-                    </div>
-                  )}
                 </div>
-                <div className={styles.companyName}>{company.name}</div>
               </motion.div>
             ))}
           </motion.div>

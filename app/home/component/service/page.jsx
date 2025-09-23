@@ -118,40 +118,13 @@ const Services = () => {
       <div className={styles.backgroundPattern}></div>
 
       <div className={styles.container}>
-        {/* Header Section */}
-        <div className={styles.header}>
-          <div className={styles.sectionBadge}>
-            <FaRocket className={styles.badgeIcon} />
-            Premium Solutions
-          </div>
-
-          <h1 className={styles.mainTitle}>
-            Enterprise-Grade{" "}
-            <span className={styles.titleHighlight}>Services</span>
-          </h1>
-
-          <p className={styles.subtitle}>
-            Professional solutions designed to optimize operations, enhance
-            productivity, and drive measurable business growth through expert
-            service delivery.
-          </p>
-
-          {/* Performance Metrics */}
-          <div className={styles.performanceMetrics}>
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>99.8%</div>
-              <div className={styles.metricLabel}>Success Rate</div>
-            </div>
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>24-48h</div>
-              <div className={styles.metricLabel}>Avg. Delivery</div>
-            </div>
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>10K+</div>
-              <div className={styles.metricLabel}>Projects Done</div>
-            </div>
-          </div>
-        </div>
+        <h2 className={styles.sectionHeading}>Our Services</h2>
+        <p className={styles.sectionDescription}>
+          We provide tailored solutions designed to help businesses grow
+          efficiently. From innovative web development to enterprise-grade
+          solutions, our services are crafted to optimize your operations,
+          enhance productivity, and deliver measurable results.
+        </p>
 
         {/* Services Grid */}
         <div className={styles.servicesGrid}>
@@ -210,29 +183,6 @@ const Services = () => {
               <div className={styles.cardHoverEffect}></div>
             </div>
           ))}
-        </div>
-
-        {/* Enterprise CTA */}
-        <div className={styles.enterpriseCTA}>
-          <div className={styles.ctaContent}>
-            <div className={styles.ctaBadge}>
-              <FaShieldAlt />
-              Enterprise Ready
-            </div>
-            <h2>Ready to Transform Your Business?</h2>
-            <p>
-              Schedule a consultation with our experts to discuss custom
-              solutions tailored to your specific requirements
-            </p>
-            <div className={styles.ctaButtons}>
-              <Link href="/contact">
-                <button className={styles.primaryCta}>
-                  <span>Get Free Consultation</span>
-                  <FaArrowRight />
-                </button>
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </section>

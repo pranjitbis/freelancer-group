@@ -110,7 +110,7 @@ const WhyChooseAroliya = () => {
           >
             <div className={styles.heroBadge}>
               <FaStar className={styles.badgeIcon} />
-              Industry Leader Since 2021
+              Industry Leader Since 2023
             </div>
             <h1 className={styles.heroTitle}>
               Why <span className={styles.highlight}>Thousands Trust</span>{" "}
