@@ -318,7 +318,7 @@ export default function ServicesPage() {
       const resumeUrl = uploadResult.url;
 
       // 2️⃣ Create Razorpay order
-      const amount = selectedService.actualPrice * formData.quantity;
+      const amount = formData.price * formData.quantity;
       const amountInPaise = amount * 100;
 
       const orderRes = await fetch("/api/razorpay", {
@@ -353,6 +353,7 @@ export default function ServicesPage() {
                 category: formData.category,
                 subcategory: formData.subcategory,
                 urgency: formData.urgency,
+                urgency: formData.price,
                 duration: formData.duration,
                 resume: resumeUrl,
                 experienceLevel: formData.experienceLevel,
@@ -894,41 +895,54 @@ export default function ServicesPage() {
                 />
               </div>
 
-              <div className={styles.formGroup}>
-                <label htmlFor="resume" className={styles.label}>
+              <div className={styles.formField}>
+                <label htmlFor="resume" className={styles.fieldLabel}>
                   Upload Resume
                 </label>
-                <input
-                  type="file"
-                  id="resume"
-                  name="resume"
-                  className={styles.fileInput}
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleInputChange}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="price" className={styles.label}>
-                  Service Price: ₹{formData.price}
-                </label>
-                <input
-                  type="range"
-                  id="price"
-                  name="price"
-                  className={styles.rangeSlider}
-                  min={selectedService?.actualPrice ?? 0}
-                  max={10000}
-                  step={100}
-                  value={formData.price}
-                  onChange={handleInputChange}
-                />
-                <div className={styles.rangeLabels}>
-                  <span>₹{selectedService?.actualPrice ?? 0}</span>
-                  <span>₹10000</span>
+                <div className={styles.fileInputContainer}>
+                  <input
+                    type="file"
+                    id="resume"
+                    name="resume"
+                    className={styles.fileInput}
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleInputChange}
+                  />
                 </div>
               </div>
 
+              <div className={styles.formField}>
+                <div className={styles.rangeValue}>
+                  Service Price: ₹{formData.price}
+                </div>
+                <div className={styles.rangeContainer}>
+                  <input
+                    type="range"
+                    id="price"
+                    name="price"
+                    className={styles.rangeSlider}
+                    min={selectedService?.actualPrice ?? 0}
+                    max={10000}
+                    step={100}
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    style={{
+                      "--slider-progress": `${
+                        ((formData.price -
+                          (selectedService?.actualPrice ?? 0)) /
+                          (10000 - (selectedService?.actualPrice ?? 0))) *
+                        100
+                      }%`,
+                    }}
+                  />
+                </div>
+                <div className={styles.rangeLabels}>
+                  <span className={styles.rangeMinMax}>
+                    ₹{selectedService?.actualPrice ?? 0}
+                  </span>
+                  <span className={styles.rangeMinMax}>₹10000</span>
+                </div>
+              </div>
               {/* Service-specific fields */}
               {renderServiceSpecificFields()}
 
@@ -986,7 +1000,7 @@ export default function ServicesPage() {
                 <div className={styles.priceRow}>
                   <span>Total Amount:</span>
                   <span className={styles.totalPrice}>
-                    ₹{selectedService.actualPrice * formData.quantity}
+                    ₹{formData.price * formData.quantity}
                   </span>
                 </div>
               </div>

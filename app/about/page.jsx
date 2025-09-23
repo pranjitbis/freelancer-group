@@ -1,433 +1,823 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import styles from "./About.module.css";
 import Nav from "../home/component/Nav/page";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import Footer from "../home/footer/page";
-import about from "../../public/about/sir-image.png";
-import team from "../../public/about/team-image.jpg";
+import founderImage from "../../public/about/sir-image.png";
+import teamImage from "../../public/about/team-image.jpg";
 import Image from "next/image";
 import {
-  FaClock,
-  FaMoneyBillWave,
-  FaRegSmile,
-  FaHandsHelping,
   FaShieldAlt,
   FaRocket,
-  FaChartLine,
   FaUsers,
   FaCheckCircle,
-  FaGlobe,
+  FaLinkedin,
+  FaTwitter,
+  FaGithub,
+  FaTrophy,
+  FaAward,
+  FaQuoteLeft,
+  FaGlobeAmericas,
+  FaLightbulb,
+  FaHandshake,
+  FaStar,
+  FaHeart,
+  FaCode,
+  FaChartLine,
 } from "react-icons/fa";
+
 export default function About() {
   const [isVisible, setIsVisible] = useState(false);
+  const [activeValue, setActiveValue] = useState(0);
+  const statsRef = useRef(null);
 
   useEffect(() => {
     setIsVisible(true);
     window.scrollTo(0, 0);
   }, []);
-  useEffect(() => {
-    AOS.init({
-      duration: 1000, // Animation duration (1 second)
-      once: false, // false = re-trigger animation on scroll up/down
-    });
-  }, []);
 
-  const benefits = [
-    {
-      icon: <FaClock />,
-      title: "Save Time",
-      desc: "Automated workflows reduce manual work so you can focus on growth.",
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+      },
     },
-    {
-      icon: <FaMoneyBillWave />,
-      title: "Cost Effective",
-      desc: "Affordable solutions designed to fit small businesses and startups.",
+  };
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 60 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+      },
     },
-    {
-      icon: <FaRegSmile />,
-      title: "Stress-Free",
-      desc: "Easy-to-use tools that make business management simple and smooth.",
+  };
+
+  const staggerChildren = {
+    visible: {
+      transition: {
+        staggerChildren: 0.2,
+      },
     },
-    {
-      icon: <FaHandsHelping />,
-      title: "24/7 Support",
-      desc: "Dedicated support team available around the clock for your needs.",
+  };
+
+  const slideInLeft = {
+    hidden: { opacity: 0, x: -100 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+      },
     },
-    {
-      icon: <FaShieldAlt />,
-      title: "Secure & Reliable",
-      desc: "Enterprise-grade security ensures your data stays protected.",
+  };
+
+  const slideInRight = {
+    hidden: { opacity: 0, x: 100 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+      },
     },
-    {
-      icon: <FaRocket />,
-      title: "Boost Productivity",
-      desc: "Streamlined processes help your team achieve more in less time.",
+  };
+
+  const scaleIn = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
     },
-    {
-      icon: <FaChartLine />,
-      title: "Data-Driven Insights",
-      desc: "Real-time analytics help you make smarter business decisions.",
+  };
+
+  const floatAnimation = {
+    animate: {
+      y: [0, -20, 0],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
     },
-    {
-      icon: <FaUsers />,
-      title: "Scalable",
-      desc: "Our solutions grow with your business—no limitations, no stress.",
-    },
-    {
-      icon: <FaCheckCircle />,
-      title: "Proven Results",
-      desc: "Trusted by clients worldwide with measurable success stories.",
-    },
-    {
-      icon: <FaGlobe />,
-      title: "Global Reach",
-      desc: "Expand your business and connect with customers everywhere.",
-    },
-  ];
+  };
+
+  // Animated counter
+  const [animatedStats, setAnimatedStats] = useState({
+    projects: 0,
+    satisfaction: 0,
+    support: 0,
+    clients: 0,
+    delivered: 0,
+  });
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Animate stats
+          const animateValue = (start, end, duration, key) => {
+            let startTime = null;
+            const step = (timestamp) => {
+              if (!startTime) startTime = timestamp;
+              const progress = Math.min((timestamp - startTime) / duration, 1);
+              setAnimatedStats((prev) => ({
+                ...prev,
+                [key]: Math.floor(progress * (end - start) + start),
+              }));
+              if (progress < 1) {
+                requestAnimationFrame(step);
+              }
+            };
+            requestAnimationFrame(step);
+          };
+
+          animateValue(0, 50, 2000, "projects");
+          animateValue(0, 100, 2000, "satisfaction");
+          animateValue(0, 24, 2000, "support");
+          animateValue(0, 50, 2000, "clients");
+          animateValue(0, 100, 2000, "delivered");
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (statsRef.current) {
+      observer.observe(statsRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div>
       <Nav />
-      <div
-        className={`${styles.aboutContainer} ${
-          isVisible ? styles.visible : ""
-        }`}
+      <motion.div
+        className={styles.aboutContainer}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
-        {/* Hero Section */}
+        {/* Professional Hero Section */}
         <section className={styles.heroSection}>
-          <div data-aos="zoom-in-up" className={styles.heroContent}>
-            <h1 className={styles.heroTitle}>About Aroliya</h1>
-            <p className={styles.heroSubtitle}>
-              Empowering businesses and individuals through innovative digital
-              solutions
-            </p>
+          <div className={styles.heroBackground}>
+            <motion.div
+              className={styles.floatingOrb1}
+              animate={{
+                x: [0, 100, 0],
+                y: [0, -50, 0],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <motion.div
+              className={styles.floatingOrb2}
+              animate={{
+                x: [0, -80, 0],
+                y: [0, 60, 0],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
+
+          <div className={styles.container}>
+            <div className={styles.heroGrid}>
+              <motion.div
+                className={styles.heroContent}
+                variants={staggerChildren}
+                initial="hidden"
+                animate="visible"
+              >
+                <motion.div className={styles.heroBadge} variants={fadeInUp}>
+                  <FaGlobeAmericas className={styles.badgeIcon} />
+                  <span>About Aroliya</span>
+                </motion.div>
+
+                <motion.h1 className={styles.heroTitle} variants={fadeInUp}>
+                  Crafting Digital Excellence{" "}
+                  <motion.span
+                    className={styles.gradientText}
+                    animate={{
+                      backgroundPosition: ["0%", "100%", "0%"],
+                    }}
+                    transition={{
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                  >
+                    Since 2023
+                  </motion.span>
+                </motion.h1>
+
+                <motion.p className={styles.heroSubtitle} variants={fadeInUp}>
+                  We are a passionate team of developers, designers, and
+                  innovators dedicated to transforming your ideas into
+                  exceptional digital solutions. With expertise across
+                  cutting-edge technologies, we deliver results that drive
+                  growth and success.
+                </motion.p>
+
+                {/* Animated Stats */}
+                <motion.div
+                  className={styles.heroStats}
+                  variants={fadeInUp}
+                  ref={statsRef}
+                >
+                  {[
+                    {
+                      number: animatedStats.projects,
+                      label: "Projects Completed",
+                      suffix: "+",
+                      icon: FaCheckCircle,
+                    },
+                    {
+                      number: animatedStats.clients,
+                      label: "Happy Clients",
+                      suffix: "+",
+                      icon: FaHeart,
+                    },
+                    {
+                      number: animatedStats.satisfaction,
+                      label: "Client Satisfaction",
+                      suffix: "%",
+                      icon: FaStar,
+                    },
+                  ].map((stat, index) => {
+                    const IconComponent = stat.icon;
+                    return (
+                      <motion.div
+                        key={index}
+                        className={styles.statItem}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <div className={styles.statIcon}>
+                          <IconComponent />
+                        </div>
+                        <motion.span
+                          className={styles.statNumber}
+                          key={
+                            animatedStats[
+                              stat.label.toLowerCase().split(" ")[0]
+                            ]
+                          }
+                        >
+                          {stat.number}
+                          {stat.suffix}
+                        </motion.span>
+                        <span className={styles.statLabel}>{stat.label}</span>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+
+                <motion.div className={styles.heroButtons} variants={fadeInUp}>
+                  <motion.button
+                    className={styles.primaryButton}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Our Services
+                  </motion.button>
+                  <motion.button
+                    className={styles.secondaryButton}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Meet Our Team
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+
+              <motion.div
+                className={styles.heroImage}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                <div className={styles.imageContainer}>
+                  <Image
+                    src={teamImage}
+                    alt="Aroliya Team"
+                    className={styles.teamPhoto}
+                    priority
+                  />
+                  <div className={styles.imageOverlay}></div>
+
+                  {/* Floating elements around the image */}
+                  <motion.div
+                    className={styles.floatingElement1}
+                    animate={{
+                      y: [0, -20, 0],
+                      rotate: [0, 5, 0],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <FaCode />
+                  </motion.div>
+
+                  <motion.div
+                    className={styles.floatingElement2}
+                    animate={{
+                      y: [0, 15, 0],
+                      rotate: [0, -5, 0],
+                    }}
+                    transition={{
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <FaChartLine />
+                  </motion.div>
+
+                  <motion.div
+                    className={styles.floatingElement3}
+                    animate={{
+                      y: [0, -15, 0],
+                      x: [0, 10, 0],
+                    }}
+                    transition={{
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <FaRocket />
+                  </motion.div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </section>
+
+        {/* Founder Section */}
         <section className={styles.section}>
           <div className={styles.container}>
-            <h2 className={styles.sectionTitleCenter} data-aos="fade-down">
-              About the Founder
-            </h2>
+            <motion.div
+              className={styles.sectionHeader}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <span className={styles.sectionLabel}>Leadership</span>
+              <h2 className={styles.sectionTitle}>
+                Meet Our Visionary Founder
+              </h2>
+            </motion.div>
+
             <div className={styles.founderGrid}>
-              <div className={styles.founderContent} data-aos="fade-left">
-                <h3 className={styles.founderName}>Neeraj Baghel</h3>
-                <p className={styles.founderTitle}>Founder & CEO of Aroliya</p>
+              <motion.div
+                className={styles.founderImageWrapper}
+                initial={{ opacity: 0, x: -100 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <motion.div
+                  className={styles.founderImageContainer}
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <Image
+                    src={founderImage}
+                    alt="Neeraj Baghel - Founder & CEO"
+                    className={styles.founderImage}
+                    priority
+                  />
+                  <div className={styles.imageOverlay}></div>
+                </motion.div>
+                <motion.div
+                  className={styles.founderAchievements}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <div className={styles.achievementItem}>
+                    <FaAward className={styles.achievementIcon} />
+                    <span>5+ Years Experience</span>
+                  </div>
+                  <div className={styles.achievementItem}>
+                    <FaRocket className={styles.achievementIcon} />
+                    <span>50+ Projects</span>
+                  </div>
+                </motion.div>
+              </motion.div>
+
+              <motion.div
+                className={styles.founderContent}
+                initial={{ opacity: 0, x: 100 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className={styles.founderHeader}>
+                  <h3 className={styles.founderName}>Neeraj Baghel</h3>
+                  <span className={styles.founderTitle}>Founder & CEO</span>
+                  <div className={styles.founderSocial}>
+                    <motion.a
+                      href="#"
+                      className={styles.socialLink}
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <FaLinkedin />
+                    </motion.a>
+                    <motion.a
+                      href="#"
+                      className={styles.socialLink}
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <FaTwitter />
+                    </motion.a>
+                    <motion.a
+                      href="#"
+                      className={styles.socialLink}
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <FaGithub />
+                    </motion.a>
+                  </div>
+                </div>
+
                 <div className={styles.founderDescription}>
                   <p>
-                    Neeraj Baghel, the Founder of Aroliya, is passionate about
-                    using technology to solve real-world problems. With a
-                    background in data science, artificial intelligence, and
-                    digital innovation, Neeraj has been recognized for his
-                    performance and creativity in professional roles. His vision
-                    for Aroliya is not just about offering services—it's about
-                    building a platform where businesses find solutions and
-                    freelancers find opportunities. Neeraj's leadership combines
-                    innovation, dedication, and strategic thinking, making
-                    Aroliya a brand that stands for reliability and growth. His
-                    belief is simple:
-                    <em>
-                      "Work should be smarter, not harder—and technology should
-                      make life easier for everyone."
-                    </em>
+                    Neeraj Baghel, the visionary Founder of Aroliya, is
+                    passionate about leveraging technology to solve real-world
+                    challenges. With extensive expertise in data science,
+                    artificial intelligence, and digital innovation.
+                  </p>
+                  <p>
+                    His leadership philosophy centers on creating a platform
+                    where businesses discover transformative solutions while
+                    freelancers unlock meaningful opportunities.
                   </p>
                 </div>
-              </div>
-              <div className={styles.founderImageWrapper}>
-                <div
-                  className={styles.founderPlaceholder}
-                  data-aos="fade-right"
+
+                <motion.blockquote
+                  className={styles.quote}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 }}
                 >
-                  <Image src={about} alt="err" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        {/* Introduction Section */}
-        <section className={styles.section}>
-          <div className={styles.container}>
-            <div data-aos="fade-right" className={styles.content}>
-              <h2 className={styles.sectionTitle}>About Aroliya</h2>
+                  <FaQuoteLeft className={styles.quoteIcon} />
+                  "Work should be smarter, not harder—and technology should make
+                  life easier for everyone."
+                </motion.blockquote>
 
-              <div className={styles.textContent}>
-                <p>
-                  A trusted digital solutions platform built on the vision of
-                  simplifying work and empowering people. Founded by Neeraj
-                  Baghel, Aroliya was created with a single goal in mind – to
-                  make technology accessible, efficient, and meaningful for
-                  businesses and individuals alike.
-                </p>
-                <p>
-                  At Aroliya, we believe that the future belongs to those who
-                  can harness the power of innovation and collaboration. Our
-                  journey started with the idea of creating a platform that not
-                  only delivers high-quality digital solutions but also builds a
-                  strong community of freelancers, clients, and businesses
-                  working together for growth.
-                </p>
-                <p>
-                  We are driven by values of trust, transparency, and
-                  excellence, ensuring that every service we provide adds
-                  measurable value to our clients' lives and businesses. With a
-                  focus on professionalism and reliability, Aroliya has been
-                  growing steadily as a name that people can depend on for their
-                  diverse digital needs.
-                </p>
-              </div>
-              <div className={styles.imageWrapper} data-aos="fade-left">
-                <div className={styles.placeholderImage}>
-                  <Image src={team} alt="cc" />
+                <div className={styles.founderExpertise}>
+                  <h4>Areas of Expertise</h4>
+                  <div className={styles.expertiseTags}>
+                    {[
+                      "Data Science",
+                      "AI & ML",
+                      "Digital Strategy",
+                      "Innovation",
+                      "Web Development",
+                      "Cloud Computing",
+                    ].map((tag, index) => (
+                      <motion.span
+                        key={index}
+                        className={styles.expertiseTag}
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {tag}
+                      </motion.span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
 
-        <section className={`${styles.section} ${styles.accentSection}`}>
+        {/* Company Story Section */}
+        <section className={`${styles.section} ${styles.storySection}`}>
           <div className={styles.container}>
-            <div className={styles.visionMissionGrid} data-aos="fade-up">
-              <div className={styles.visionCard}>
-                <div className={styles.cardIcon}>
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z"
-                      stroke="#4facfe"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M12 5C7.58172 5 4 8.00161 4 12C4 15.9984 7.58172 19 12 19C16.4183 19 20 15.9984 20 12C20 8.00161 16.4183 5 12 5Z"
-                      stroke="#4facfe"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M12 2V4"
-                      stroke="#4facfe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M12 20V22"
-                      stroke="#4facfe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M4 12H2"
-                      stroke="#4facfe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M22 12H20"
-                      stroke="#4facfe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
+            <div className={styles.storyGrid}>
+              <motion.div
+                className={styles.storyContent}
+                initial={{ opacity: 0, x: -100 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className={styles.sectionHeader}>
+                  <span className={styles.sectionLabel}>Our Journey</span>
+                  <h2 className={styles.sectionTitle}>
+                    Building the Future Together
+                  </h2>
                 </div>
-                <h3>Our Vision</h3>
-                <p>
-                  To become a global leader in providing innovative, reliable,
-                  and cost-effective digital solutions that empower individuals,
-                  freelancers, and organizations to achieve their goals.
-                </p>
-              </div>
 
-              <div className={styles.missionCard}>
-                <div className={styles.cardIcon}>
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
-                      stroke="#00f2fe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M9 22V12H15V22"
-                      stroke="#00f2fe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                <div className={styles.timeline}>
+                  {[
+                    {
+                      year: "2023",
+                      title: "Company Founded",
+                      description:
+                        "Aroliya was born with a vision to democratize digital solutions",
+                      icon: <FaTrophy />,
+                    },
+                    {
+                      year: "2024",
+                      title: "First Milestone",
+                      description:
+                        "Successfully delivered 50+ projects with 100% client satisfaction",
+                      icon: <FaAward />,
+                    },
+                    {
+                      year: "2025",
+                      title: "Future Vision",
+                      description:
+                        "Expanding globally with innovative AI-driven solutions",
+                      icon: <FaRocket />,
+                    },
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      className={styles.timelineItem}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.2 }}
+                    >
+                      <div className={styles.timelineMarker}>{item.icon}</div>
+                      <div className={styles.timelineContent}>
+                        <span className={styles.timelineYear}>{item.year}</span>
+                        <h4>{item.title}</h4>
+                        <p>{item.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
-                <h3>Our Mission</h3>
-                <p>
-                  To create opportunities, simplify challenges, and bridge the
-                  gap between businesses and digital transformation by offering
-                  services that are efficient, impactful, and future-ready.
-                </p>
-              </div>
+              </motion.div>
+
+              <motion.div
+                className={styles.storyVisual}
+                initial={{ opacity: 0, x: 100 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className={styles.visualContainer}>
+                  <motion.div
+                    className={styles.floatingCard}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                    <span className={styles.cardStat}>
+                      {animatedStats.clients}+
+                    </span>
+                    <span className={styles.cardLabel}>Happy Clients</span>
+                  </motion.div>
+                  <motion.div
+                    className={styles.floatingCard}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.6 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                    <span className={styles.cardStat}>
+                      {animatedStats.delivered}+
+                    </span>
+                    <span className={styles.cardLabel}>Projects Delivered</span>
+                  </motion.div>
+                  <div className={styles.teamImageWrapper}>
+                    <Image
+                      src={teamImage}
+                      alt="Aroliya Team Collaboration"
+                      className={styles.teamImage}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Vision & Mission Section */}
+        <section className={`${styles.section} ${styles.visionMissionSection}`}>
+          <div className={styles.container}>
+            <motion.div
+              className={styles.sectionHeader}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <span className={styles.sectionLabel}>Our Purpose</span>
+              <h2 className={styles.sectionTitle}>Vision & Mission</h2>
+            </motion.div>
+
+            <div className={styles.visionMissionGrid}>
+              <motion.div
+                className={styles.purposeCard}
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                whileHover={{
+                  y: -10,
+                  transition: { type: "spring", stiffness: 300 },
+                }}
+              >
+                <div className={styles.cardVisual}>
+                  <FaLightbulb className={styles.cardIcon} />
+                </div>
+                <div className={styles.cardContent}>
+                  <h3>Our Vision</h3>
+                  <p>
+                    To emerge as a global leader in delivering innovative,
+                    reliable, and cost-effective digital solutions that empower
+                    individuals and organizations to achieve extraordinary
+                    outcomes.
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className={styles.purposeCard}
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                whileHover={{
+                  y: -10,
+                  transition: { type: "spring", stiffness: 300 },
+                }}
+              >
+                <div className={styles.cardVisual}>
+                  <FaRocket className={styles.cardIcon} />
+                </div>
+                <div className={styles.cardContent}>
+                  <h3>Our Mission</h3>
+                  <p>
+                    To create unprecedented opportunities, simplify complex
+                    challenges, and bridge the gap between businesses and
+                    digital transformation through efficient, impactful, and
+                    future-ready services.
+                  </p>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
 
         {/* Values Section */}
         <section className={`${styles.section} ${styles.valuesSection}`}>
-          <div className={styles.container} data-aos="fade-right">
-            <h2 className={styles.sectionTitleCenter}>Our Core Values</h2>
+          <div className={styles.container}>
+            <motion.div
+              className={styles.sectionHeader}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <span className={styles.sectionLabel}>Our Foundation</span>
+              <h2 className={styles.sectionTitle}>Core Values</h2>
+              <p className={styles.sectionSubtitle}>
+                The principles that guide everything we do and define who we are
+              </p>
+            </motion.div>
+
             <div className={styles.valuesGrid}>
-              <div className={styles.valueItem}>
-                <div className={styles.valueIcon}>
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+              {[
+                {
+                  icon: <FaShieldAlt />,
+                  title: "Trust & Integrity",
+                  description:
+                    "Building lasting relationships through transparency, honesty, and unwavering reliability.",
+                  color: "#10B981",
+                },
+                {
+                  icon: <FaLightbulb />,
+                  title: "Innovation",
+                  description:
+                    "Pushing boundaries and embracing cutting-edge technologies for forward-thinking solutions.",
+                  color: "#3B82F6",
+                },
+                {
+                  icon: <FaHandshake />,
+                  title: "Collaboration",
+                  description:
+                    "Fostering synergy where diverse talents unite for extraordinary results.",
+                  color: "#8B5CF6",
+                },
+                {
+                  icon: <FaStar />,
+                  title: "Excellence",
+                  description:
+                    "Committing to highest standards of quality and continuous improvement.",
+                  color: "#F59E0B",
+                },
+              ].map((value, index) => (
+                <motion.div
+                  key={index}
+                  className={styles.valueCard}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{
+                    scale: 1.05,
+                    y: -10,
+                    transition: { type: "spring", stiffness: 300 },
+                  }}
+                  onHoverStart={() => setActiveValue(index)}
+                >
+                  <div
+                    className={styles.valueIcon}
+                    style={{ "--value-color": value.color }}
                   >
-                    <path
-                      d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
-                      stroke="#4facfe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <h3>Trust</h3>
-                <p>
-                  Building reliable relationships with our clients and community
-                  through transparency and integrity.
-                </p>
-              </div>
-
-              <div className={styles.valueItem}>
-                <div className={styles.valueIcon}>
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M13 2L3 14H12L11 22L21 10H12L13 2Z"
-                      stroke="#00f2fe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <h3>Innovation</h3>
-                <p>
-                  Continuously evolving our solutions to stay ahead in the
-                  rapidly changing digital landscape.
-                </p>
-              </div>
-
-              <div className={styles.valueItem}>
-                <div className={styles.valueIcon}>
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"
-                      stroke="#4facfe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z"
-                      stroke="#4facfe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13"
-                      stroke="#00f2fe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M16 3.13C16.8604 3.3503 17.623 3.8507 18.1676 4.55231C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88"
-                      stroke="#00f2fe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <h3>Collaboration</h3>
-                <p>
-                  Fostering a community where freelancers and businesses work
-                  together for mutual growth.
-                </p>
-              </div>
-
-              <div className={styles.valueItem}>
-                <div className={styles.valueIcon}>
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 15L12 18M12 21L12 18M12 18L15 15M12 18L9 21M3 12C3 13.1819 3.23279 14.3522 3.68508 15.4442C4.13738 16.5361 4.80031 17.5282 5.63604 18.364C6.47177 19.1997 7.46392 19.8626 8.55585 20.3149C9.64778 20.7672 10.8181 21 12 21C13.1819 21 14.3522 20.7672 15.4442 20.3149C16.5361 19.8626 17.5282 19.1997 18.364 18.364C19.1997 17.5282 19.8626 16.5361 20.3149 15.4442C20.7672 14.3522 21 13.1819 21 12C21 10.8181 20.7672 9.64778 20.3149 8.55585C19.8626 7.46392 19.1997 6.47177 18.364 5.63604C17.5282 4.80031 16.5361 4.13738 15.4442 3.68508C14.3522 3.23279 13.1819 3 12 3C9.61305 3 7.32387 3.94821 5.63604 5.63604C3.94821 7.32387 3 9.61305 3 12Z"
-                      stroke="#4facfe"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <h3>Excellence</h3>
-                <p>
-                  Striving for the highest quality in every service we provide
-                  and every interaction we have.
-                </p>
-              </div>
+                    {value.icon}
+                  </div>
+                  <h3>{value.title}</h3>
+                  <p>{value.description}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className={styles.benefits}>
-          <div className={styles.sectionHead}>
-            <h2>Why Choose Aroliya?</h2>
-            <p>
-              Using our platform means saving time, reducing costs, and focusing
-              on what really matters—growing your business.
-            </p>
-          </div>
-
-          <div className={styles.grids} data-aos="fade-up">
-            {benefits.map((b, i) => (
-              <div key={i} className={styles.card}>
-                <div className={styles.icon}>{b.icon}</div>
-                <h3>{b.title}</h3>
-                <p>{b.desc}</p>
+        {/* CTA Section */}
+        <motion.section
+          className={styles.ctaSection}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className={styles.container}>
+            <motion.div
+              className={styles.ctaContent}
+              initial={{ scale: 0.9 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ type: "spring", stiffness: 100 }}
+            >
+              <h2>Ready to Start Your Project?</h2>
+              <p>
+                Let's discuss how we can help you achieve your digital goals
+              </p>
+              <div className={styles.ctaButtons}>
+                <motion.button
+                  className={styles.primaryButton}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Get Started
+                </motion.button>
+                <motion.button
+                  className={styles.secondaryButton}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Contact Us
+                </motion.button>
               </div>
-            ))}
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
+
         <Footer />
-      </div>
+      </motion.div>
     </div>
   );
 }

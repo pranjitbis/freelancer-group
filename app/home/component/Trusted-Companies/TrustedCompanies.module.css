@@ -1,89 +1,317 @@
-.trustedSection{
-  width: 100%;
-  background: #f8f8f8;
-  padding: 100px 20px  0;
-  box-sizing: border-box;
+/* TrustedCompanies.module.css */
+
+.trustedSection {
+  padding: 6rem 2rem 2rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .trustedContainer {
-  max-width: 1200px;
+  max-width: 1700px;
   margin: 0 auto;
+  position: relative;
+}
+
+/* Header Styles */
+.sectionHeader {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 4rem;
+}
+
+.premiumBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.badgeIcon {
+  font-size: 0.8rem;
 }
 
 .trustedTitle {
-  font-size: 36px;
+  font-size: 3rem;
   font-weight: 700;
-  color: #222;
-  letter-spacing: 0.5px;
+  margin-bottom: 1rem;
+  color: #2d3748;
+  line-height: 1.2;
 }
 
+.titleHighlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.trustedSubtitle {
+  font-size: 1.2rem;
+  color: #718096;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.trustIndicators {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.trustIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f7fafc;
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+}
+
+.indicatorIcon {
+  color: #667eea;
+  font-size: 1rem;
+}
+
+/* Slider Styles */
 .trustedSliderContainer {
   position: relative;
-  height: 180px;
+  margin: 3rem 0;
+  padding: 2rem 0;
   overflow: hidden;
+}
+
+.sliderOverlayLeft,
+.sliderOverlayRight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.sliderOverlayLeft {
+  left: 0;
+  background: linear-gradient(90deg, white 0%, transparent 100%);
+}
+
+.sliderOverlayRight {
+  right: 0;
+  background: linear-gradient(90deg, transparent 0%, white 100%);
 }
 
 .trustedSlider {
   display: flex;
-  gap: 60px;
-  position: absolute;
-  left: 0;
-  top: 0;
+  gap: 3rem;
   align-items: center;
+  width: max-content;
 }
 
 .trustedLogoWrapper {
-  width: 200px;
-  height: 120px;
-  background: #f8f8f8;
-  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+  min-width: 140px;
+}
+
+.trustedLogoWrapper:hover {
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15);
+  border-color: #e2e8f0;
+}
+
+.trustedLogoWrapper.premium {
+  border: 2px solid #ffeaa7;
+  background: linear-gradient(135deg, #fff9f0 0%, #fff 100%);
+}
+
+.logoContainer {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s ease;
-}
-
-
-.trustedLogoWrapper:hover {
-  transform: scale(1.05);
+  width: 80px;
+  height: 80px;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1rem;
 }
 
 .trustedLogo {
-  max-height: 80px;
   max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
+  filter: grayscale(100%);
+  opacity: 0.7;
+  transition: all 0.3s ease;
 }
 
-.trustedNext {
-  max-width: 800px;
-  margin: 120px auto 0;
+.trustedLogoWrapper:hover .trustedLogo {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+.premiumIndicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background: #fdcb6e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: white;
+}
+
+.companyName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
   text-align: center;
 }
 
-.trustedSubtitle {
-  font-size: 28px;
+/* CTA Section */
+.ctaSection {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.ctaText {
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #333;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
 }
 
-.trustedText {
-  font-size: 18px;
-  color: #555;
-  margin-top: 18px;
-  line-height: 1.6;
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
 }
 
-@media (max-width: 780px) {
-.trustedTitle{
-  width: 100%;
-  max-width: 500px;
-  font-size: 1.9rem;
-  margin: auto;
-  padding: 0;
+.ctaButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
+.ctaIcon {
+  font-size: 0.9rem;
+  transition: transform 0.3s ease;
+}
+
+.ctaButton:hover .ctaIcon {
+  transform: translateX(3px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .trustedTitle {
+    font-size: 2.5rem;
+  }
+  
+  .trustedSlider {
+    gap: 2rem;
+  }
+  
+  .trustedLogoWrapper {
+    min-width: 120px;
+    padding: 1rem 1.5rem;
+  }
+  
+  .logoContainer {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .trustedSection {
+    padding: 4rem 1.5rem;
+  }
+  
+  .trustedTitle {
+    font-size: 2rem;
+  }
+  
+  .trustedSubtitle {
+    font-size: 1.1rem;
+  }
+  
+  .trustIndicators {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .trustIndicator {
+    width: 100%;
+    max-width: 250px;
+    justify-content: center;
+  }
+  
+  .sliderOverlayLeft,
+  .sliderOverlayRight {
+    width: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .trustedSection {
+    padding: 3rem 1rem;
+  }
+  
+  .trustedTitle {
+    font-size: 1.8rem;
+  }
+  
+  .trustedLogoWrapper {
+    min-width: 100px;
+    padding: 0.8rem 1rem;
+    gap: 0.8rem;
+  }
+  
+  .companyName {
+    font-size: 0.8rem;
+  }
+  
+  .ctaSection {
+    padding: 1.5rem;
+  }
+  
+  .ctaText {
+    font-size: 1.1rem;
+  }
 }
