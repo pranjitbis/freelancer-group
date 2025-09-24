@@ -80,7 +80,7 @@
   z-index: 2;
 }
 
-.slide h1 {
+.slide h2 {
   font-size: 3.5rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
@@ -214,7 +214,7 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .slide h1 {
+  .slide h2 {
     font-size: 2.8rem;
   }
 
@@ -240,7 +240,7 @@
     padding: 2rem 1rem;
   }
 
-  .slide h1 {
+  .slide h2 {
     font-size: 2.2rem;
     margin-bottom: 1rem;
   }
@@ -279,7 +279,7 @@
 }
 
 @media (max-width: 480px) {
-  .slide h1 {
+  .slide h2 {
     font-size: 1.8rem;
   }
   .trustBadge {

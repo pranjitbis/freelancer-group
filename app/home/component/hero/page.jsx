@@ -29,7 +29,7 @@ export default function Hero() {
           <div className={`${styles.slide} ${styles.slideThree}`}>
             <div className={styles.slideContent}>
               <div className={styles.welcomeSection}>
-                <h1>Welcome to Aroliya – </h1>
+                <h2>Welcome to Aroliya – </h2>
                 <p>
                   India’s No. 1 Platform for Smart Online Services From online
                   form filling to travel & hotel bookings, web development, Data
@@ -55,7 +55,7 @@ export default function Hero() {
             }}
           >
             <div className={styles.slideContent}>
-              <h1>We Do the Work, You Enjoy the Results</h1>
+              <h2>We Do the Work, You Enjoy the Results</h2>
               <p>
                 Whether it's online form filling, business support, or travel
                 bookings—our team takes care of it quickly, securely, and
@@ -96,7 +96,7 @@ export default function Hero() {
             }}
           >
             <div className={styles.slideContent}>
-              <h1>Work Smarter with Aroliya Freelancer Hub</h1>
+              <h2>Work Smarter with Aroliya Freelancer Hub</h2>
               <p>
                 Showcase your skills, get hired, and grow your career faster
                 with a powerful portfolio that proves impact and builds
