@@ -77,7 +77,6 @@ const jobsData = [
       "Competitive salary with annual performance bonuses",
       "Full remote work flexibility with coworking space allowances",
       "Comprehensive health, dental, and vision insurance",
-      "$2,000 annual professional development budget",
       "Flexible working hours and unlimited PTO",
       "Quarterly team retreats and annual company events",
       "Latest MacBook Pro and home office setup stipend",
@@ -138,7 +137,6 @@ const jobsData = [
       "Competitive salary with performance-based bonuses",
       "Remote-first culture with flexible scheduling",
       "Comprehensive health benefits and wellness programs",
-      "$3,000 annual learning and conference budget",
       "Access to high-performance computing resources",
       "Publication opportunities and patent support",
       "Collaboration with leading AI research institutions",
@@ -205,6 +203,64 @@ const jobsData = [
       "Regular destination training and product workshops",
       "Opportunities to specialize in specific travel niches",
       "Collaborative environment with shared knowledge base",
+    ],
+  },
+  {
+    id: 4,
+    title: "Virtual Executive Assistant",
+    department: "Virtual Assistant Services",
+    type: "Contract",
+    location: "Remote",
+    description:
+      "Provide top-tier administrative and executive support to global clients. As a Virtual Executive Assistant, you'll manage schedules, handle communication, and keep operations running smoothly for executives worldwide.",
+    category: "virtual-assistant",
+    experience: "1+ year",
+    salary: "$35,000 - $50,000",
+    requirements: [
+      "1+ year of experience as an executive assistant, virtual assistant, or similar role",
+      "Excellent written and verbal communication skills",
+      "Strong organizational and time management abilities",
+      "Proficiency with productivity tools (Google Workspace, Microsoft Office)",
+      "Experience with task/project management tools (Trello, Asana, or Monday.com)",
+      "Ability to maintain confidentiality and handle sensitive information",
+      "Comfortable working across different time zones",
+      "Tech-savvy with ability to learn new tools quickly",
+    ],
+    skills: [
+      "Administrative Support",
+      "Scheduling",
+      "Communication",
+      "Time Management",
+      "Organization",
+      "Problem Solving",
+      "Confidentiality",
+      "Productivity Tools",
+    ],
+    about:
+      "As a Virtual Executive Assistant at Aroliya, you'll play a crucial role in helping executives stay productive and focused on what matters most. You'll be the backbone of operations—handling calendars, coordinating meetings, and ensuring seamless communication across teams and clients.",
+    responsibilities: [
+      "Manage executives’ calendars, appointments, and travel arrangements",
+      "Screen and respond to emails, messages, and phone calls professionally",
+      "Coordinate meetings, prepare agendas, and record minutes",
+      "Handle document preparation, reports, and presentations",
+      "Assist with project management and task tracking",
+      "Provide customer support and manage client communications",
+      "Maintain confidentiality and safeguard sensitive information",
+      "Adapt quickly to changing priorities and multitask effectively",
+    ],
+    benefits: [
+      "Competitive contract-based compensation",
+      "Remote work flexibility with global exposure",
+      "Opportunity to work with international executives and teams",
+      "Skill development through real-world executive management experience",
+      "Flexible working hours across multiple time zones",
+      "Access to productivity and project management training",
+    ],
+    companyCulture: [
+      "Supportive and collaborative remote-first environment",
+      "Focus on personal growth and professional development",
+      "Work-life balance and flexible scheduling",
+      "Inclusive and diverse team culture",
     ],
   },
 ];
@@ -324,10 +380,7 @@ export default function JobDetail() {
                   <FaClock className={styles.metaIcon} />
                   <span>{job.type}</span>
                 </div>
-                <div className={styles.metaItem}>
-                  <FaDollarSign className={styles.metaIcon} />
-                  <span>{job.salary}</span>
-                </div>
+
                 <div className={styles.metaItem}>
                   <FaUserTie className={styles.metaIcon} />
                   <span>{job.experience}</span>
@@ -449,10 +502,6 @@ export default function JobDetail() {
                   <div className={styles.detailItem}>
                     <strong>Experience Level:</strong>
                     <span>{job.experience}</span>
-                  </div>
-                  <div className={styles.detailItem}>
-                    <strong>Salary Range:</strong>
-                    <span>{job.salary}</span>
                   </div>
                 </div>
               </div>

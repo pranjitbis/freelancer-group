@@ -40,22 +40,21 @@ export default function ProfessionalServicesHero() {
           services. We deliver accuracy, save you time, and eliminate the stress
           of complex processes.
         </p>
-
-        {/* Mini Stats */}
       </div>
 
       {/* Row 1: Form Filling Service */}
-      <div className={styles.row}>
+      <div className={`${styles.row} ${styles.form}`}>
         <div className={styles.content}>
           <div className={styles.serviceBadge}>
             <FaFileAlt className={styles.badgeServiceIcon} />
             <span>Premium Form Service</span>
           </div>
-          <h2>Expert Form Filling Solutions</h2>
+          <h2>Scalable Solutions for Modern Businesses</h2>
           <p className={styles.serviceDescription}>
-            Eliminate the stress of complex paperwork with our professional form
-            filling services. We ensure 100% accuracy, compliance, and timely
-            submission for all your documentation needs.
+            Our scalable solutions are built to meet the evolving needs of
+            modern businesses. We provide expert services that streamline
+            operations, boost efficiency, and support sustainable growth,
+            ensuring your business stays competitive and future-ready.
           </p>
 
           <div className={styles.featuresGrid}>
@@ -224,8 +223,6 @@ export default function ProfessionalServicesHero() {
           </div>
         </div>
       </div>
-
-     
     </section>
   );
 }

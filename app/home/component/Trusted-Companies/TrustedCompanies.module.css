@@ -1,6 +1,6 @@
 .trustedSection {
-  padding: 80px 0 0;
-  background: #f8fafc;
+  padding: 50px 0 0;
+  background: #f6faff;
   position: relative;
   overflow: hidden;
 }
@@ -51,6 +51,8 @@
   color: #2563eb;
   font-size: 1.1rem;
 }
+
+
 
 /* Logo Slider */
 .logoSliderContainer {

@@ -433,7 +433,7 @@ const ServiceDetail = () => {
                     rows="4"
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Please provide any additional information about your requirements"
+                    placeholder="Please provide additional information"
                   ></textarea>
                 </div>
 

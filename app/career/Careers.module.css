@@ -5,7 +5,6 @@
 
 /* Hero Section */
 .hero {
-  min-height: 84vh;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -38,8 +37,7 @@
   justify-content: right;
 }
 
-
-.heroImage img{
+.heroImage img {
   width: 100%;
   max-width: 630px;
   height: auto;
@@ -475,6 +473,9 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1365px) {
+}
+
 @media (max-width: 768px) {
   .heroTitle {
     font-size: 2.5rem;
@@ -801,7 +802,15 @@
   margin-right: auto;
 }
 
-/* Responsive Design */
+@media (max-width: 1522px) {
+  .jobsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 3rem;
+  }
+}
 @media (max-width: 1128px) {
   .hero {
     flex-direction: column;

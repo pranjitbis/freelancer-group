@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Head from "next/head";
 import Nav from "../home/component/Nav/page";
-import cerrer from '../../public/icons/career.png'
+import cerrer from "../../public/icons/career.png";
 import Image from "next/image";
 import {
   FaBriefcase,
@@ -150,7 +150,7 @@ export default function Careers() {
       type: "Contract",
       location: "Remote",
       description:
-        "Provide high-level administrative and executive support to clients globally, managing schedules, correspondence, project coordination, and other operational tasks with professionalism and efficiency.",
+        "Provide global executive support, managing schedules, correspondence, projects, and operations with professionalism, efficiency, organization, and strong communication skills.",
       category: "virtual-assistant",
       experience: "1+ year",
       salary: "$35,000 - $50,000",
@@ -411,7 +411,7 @@ export default function Careers() {
             </button>
           </div>
           <div className={styles.heroImage}>
-            <Image src={cerrer} alt="err"/>
+            <Image src={cerrer} alt="err" />
           </div>
         </section>
 
@@ -557,9 +557,7 @@ export default function Careers() {
                         {job.experience}
                       </span>
                     </div>
-                    <div className={styles.jobSalary}>{job.salary}</div>
                   </div>
-
                   <p className={styles.jobDescription}>{job.description}</p>
 
                   <div className={styles.jobSkills}>

@@ -151,7 +151,7 @@ export default function Nav() {
                     href="/services/data-visualization"
                     onClick={() => setServicesOpen(false)}
                   >
-                    Data Visualization and AI solution
+                    Data and AI solution
                   </Link>
                 </div>
               )}
