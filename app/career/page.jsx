@@ -2,14 +2,22 @@
 import { useState } from "react";
 import Head from "next/head";
 import Nav from "../home/component/Nav/page";
+import cerrer from '../../public/icons/career.png'
+import Image from "next/image";
 import {
   FaBriefcase,
+  FaTasks,
+  FaDatabase,
+  FaBullhorn,
   FaPlane,
   FaChartLine,
   FaAssistiveListeningSystems,
+  FaPenNib,
+  FaCheckCircle,
   FaLinkedin,
   FaTwitter,
   FaFacebook,
+  FaCogs,
   FaEnvelope,
   FaPhone,
   FaMapMarkerAlt,
@@ -26,14 +34,30 @@ import {
   FaPhoneAlt,
   FaStar,
   FaCheck,
+  FaSearch,
+  FaBrain,
+  FaServer,
+  FaMobileAlt,
+  FaShare,
 } from "react-icons/fa";
+import {
+  MdTravelExplore,
+  MdOutlineDesignServices,
+  MdSecurity,
+} from "react-icons/md";
+import { GiArtificialIntelligence, GiTeacher, GiFactory } from "react-icons/gi";
+import { SiCloudflare } from "react-icons/si";
+
 import Footer from "../home/footer/page";
 import { FaEarthAmericas } from "react-icons/fa6";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import styles from "./Careers.module.css";
 
 export default function Careers() {
   const [activeTab, setActiveTab] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
 
   const jobs = [
     {
@@ -43,9 +67,26 @@ export default function Careers() {
       type: "Full-time",
       location: "Remote",
       description:
-        "Lead the development of high-performance, scalable web applications using React and Next.js, ensuring responsive design and optimal user experience.",
+        "Lead the development of high-performance, scalable web applications using React and Next.js, ensuring responsive design, optimal user experience, and adherence to best coding practices.",
       category: "technology",
-      experience: "3 years",
+      experience: "3+ years",
+      salary: "$80,000 - $120,000",
+      requirements: [
+        "Proficient in React.js and Next.js with hands-on project experience",
+        "Strong knowledge of TypeScript and modern JavaScript",
+        "Experience with CSS frameworks like Tailwind or Styled Components",
+        "Familiarity with REST APIs and frontend-backend integration",
+      ],
+      skills: [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "CSS",
+        "JavaScript",
+        "Tailwind",
+      ],
+      about:
+        "Join our core technology team to build innovative web solutions that serve thousands of users worldwide. Work on cutting-edge projects, collaborate with cross-functional teams, and deliver scalable applications using modern technologies.",
     },
     {
       id: 2,
@@ -54,9 +95,26 @@ export default function Careers() {
       type: "Full-time",
       location: "Remote",
       description:
-        "Design and implement innovative AI and machine learning models, providing actionable insights and predictive solutions for diverse business challenges.",
+        "Design, implement, and optimize AI and machine learning models to provide actionable insights, predictive analytics, and innovative solutions that address complex business challenges.",
       category: "technology",
-      experience: "2 years",
+      experience: "2+ years",
+      salary: "$90,000 - $130,000",
+      requirements: [
+        "Proficient in Python and ML frameworks like TensorFlow or PyTorch",
+        "Hands-on experience in data modeling, analysis, and visualization",
+        "Ability to deploy ML models on cloud platforms like AWS or Azure",
+        "Strong understanding of AI algorithms and statistical modeling",
+      ],
+      skills: [
+        "Python",
+        "TensorFlow",
+        "PyTorch",
+        "Machine Learning",
+        "Data Analysis",
+        "AI",
+      ],
+      about:
+        "Be part of our AI innovation team, working on challenging problems and deploying machine learning solutions that drive real business impact. Collaborate with data scientists, engineers, and product teams to create scalable, intelligent systems.",
     },
     {
       id: 3,
@@ -65,9 +123,25 @@ export default function Careers() {
       type: "Full-time",
       location: "Remote",
       description:
-        "Provide expert guidance on travel itineraries, hotel accommodations, and booking management, ensuring seamless and memorable travel experiences for clients worldwide.",
+        "Provide expert guidance on travel itineraries, hotel accommodations, and booking management, ensuring seamless, personalized, and memorable experiences for clients worldwide.",
       category: "travel",
-      experience: "2 years",
+      experience: "2+ years",
+      salary: "$45,000 - $65,000",
+      requirements: [
+        "Proven experience in travel planning and consulting",
+        "Excellent customer service and communication skills",
+        "Proficiency in travel booking and reservation systems",
+        "Ability to work with multilingual clients and global travel providers",
+      ],
+      skills: [
+        "Travel Planning",
+        "Customer Service",
+        "Booking Systems",
+        "Multilingual",
+        "Itinerary Design",
+      ],
+      about:
+        "Join our travel division and help create unforgettable experiences for clients around the globe. Work closely with international partners, provide expert recommendations, and ensure each journey is meticulously planned and executed.",
     },
     {
       id: 4,
@@ -76,97 +150,25 @@ export default function Careers() {
       type: "Contract",
       location: "Remote",
       description:
-        "Deliver professional administrative and executive support to clients globally, managing schedules, correspondence, and operational tasks efficiently.",
+        "Provide high-level administrative and executive support to clients globally, managing schedules, correspondence, project coordination, and other operational tasks with professionalism and efficiency.",
       category: "virtual-assistant",
-      experience: "1 year",
-    },
-    {
-      id: 5,
-      title: "Data Analyst – Business Intelligence",
-      department: "Data & AI Solutions",
-      type: "Full-time",
-      location: "Remote",
-      description:
-        "Analyze complex datasets to extract insights, create dashboards, and provide actionable recommendations that drive strategic business decisions.",
-      category: "technology",
-      experience: "2 years",
-    },
-    {
-      id: 6,
-      title: "UX/UI Designer – Digital Solutions",
-      department: "Technology",
-      type: "Contract",
-      location: "Remote",
-      description:
-        "Design user-centric interfaces and experiences for web and mobile applications, focusing on usability, accessibility, and modern design standards.",
-      category: "technology",
-      experience: "2 years",
-    },
-    {
-      id: 7,
-      title: "Travel Itinerary Specialist",
-      department: "Travel & Hotel Booking",
-      type: "Full-time",
-      location: "Remote",
-      description:
-        "Create personalized travel itineraries for clients, optimizing for time, budget, and experience while ensuring smooth travel logistics.",
-      category: "travel",
-      experience: "1-2 years",
-    },
-    {
-      id: 8,
-      title: "Virtual Customer Support Agent",
-      department: "Virtual Assistant Services",
-      type: "Full-time",
-      location: "Remote",
-      description:
-        "Handle client inquiries and support requests professionally via email, chat, and calls, maintaining high customer satisfaction.",
-      category: "virtual-assistant",
-      experience: "1 year",
-    },
-    {
-      id: 9,
-      title: "Backend Developer – Node.js & Express",
-      department: "Technology",
-      type: "Full-time",
-      location: "Remote",
-      description:
-        "Develop and maintain scalable backend systems, RESTful APIs, and database structures using Node.js and Express for high-performance applications.",
-      category: "technology",
-      experience: "3 years",
-    },
-    {
-      id: 10,
-      title: "Virtual Marketing Assistant",
-      department: "Virtual Assistant Services",
-      type: "Contract",
-      location: "Remote",
-      description:
-        "Support marketing campaigns by managing social media content, email campaigns, and client engagement tasks efficiently.",
-      category: "virtual-assistant",
-      experience: "2 years",
-    },
-    {
-      id: 11,
-      title: "Travel Booking Coordinator",
-      department: "Travel & Hotel Booking",
-      type: "Full-time",
-      location: "Remote",
-      description:
-        "Coordinate flight, hotel, and tour bookings for clients, ensuring timely confirmations, best rates, and smooth customer experiences.",
-      category: "travel",
-      experience: "2 years",
-    },
-    {
-      id: 12,
-      title: "Full Stack Developer – React & Node",
-      department: "Technology",
-      type: "Full-time",
-      location: "Remote",
-      description:
-        "Build and maintain end-to-end web applications using React for frontend and Node.js for backend with high scalability and performance.",
-      category: "technology",
-      experience: "3 years",
+      experience: "1+ year",
+      salary: "$35,000 - $50,000",
+      requirements: [
+        "Experience in executive or administrative support roles",
+        "Excellent communication and organizational skills",
+        "Ability to manage multiple tasks and priorities effectively",
+        "Proficiency with digital tools, calendars, and project management software",
+      ],
+      skills: [
+        "Administrative Support",
+        "Communication",
+        "Time Management",
+        "Organization",
+        "Project Coordination",
+      ],
+      about:
+        "Support executives and business leaders in a dynamic, fast-paced environment. Manage scheduling, handle correspondence, coordinate projects, and ensure smooth day-to-day operations while maintaining confidentiality and professionalism.",
     },
   ];
 
@@ -199,24 +201,27 @@ export default function Careers() {
       icon: <FaCheck className={styles.stepIcon} />,
     },
   ];
+
   const jobReviews = [
     {
-      name: "Rohan Sharma",
+      name: "Chintan Sharma",
       role: "Frontend Developer",
       review:
         "Working here has been a fantastic experience! The projects are challenging and rewarding, and the team is supportive.",
       rating: 5,
-      image:
-        "https://pbs.twimg.com/profile_images/1107493705261502464/syjHAMsv_400x400.jpg",
+      icon: <FaLaptopCode style={{ fontSize: "40px", color: "#1D4ED8" }} />, // dev
     },
     {
-      name: "Priya Verma",
+      name: "Jay Verma",
       role: "AI/ML Engineer",
       review:
         "Amazing work culture and learning opportunities. Mentorship here helped me grow professionally.",
       rating: 4.5,
-      image:
-        "https://photosmint.com/wp-content/uploads/beautiful-cute-simple-girl-pic-12-years-indian.jpeg",
+      icon: (
+        <GiArtificialIntelligence
+          style={{ fontSize: "40px", color: "#7C3AED" }}
+        />
+      ), // AI
     },
     {
       name: "Ankit Singh",
@@ -224,41 +229,157 @@ export default function Careers() {
       review:
         "Great environment for travel professionals. The company encourages innovation and client satisfaction.",
       rating: 5,
-      image:
-        "https://cdn.i.haymarketmedia.asia/?n=campaign-india%2Fcontent%2Fankitsingh.jpg&h=570&w=855&q=100&v=20250320&c=1",
+      icon: <MdTravelExplore style={{ fontSize: "40px", color: "#10B981" }} />, // travel
     },
     {
-      name: "Neha Gupta",
-      role: "UX/UI Designer",
+      name: "Riya Kapoor",
+      role: "UI/UX Designer",
       review:
-        "Creative freedom and excellent teamwork. The leadership values employee input and ideas.",
-      rating: 4,
-      image:
-        "https://media.licdn.com/dms/image/v2/C4E03AQH3UlkZJ0vK2g/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1547947057672?e=2147483647&v=beta&t=w2mdRRicbVfwhVn66niheD1aXkWs8cds6n4wJcv6UWA",
+        "The design culture here is inspiring. Collaboration across teams has helped me grow creatively.",
+      rating: 4.8,
+      icon: (
+        <MdOutlineDesignServices
+          style={{ fontSize: "40px", color: "#EC4899" }}
+        />
+      ), // design
+    },
+    {
+      name: "Arjun Mehta",
+      role: "Business Analyst",
+      review:
+        "The management encourages data-driven decisions. It’s a great place for analytical minds.",
+      rating: 4.7,
+      icon: <FaChartLine style={{ fontSize: "40px", color: "#F59E0B" }} />, // analyst
+    },
+    {
+      name: "Sneha Iyer",
+      role: "Language Trainer",
+      review:
+        "A very supportive environment for trainers. The company invests in employee learning.",
+      rating: 4.9,
+      icon: <GiTeacher style={{ fontSize: "40px", color: "#14B8A6" }} />, // trainer
+    },
+    {
+      name: "Rahul Desai",
+      role: "Backend Engineer",
+      review:
+        "The backend systems here are cutting-edge. I’ve had the chance to work on large-scale distributed systems.",
+      rating: 4.6,
+      icon: <FaServer style={{ fontSize: "40px", color: "#374151" }} />, // backend
+    },
+    {
+      name: "Meera Nair",
+      role: "Cybersecurity Specialist",
+      review:
+        "Security is taken very seriously. I enjoy the proactive approach and the constant learning.",
+      rating: 5,
+      icon: <MdSecurity style={{ fontSize: "40px", color: "#DC2626" }} />, // security
+    },
+    {
+      name: "Karan Gupta",
+      role: "Cloud Engineer",
+      review:
+        "I get to work on modern cloud infrastructure with a team that loves solving problems at scale.",
+      rating: 4.7,
+      icon: <SiCloudflare style={{ fontSize: "40px", color: "#FACC15" }} />, // cloud
+    },
+    {
+      name: "Ayesha Khan",
+      role: "Mobile App Developer",
+      review:
+        "Building mobile-first solutions has been very exciting. I’ve learned a lot about cross-platform apps.",
+      rating: 4.8,
+      icon: <FaMobileAlt style={{ fontSize: "40px", color: "#4F46E5" }} />, // mobile
     },
     {
       name: "Vikram Patel",
-      role: "Virtual Assistant",
+      role: "Operations Manager",
       review:
-        "Flexible remote work and great support from management. Highly recommend for aspiring virtual assistants.",
+        "Managing teams here is smooth thanks to the collaborative culture. Every idea is heard and valued.",
       rating: 5,
-      image:
-        "https://static.independent.co.uk/s3fs-public/thumbnails/image/2020/04/28/09/normal-people-0.jpg",
+      icon: <GiFactory style={{ fontSize: "40px", color: "#15803D" }} />, // ops
     },
     {
-      name: "Sanya Reddy",
-      role: "Data Analyst",
+      name: "Neha Joshi",
+      role: "HR Manager",
       review:
-        "Learning new tools and solving real business problems has been an exciting journey.",
-      rating: 4.5,
-      image:
-        "https://media.licdn.com/dms/image/v2/D4E03AQEIvFxq2zqBmw/profile-displayphoto-shrink_200_200/B4EZPv8thvGcAc-/0/1734897491314?e=2147483647&v=beta&t=zQiXOdNmd-er0vikMYHbMhrVb4XkPOf8Jm_YnuPYzDs",
+        "The company puts people first. From onboarding to career growth, HR is fully empowered to help employees.",
+      rating: 4.9,
+      icon: <FaUserTie style={{ fontSize: "40px", color: "#BE123C" }} />, // HR
+    },
+    // Additional reviews
+    {
+      name: "Siddharth Rao",
+      role: "DevOps Engineer",
+      review:
+        "The DevOps processes here are very streamlined. Automation and CI/CD pipelines make deployment effortless.",
+      rating: 4.8,
+      icon: <FaCogs style={{ fontSize: "40px", color: "#0EA5E9" }} />, // DevOps
+    },
+    {
+      name: "Priya Singh",
+      role: "Product Manager",
+      review:
+        "Product planning and execution are very well-managed. Cross-team collaboration is encouraged at every step.",
+      rating: 4.7,
+      icon: <FaTasks style={{ fontSize: "40px", color: "#F97316" }} />, // PM
+    },
+    {
+      name: "Rohit Malhotra",
+      role: "Data Scientist",
+      review:
+        "Working with large datasets and ML models is exciting here. The support for research and innovation is excellent.",
+      rating: 4.9,
+      icon: <FaDatabase style={{ fontSize: "40px", color: "#8B5CF6" }} />, // data
+    },
+    {
+      name: "Ananya Verma",
+      role: "Marketing Specialist",
+      review:
+        "Creative campaigns and innovative strategies make marketing here very dynamic and rewarding.",
+      rating: 4.8,
+      icon: <FaBullhorn style={{ fontSize: "40px", color: "#F43F5E" }} />, // marketing
+    },
+    {
+      name: "Aditya Joshi",
+      role: "QA Engineer",
+      review:
+        "Testing processes are thorough and structured. The focus on quality ensures robust products for clients.",
+      rating: 4.7,
+      icon: <FaCheckCircle style={{ fontSize: "40px", color: "#22C55E" }} />, // QA
+    },
+    {
+      name: "Isha Kapoor",
+      role: "Content Writer",
+      review:
+        "Writing for various campaigns is both fun and challenging. The creative freedom given is highly motivating.",
+      rating: 4.8,
+      icon: <FaPenNib style={{ fontSize: "40px", color: "#F59E0B" }} />, // writer
     },
   ];
-  const filteredJobs =
-    activeTab === "all"
-      ? jobs
-      : jobs.filter((job) => job.category === activeTab);
+
+  const filteredJobs = jobs.filter((job) => {
+    const matchesTab = activeTab === "all" || job.category === activeTab;
+    const matchesSearch =
+      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.department.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesTab && matchesSearch;
+  });
+
+  const scrollToOpportunities = () => {
+    document.getElementById("opportunities").scrollIntoView({
+      behavior: "smooth",
+    });
+  };
+
+  const handleJobClick = (job) => {
+    // Create URL-friendly slug from job title
+    const jobSlug = job.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+    router.push(`/career/${jobSlug}`);
+  };
 
   return (
     <>
@@ -275,70 +396,32 @@ export default function Careers() {
         {/* Hero Section */}
         <section className={styles.hero}>
           <div className={styles.heroContent}>
-            <div className={styles.logo}>
-              <span className={styles.logoText}>Aroliya</span>
-            </div>
             <h1 className={styles.heroTitle}>Build Your Future With Aroliya</h1>
             <p className={styles.heroSubtitle}>
               Join our team of experts delivering innovative solutions across
-              multiple industries worldwide
+              multiple industries worldwide. Grow your career in a dynamic,
+              remote-first environment.
             </p>
-            <div className={styles.heroStats}>
-              <div className={styles.statItem}>
-                <FaUsers className={styles.statIcon} />
-                <span className={styles.statNumber}>50+</span>
-                <span className={styles.statLabel}>Team Members</span>
-              </div>
-              <div className={styles.statItem}>
-                <FaProjectDiagram className={styles.statIcon} />
-                <span className={styles.statNumber}>100+</span>
-                <span className={styles.statLabel}>Projects Delivered</span>
-              </div>
-              <div className={styles.statItem}>
-                <FaEarthAmericas className={styles.statIcon} />
-                <span className={styles.statNumber}>15+</span>
-                <span className={styles.statLabel}>Countries Served</span>
-              </div>
-            </div>
-            <button className={styles.ctaButton}>
+
+            <button
+              className={styles.ctaButton}
+              onClick={scrollToOpportunities}
+            >
               View Open Positions <FaArrowRight />
             </button>
           </div>
-          <div className={styles.heroVisual}>
-            <div
-              className={styles.floatingIcon}
-              style={{ top: "20%", left: "10%" }}
-            >
-              <FaLaptopCode />
-            </div>
-            <div
-              className={styles.floatingIcon}
-              style={{ top: "60%", left: "80%" }}
-            >
-              <FaGlobe />
-            </div>
-            <div
-              className={styles.floatingIcon}
-              style={{ top: "30%", left: "70%" }}
-            >
-              <FaRobot />
-            </div>
-            <div
-              className={styles.floatingIcon}
-              style={{ top: "70%", left: "20%" }}
-            >
-              <FaHeadset />
-            </div>
+          <div className={styles.heroImage}>
+            <Image src={cerrer} alt="err"/>
           </div>
         </section>
-
-        {/* Services Section */}
 
         {/* Culture Section */}
         <section id="culture" className={styles.culture}>
           <div className={styles.container}>
-            <h2 className={styles.sectionTitle}>Our Culture</h2>
-            <p className={styles.sectionSubtitle}>Why join the Aroliya team?</p>
+            <h2 className={styles.sectionTitle}>Our Culture & Values</h2>
+            <p className={styles.sectionSubtitle}>
+              Why Aroliya is the perfect place to grow your career
+            </p>
 
             <div className={styles.cultureGrid}>
               <div className={styles.cultureItem}>
@@ -348,7 +431,7 @@ export default function Careers() {
                 <h3>Remote First</h3>
                 <p>
                   Work from anywhere in the world with our flexible remote work
-                  policy.
+                  policy and async communication.
                 </p>
               </div>
 
@@ -358,8 +441,8 @@ export default function Careers() {
                 </div>
                 <h3>Professional Growth</h3>
                 <p>
-                  Continuous learning opportunities and career advancement
-                  paths.
+                  Continuous learning opportunities, mentorship programs, and
+                  clear career advancement paths.
                 </p>
               </div>
 
@@ -370,7 +453,7 @@ export default function Careers() {
                 <h3>Impactful Work</h3>
                 <p>
                   Work on projects that make a real difference for clients
-                  across industries.
+                  across global industries.
                 </p>
               </div>
 
@@ -380,22 +463,36 @@ export default function Careers() {
                 </div>
                 <h3>Collaborative Environment</h3>
                 <p>
-                  Join a supportive team that values collaboration and
-                  innovation.
+                  Join a supportive team that values collaboration, innovation,
+                  and work-life balance.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Opportunities Section */}
         <section id="opportunities" className={styles.opportunities}>
           <div className={styles.container}>
             <h2 className={styles.sectionTitle}>Career Opportunities</h2>
             <p className={styles.sectionSubtitle}>
-              Join our dynamic team and grow with us
+              Discover your next career move with our growing team
             </p>
 
+            {/* Search Bar */}
+            <div className={styles.searchContainer}>
+              <div className={styles.searchBox}>
+                <FaSearch className={styles.searchIcon} />
+                <input
+                  type="text"
+                  placeholder="Search jobs by title or department..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={styles.searchInput}
+                />
+              </div>
+            </div>
+
+            {/* Category Tabs */}
             <div className={styles.tabs}>
               <button
                 className={`${styles.tab} ${
@@ -403,16 +500,16 @@ export default function Careers() {
                 }`}
                 onClick={() => setActiveTab("all")}
               >
-                All Positions
+                All Positions ({jobs.length})
               </button>
-
               <button
                 className={`${styles.tab} ${
                   activeTab === "technology" ? styles.activeTab : ""
                 }`}
                 onClick={() => setActiveTab("technology")}
               >
-                technology
+                Technology (
+                {jobs.filter((job) => job.category === "technology").length})
               </button>
               <button
                 className={`${styles.tab} ${
@@ -420,7 +517,8 @@ export default function Careers() {
                 }`}
                 onClick={() => setActiveTab("travel")}
               >
-                Travel
+                Travel ({jobs.filter((job) => job.category === "travel").length}
+                )
               </button>
               <button
                 className={`${styles.tab} ${
@@ -428,74 +526,110 @@ export default function Careers() {
                 }`}
                 onClick={() => setActiveTab("virtual-assistant")}
               >
-                Virtual Assistance
+                Virtual Assistance (
+                {
+                  jobs.filter((job) => job.category === "virtual-assistant")
+                    .length
+                }
+                )
               </button>
             </div>
 
+            {/* Jobs Grid */}
             <div className={styles.jobsGrid}>
               {filteredJobs.map((job) => (
                 <div key={job.id} className={styles.jobCard}>
                   <div className={styles.jobHeader}>
+                    <div className={styles.jobBadges}>
+                      <span
+                        className={`${styles.jobBadge} ${styles[job.category]}`}
+                      >
+                        {job.department}
+                      </span>
+                      <span className={styles.jobType}>{job.type}</span>
+                    </div>
                     <h3 className={styles.jobTitle}>{job.title}</h3>
                     <div className={styles.jobMeta}>
-                      <span className={styles.jobDept}>{job.department}</span>
-                      <span className={styles.jobType}>{job.type}</span>
+                      <span className={styles.jobLocation}>
+                        <FaMapMarkerAlt /> {job.location}
+                      </span>
                       <span className={styles.jobExperience}>
                         {job.experience}
                       </span>
                     </div>
+                    <div className={styles.jobSalary}>{job.salary}</div>
                   </div>
 
                   <p className={styles.jobDescription}>{job.description}</p>
 
-                  <div className={styles.jobFooter}>
-                    <div className={styles.jobLocation}>
-                      <FaMapMarkerAlt className={styles.locationIcon} />
-                      <span>{job.location}</span>
+                  <div className={styles.jobSkills}>
+                    <h4>Key Skills:</h4>
+                    <div className={styles.skillsList}>
+                      {job.skills.map((skill, index) => (
+                        <span key={index} className={styles.skillTag}>
+                          {skill}
+                        </span>
+                      ))}
                     </div>
-                    <Link href="/job-apply">
-                      <button className={styles.applyBtn}>
-                        Apply Now <FaArrowRight className={styles.arrowIcon} />
-                      </button>
-                    </Link>
                   </div>
+
+                  <div className={styles.jobFooter}>
+                    <button
+                      className={styles.applyBtn}
+                      onClick={() => handleJobClick(job)}
+                    >
+                      View Details & Apply{" "}
+                      <FaArrowRight className={styles.arrowIcon} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredJobs.length === 0 && (
+              <div className={styles.noJobs}>
+                <FaBriefcase className={styles.noJobsIcon} />
+                <h3>No jobs found</h3>
+                <p>Try adjusting your search or filter criteria</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* How It Works Section */}
+        <section id="howItWorks" className={styles.howItWorksSection}>
+          <div className={styles.container}>
+            <div className={styles.sectionHeader}>
+              <h2>How to Join Our Team</h2>
+              <p>Simple 4-step process to apply and get hired</p>
+            </div>
+
+            <div className={styles.stepsGrid}>
+              {steps.map((step) => (
+                <div key={step.id} className={styles.stepCard}>
+                  <div className={styles.stepNumber}>{step.id}</div>
+                  <div className={styles.iconContainer}>{step.icon}</div>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="howItWorks" className={styles.howItWorksSection}>
-          <div className={styles.sectionHeader}>
-            <h2>How It Works</h2>
-            <p>Simple 4-step process to apply and get hired</p>
-          </div>
-
-          <div className={styles.stepsGrid}>
-            {steps.map((step) => (
-              <div key={step.id} className={styles.stepCard}>
-                <div className={styles.iconContainer}>{step.icon}</div>
-                <h3>{step.title}</h3>
-                <p>{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
+        {/* Employee Reviews Section */}
         <section className={styles.jobReviewsSection}>
-          <div className={styles.sectionHeader}>
-            <h2>What Our Employees Say</h2>
-            <p>Hear from our talented team members across different domains</p>
-          </div>
+          <div className={styles.container}>
+            <div className={styles.sectionHeader}>
+              <h2>What Our Team Members Say</h2>
+              <p>
+                Hear from our talented professionals across different domains
+              </p>
+            </div>
 
-          {/* Slider Wrapper */}
-          <div className={styles.sliderWrapper}>
-            <div className={styles.slider}>
-              {[...jobReviews, ...jobReviews].map(
-                (
-                  review,
-                  index // duplicate for infinite loop
-                ) => (
+            <div className={styles.reviewsGridWrapper}>
+              <div className={styles.reviewsGrid}>
+                {jobReviews.concat(jobReviews).map((review, index) => (
                   <div key={index} className={styles.reviewCard}>
                     <div className={styles.reviewRating}>
                       {[...Array(5)].map((_, i) => (
@@ -512,19 +646,45 @@ export default function Careers() {
                     </div>
                     <p className={styles.reviewText}>"{review.review}"</p>
                     <div className={styles.reviewAuthor}>
-                      <img
-                        src={review.image}
-                        alt={review.name}
-                        className={styles.authorImage}
-                      />
+                      <div className={styles.authorImage}>
+                        {review.icon ? (
+                          <span>{review.icon}</span>
+                        ) : (
+                          <div className={styles.avatarPlaceholder}>
+                            {review.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </div>
+                        )}
+                      </div>
                       <div className={styles.authorInfo}>
                         <h4>{review.name}</h4>
                         <p>{review.role}</p>
                       </div>
                     </div>
                   </div>
-                )
-              )}
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className={styles.ctaSection}>
+          <div className={styles.container}>
+            <div className={styles.ctaContent}>
+              <h2>Ready to Start Your Journey?</h2>
+              <p>
+                Join Aroliya and be part of a team that's shaping the future of
+                digital solutions across the globe.
+              </p>
+              <button
+                className={styles.ctaButton}
+                onClick={scrollToOpportunities}
+              >
+                Explore Open Positions <FaArrowRight />
+              </button>
             </div>
           </div>
         </section>

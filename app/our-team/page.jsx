@@ -7,13 +7,28 @@ import {
   FaGithub,
   FaBehance,
   FaDribbble,
-  FaFacebookF,
-  FaMediumM,
   FaLightbulb,
   FaCode,
   FaUsers,
   FaRocket,
   FaHeart,
+  FaMapMarkerAlt,
+  FaBriefcase,
+  FaCalendarAlt,
+  FaShieldAlt,
+  FaChartLine,
+  FaHandshake,
+  FaGlobeAmericas,
+  FaUserTie,
+  FaPalette,
+  FaMobileAlt,
+  FaCloud,
+  FaDatabase,
+  FaNetworkWired,
+  FaAward,
+  FaBalanceScale,
+  FaEye,
+  FaChevronRight,
 } from "react-icons/fa";
 import styles from "./Team.module.css";
 import Navs from "../home/component/Nav/page";
@@ -28,21 +43,25 @@ const Team = () => {
       name: "Neeraj Baghel",
       role: "CEO & Founder",
       image: "/about/sir-image.png",
-      bio: "Leading Aroliya with a mission to bridge the gap between freelancers and businesses.",
+      bio: "Visionary leader with 8+ years of experience in building successful tech ventures. Passionate about creating opportunities for global talent.",
+      location: "India",
+      experience: "8+ years",
+      expertise: ["Strategic Planning", "Business Development", "Leadership"],
       social: {
-        twitter: "#",
         linkedin: "#",
-        instagram: "#",
+        twitter: "#",
       },
     },
     {
       id: 2,
       name: "Chintan Rabadiya",
-      role: "Web Developer",
+      role: "Senior Web Developer",
       image: "/team/Chintan.png",
-      bio: "Building secure, scalable, and user-friendly digital solutions.",
+      bio: "Full-stack developer specializing in scalable web applications and modern JavaScript frameworks.",
+      location: "India",
+      experience: "4+ years",
+      expertise: ["React.js", "Node.js", "MongoDB"],
       social: {
-        twitter: "#",
         linkedin: "#",
         github: "#",
       },
@@ -50,13 +69,15 @@ const Team = () => {
     {
       id: 3,
       name: "Sela Pawestri",
-      role: "Social Media Manager",
+      role: "Social Media Strategist",
       image: "/team/Sela.png",
-      bio: "Growing followers, boosting engagement, and increasing brand visibility.",
+      bio: "Digital marketing expert focused on brand growth and engagement across social platforms.",
+      location: "Indonesia",
+      experience: "3+ years",
+      expertise: ["Content Strategy", "Community Management", "Analytics"],
       social: {
-        behance: "#",
-        dribbble: "#",
         linkedin: "#",
+        instagram: "#",
       },
     },
     {
@@ -64,88 +85,164 @@ const Team = () => {
       name: "Pranjit Biswas",
       role: "Project Manager & Full Stack Developer",
       image: "/team/pranjit.jpeg",
-      bio: "Creating useful websites and guiding teams successfully.",
+      bio: "Experienced in leading cross-functional teams and delivering complex web solutions.",
+      location: "India",
+      experience: "5+ years",
+      expertise: [
+        "Project Management",
+        "Agile Methodology",
+        "System Architecture",
+      ],
       social: {
-        github: "https://github.com/pranjitbis/",
         linkedin: "https://www.linkedin.com/in/pranjit-biswas-42066526b/",
+        github: "https://github.com/pranjitbis/",
       },
     },
     {
       id: 5,
       name: "Nidhi Hongal",
-      role: "Executive and Personal assistant",
+      role: "Executive Assistant",
       image: "/team/Nidhi.png",
-      bio: "Organized Executive and Personal Assistant, managing schedules, communication, and tasks with efficiency and professionalism.",
+      bio: "Organized professional ensuring seamless operations and executive support.",
+      location: "India",
+      experience: "2+ years",
+      expertise: ["Administrative Support", "Communication", "Organization"],
       social: {
-        github: "https://github.com/pranjitbis/",
-        linkedin: "https://www.linkedin.com/in/pranjit-biswas-42066526b/",
+        linkedin: "#",
       },
     },
     {
       id: 6,
       name: "Jay Sikar",
-      role: "Virtual Assistant",
+      role: "Virtual Assistant Specialist",
       image: "/team/Jay.png",
-      bio: "Virtual Assistant with 6 years’ experience supporting US, UK, and Australia clients in operations, admin, SMM, marketing, content, and customer support.",
+      bio: "Multifaceted virtual assistant with extensive experience supporting international clients.",
+      location: "India",
+      experience: "6+ years",
+      expertise: ["Client Support", "Operations", "Social Media Management"],
       social: {
-        github: "https://github.com/pranjitbis/",
-        linkedin: "https://www.linkedin.com/in/pranjit-biswas-42066526b/",
+        linkedin: "#",
       },
     },
   ];
 
-  const teamRoles = [
+  const expertiseAreas = [
     {
-      icon: <FaLightbulb />,
-      title: "Founder & Visionary",
+      icon: <FaCode className={styles.expertiseIcon} />,
+      title: "Technology & Development",
       description:
-        "Leading Aroliya with a mission to bridge the gap between freelancers and businesses.",
+        "Cutting-edge solutions using modern frameworks and architectures",
+      technologies: ["React", "Node.js", "Python", "Cloud Infrastructure"],
+      color: "#2563eb",
     },
     {
-      icon: <FaCode />,
-      title: "Tech & Development Team",
+      icon: <FaRocket className={styles.expertiseIcon} />,
+      title: "Digital Marketing",
       description:
-        "Building secure, scalable, and user-friendly digital solutions.",
+        "Data-driven strategies for brand growth and customer engagement",
+      technologies: ["SEO", "Social Media", "Content Marketing", "Analytics"],
+      color: "#dc2626",
     },
     {
-      icon: <FaUsers />,
-      title: "Operations & Support Team",
-      description:
-        "Ensuring smooth bookings, services, and client satisfaction.",
+      icon: <FaUsers className={styles.expertiseIcon} />,
+      title: "Project Management",
+      description: "Agile methodologies for efficient project delivery",
+      technologies: ["Scrum", "Kanban", "Risk Management", "Team Leadership"],
+      color: "#059669",
     },
     {
-      icon: <FaRocket />,
-      title: "Creative & Marketing Team",
-      description: "Spreading the word and connecting Aroliya to the world.",
+      icon: <FaPalette className={styles.expertiseIcon} />,
+      title: "UI/UX Design",
+      description:
+        "User-centered design principles for exceptional experiences",
+      technologies: ["Figma", "Adobe Suite", "Prototyping", "User Research"],
+      color: "#7c3aed",
+    },
+  ];
+
+  const teamStructure = [
+    {
+      department: "Leadership & Strategy",
+      roles: ["CEO & Founder", "Project Managers"],
+      count: 2,
+      icon: <FaUserTie className={styles.departmentIcon} />,
+      color: "#1e40af",
+    },
+    {
+      department: "Technology & Development",
+      roles: ["Full Stack Developers", "Web Developers", "Technical Leads"],
+      count: 2,
+      icon: <FaCode className={styles.departmentIcon} />,
+      color: "#0369a1",
+    },
+    {
+      department: "Marketing & Growth",
+      roles: [
+        "Social Media Managers",
+        "Digital Marketers",
+        "Content Strategists",
+      ],
+      count: 1,
+      icon: <FaChartLine className={styles.departmentIcon} />,
+      color: "#dc2626",
+    },
+    {
+      department: "Operations & Support",
+      roles: ["Executive Assistants", "Virtual Assistants", "Client Support"],
+      count: 2,
+      icon: <FaNetworkWired className={styles.departmentIcon} />,
+      color: "#059669",
     },
   ];
 
   const values = [
     {
-      icon: <FaUsers />,
+      icon: <FaHandshake className={styles.valueIcon} />,
       title: "Collaboration",
-      description:
-        "We believe in working together to achieve extraordinary results.",
+      description: "We believe in the power of teamwork and shared success",
+      principles: ["Open Communication", "Shared Goals", "Mutual Respect"],
+      color: "#2563eb",
     },
     {
-      icon: <FaLightbulb />,
+      icon: <FaEye className={styles.valueIcon} />,
       title: "Transparency",
-      description: "Open communication and honesty in everything we do.",
-    },
-    {
-      icon: <FaRocket />,
-      title: "Innovation",
       description:
-        "Constantly improving and evolving our services and processes.",
+        "Honest communication builds trust with clients and team members",
+      principles: ["Clear Processes", "Open Feedback", "Honest Reporting"],
+      color: "#059669",
     },
     {
-      icon: <FaHeart />,
-      title: "Respect",
-      description: "Valuing every team member, client, and freelancer equally.",
+      icon: <FaRocket className={styles.valueIcon} />,
+      title: "Innovation",
+      description: "Continuous improvement through creative problem-solving",
+      principles: [
+        "Creative Thinking",
+        "Technology Adoption",
+        "Process Optimization",
+      ],
+      color: "#7c3aed",
+    },
+    {
+      icon: <FaHeart className={styles.valueIcon} />,
+      title: "Excellence",
+      description:
+        "Commitment to delivering exceptional quality in everything we do",
+      principles: [
+        "Quality Focus",
+        "Attention to Detail",
+        "Continuous Learning",
+      ],
+      color: "#dc2626",
     },
   ];
 
-  // Social icon mapping
+  const achievements = [
+    { metric: "50+", label: "Projects Completed" },
+    { metric: "15+", label: "Countries Served" },
+    { metric: "98%", label: "Client Satisfaction" },
+    { metric: "24/7", label: "Support Availability" },
+  ];
+
   const socialIcons = {
     twitter: FaTwitter,
     linkedin: FaLinkedin,
@@ -153,81 +250,81 @@ const Team = () => {
     github: FaGithub,
     behance: FaBehance,
     dribbble: FaDribbble,
-    facebook: FaFacebookF,
-    medium: FaMediumM,
   };
 
   return (
-    <div>
+    <div className={styles.pageWrapper}>
       <Navs />
-      <section className={styles.teamSection} id="team">
+
+      {/* Hero Section */}
+      <section className={styles.heroSection}>
+        <div className={styles.heroContent}>
+          <h1 className={styles.heroTitle}>
+            Meet Our <span className={styles.highlight}>Expert Team</span>
+          </h1>
+          <p className={styles.heroSubtitle}>
+            A collective of passionate professionals dedicated to delivering
+            exceptional digital solutions. Our diverse team brings together
+            expertise from across the globe to drive your success.
+          </p>
+        </div>
+      </section>
+
+      <section className={styles.teamSection}>
         <div className={styles.container}>
-          {/* Header */}
-          <div className={styles.header}>
-            <h2 className={styles.title}>Our Team – The Heart of Aroliya</h2>
-            <p className={styles.subtitle}>
-              At Aroliya, our strength lies in our people. Behind every service,
-              every solution, and every client success story is a passionate
-              team committed to making work simpler and opportunities accessible
-              for everyone.
-            </p>
-            <div className={styles.divider}></div>
+          {/* Tabs Navigation */}
+          <div className={styles.tabsContainer}>
+            <div className={styles.tabs}>
+              <button
+                className={`${styles.tab} ${
+                  activeTab === "team" ? styles.activeTab : ""
+                }`}
+                onClick={() => setActiveTab("team")}
+              >
+                <FaUsers className={styles.tabIcon} />
+                Our Team
+              </button>
+              <button
+                className={`${styles.tab} ${
+                  activeTab === "expertise" ? styles.activeTab : ""
+                }`}
+                onClick={() => setActiveTab("expertise")}
+              >
+                <FaCode className={styles.tabIcon} />
+                Our Expertise
+              </button>
+              <button
+                className={`${styles.tab} ${
+                  activeTab === "values" ? styles.activeTab : ""
+                }`}
+                onClick={() => setActiveTab("values")}
+              >
+                <FaAward className={styles.tabIcon} />
+                Our Values
+              </button>
+            </div>
           </div>
 
-          {/* Tabs */}
-          <div className={styles.tabs}>
-            <button
-              className={`${styles.tab} ${
-                activeTab === "team" ? styles.activeTab : ""
-              }`}
-              onClick={() => setActiveTab("team")}
-            >
-              Meet the Team
-            </button>
-            <button
-              className={`${styles.tab} ${
-                activeTab === "culture" ? styles.activeTab : ""
-              }`}
-              onClick={() => setActiveTab("culture")}
-            >
-              Our Culture
-            </button>
-            <button
-              className={`${styles.tab} ${
-                activeTab === "values" ? styles.activeTab : ""
-              }`}
-              onClick={() => setActiveTab("values")}
-            >
-              Our Values
-            </button>
-          </div>
-
-          {/* Team Members */}
+          {/* Team Members Section */}
           {activeTab === "team" && (
-            <>
-              <div className={styles.sectionIntro}>
+            <div className={styles.tabContent}>
+              <div className={styles.sectionHeader}>
+                <h2>Our Leadership & Team</h2>
                 <p>
-                  We are dreamers, doers, and problem-solvers — united by a
-                  vision to empower freelancers and businesses alike.
+                  Meet the talented individuals who drive innovation and
+                  excellence at Aroliya
                 </p>
               </div>
 
               <div className={styles.teamGrid}>
                 {teamMembers.map((member) => (
-                  <div
-                    key={member.id}
-                    className={styles.teamCard}
-                    data-aos="fade-up"
-                  >
+                  <div key={member.id} className={styles.teamCard}>
                     <div className={styles.imageContainer}>
-                      <div className={styles.imageWrapper}>
-                        <img
-                          src={member.image}
-                          alt={member.name}
-                          className={styles.memberImage}
-                        />
-                        <div className={styles.imageOverlay}></div>
-                      </div>
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className={styles.memberImage}
+                      />
                       <div className={styles.socialLinks}>
                         {Object.entries(member.social).map(
                           ([platform, url]) => {
@@ -251,75 +348,130 @@ const Team = () => {
                     <div className={styles.memberInfo}>
                       <h3 className={styles.memberName}>{member.name}</h3>
                       <p className={styles.memberRole}>{member.role}</p>
+                      <div className={styles.memberDetails}>
+                        <div className={styles.detailItem}>
+                          <FaMapMarkerAlt className={styles.detailIcon} />
+                          <span>{member.location}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <FaBriefcase className={styles.detailIcon} />
+                          <span>{member.experience}</span>
+                        </div>
+                      </div>
                       <p className={styles.memberBio}>{member.bio}</p>
+                      <div className={styles.expertiseTags}>
+                        {member.expertise.map((skill, index) => (
+                          <span key={index} className={styles.skillTag}>
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className={styles.rolesSection}>
-                <h3 className={styles.sectionTitle}>Our Team Structure</h3>
-                <div className={styles.rolesGrid}>
-                  {teamRoles.map((role, index) => (
-                    <div key={index} className={styles.roleCard}>
-                      <div className={styles.roleIcon}>{role.icon}</div>
-                      <h4>{role.title}</h4>
-                      <p>{role.description}</p>
+              {/* Team Structure Section */}
+              <div className={styles.structureSection}>
+                <div className={styles.sectionHeader}>
+                  <h2>Team Structure & Expertise</h2>
+                  <p>
+                    Organized for efficiency and collaboration across all
+                    departments
+                  </p>
+                </div>
+                <div className={styles.structureGrid}>
+                  {teamStructure.map((department, index) => (
+                    <div key={index} className={styles.departmentCard}>
+                      <div
+                        className={styles.departmentHeader}
+                        style={{ borderLeftColor: department.color }}
+                      >
+                        <div className={styles.departmentIconWrapper}>
+                          {department.icon}
+                        </div>
+                        <div>
+                          <h3>{department.department}</h3>
+                          <span className={styles.roleCount}>
+                            {department.count} members
+                          </span>
+                        </div>
+                      </div>
+                      <ul className={styles.roleList}>
+                        {department.roles.map((role, roleIndex) => (
+                          <li key={roleIndex} className={styles.roleItem}>
+                            <FaChevronRight className={styles.roleIcon} />
+                            {role}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   ))}
                 </div>
               </div>
-            </>
-          )}
-
-          {/* Culture Section */}
-          {activeTab === "culture" && (
-            <div className={styles.cultureSection}>
-              <div className={styles.cultureContent}>
-                <h3 className={styles.sectionTitle}>
-                  Our Culture & Philosophy
-                </h3>
-                <div className={styles.cultureStatement}>
-                  <p>
-                    "We believe in collaboration, transparency, and innovation.
-                    Every idea counts, every client matters, and every
-                    freelancer is valued. Our team culture is built on respect
-                    and the belief that growth happens when we work together."
-                  </p>
-                </div>
-              </div>
             </div>
           )}
-          {activeTab === "culture" && (
-            <div className={styles.differenceSection}>
-              <h4>Why Our Team Makes the Difference</h4>
-              <div className={styles.differenceGrid}>
-                <div className={styles.differenceItem}>
-                  <div className={styles.checkmark}>✓</div>
-                  <div>
-                    <h5>Dedicated Experts</h5>
-                    <p>Focused on solving client needs</p>
+
+          {/* Expertise Section */}
+          {activeTab === "expertise" && (
+            <div className={styles.tabContent}>
+              <div className={styles.sectionHeader}>
+                <h2>Our Areas of Expertise</h2>
+                <p>
+                  Comprehensive digital solutions tailored to your business
+                  needs
+                </p>
+              </div>
+
+              <div className={styles.expertiseGrid}>
+                {expertiseAreas.map((area, index) => (
+                  <div key={index} className={styles.expertiseCard}>
+                    <div
+                      className={styles.expertiseHeader}
+                      style={{ color: area.color }}
+                    >
+                      {area.icon}
+                      <h3>{area.title}</h3>
+                    </div>
+                    <p className={styles.expertiseDescription}>
+                      {area.description}
+                    </p>
+                    <div className={styles.technologies}>
+                      <h4>Core Technologies:</h4>
+                      <div className={styles.techTags}>
+                        {area.technologies.map((tech, techIndex) => (
+                          <span key={techIndex} className={styles.techTag}>
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className={styles.differenceItem}>
-                  <div className={styles.checkmark}>✓</div>
-                  <div>
-                    <h5>Passionate Problem Solvers</h5>
-                    <p>Going beyond tasks to deliver value</p>
+                ))}
+              </div>
+
+              <div className={styles.capabilitiesSection}>
+                <h3>Our Technical Capabilities</h3>
+                <div className={styles.capabilitiesGrid}>
+                  <div className={styles.capabilityItem}>
+                    <FaCloud className={styles.capabilityIcon} />
+                    <h4>Cloud Solutions</h4>
+                    <p>Scalable infrastructure and cloud deployment</p>
                   </div>
-                </div>
-                <div className={styles.differenceItem}>
-                  <div className={styles.checkmark}>✓</div>
-                  <div>
-                    <h5>Always Evolving</h5>
-                    <p>Constantly improving services and processes</p>
+                  <div className={styles.capabilityItem}>
+                    <FaMobileAlt className={styles.capabilityIcon} />
+                    <h4>Mobile Development</h4>
+                    <p>Cross-platform mobile applications</p>
                   </div>
-                </div>
-                <div className={styles.differenceItem}>
-                  <div className={styles.checkmark}>✓</div>
-                  <div>
-                    <h5>Client & Freelancer First</h5>
-                    <p>Every decision is made with our users in mind</p>
+                  <div className={styles.capabilityItem}>
+                    <FaDatabase className={styles.capabilityIcon} />
+                    <h4>Database Management</h4>
+                    <p>Optimized data storage and retrieval</p>
+                  </div>
+                  <div className={styles.capabilityItem}>
+                    <FaShieldAlt className={styles.capabilityIcon} />
+                    <h4>Security</h4>
+                    <p>Enterprise-grade security protocols</p>
                   </div>
                 </div>
               </div>
@@ -328,30 +480,53 @@ const Team = () => {
 
           {/* Values Section */}
           {activeTab === "values" && (
-            <div className={styles.valuesSection}>
-              <h3 className={styles.sectionTitle}>Our Core Values</h3>
+            <div className={styles.tabContent}>
+              <div className={styles.sectionHeader}>
+                <h2>Our Core Values</h2>
+                <p>The principles that guide our work and define our culture</p>
+              </div>
+
               <div className={styles.valuesGrid}>
                 {values.map((value, index) => (
                   <div key={index} className={styles.valueCard}>
-                    <div className={styles.valueIcon}>{value.icon}</div>
-                    <h4>{value.title}</h4>
+                    <div
+                      className={styles.valueIconWrapper}
+                      style={{ color: value.color }}
+                    >
+                      {value.icon}
+                    </div>
+                    <h3>{value.title}</h3>
                     <p>{value.description}</p>
+                    <ul className={styles.principlesList}>
+                      {value.principles.map((principle, principleIndex) => (
+                        <li
+                          key={principleIndex}
+                          className={styles.principleItem}
+                        >
+                          <FaChevronRight className={styles.principleIcon} />
+                          {principle}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 ))}
+              </div>
+
+              <div className={styles.missionSection}>
+                <div className={styles.missionContent}>
+                  <FaGlobeAmericas className={styles.missionIcon} />
+                  <h3>Our Mission</h3>
+                  <p>
+                    To bridge the gap between exceptional talent and businesses
+                    worldwide, delivering innovative solutions that drive growth
+                    and create lasting impact.
+                  </p>
+                </div>
               </div>
             </div>
           )}
 
           {/* Closing Statement */}
-          <div className={styles.closingSection}>
-            <div className={styles.closingContent}>
-              <h3>Together, we are Aroliya</h3>
-              <p>
-                A team committed to transforming the way people work and
-                businesses grow. And this is just the beginning.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
       <Footer />

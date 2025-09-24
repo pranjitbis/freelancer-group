@@ -1,29 +1,14 @@
 import React from "react";
 import styles from "./Services.module.css";
 import Image from "next/image";
-import {
-  FaCheck,
-  FaArrowRight,
-  FaUserTie,
-  FaFileAlt,
-  FaHeadset,
-  FaShoppingCart,
-  FaPlane,
-  FaChartLine,
-  FaStar,
-  FaClock,
-  FaShieldAlt,
-  FaRocket,
-} from "react-icons/fa";
-import { MdDataExploration } from "react-icons/md";
+import { FaCheck, FaArrowRight, FaRocket, FaShieldAlt } from "react-icons/fa";
 import Link from "next/link";
+
 const Services = () => {
   const services = [
     {
-      icon: <FaUserTie />,
+      image: "/icons/freelancer-3d.png",
       title: "Freelancer Services",
-      description:
-        "Premium platform connecting skilled professionals with quality projects",
       features: [
         "Access verified client projects",
         "Work across diverse categories",
@@ -31,14 +16,13 @@ const Services = () => {
         "Secure, on-time payments",
       ],
       buttonText: "Join Platform",
-      gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      color: "#2c3e50",
       link: "/services/freelancer",
       stat: "5K+ Freelancers",
     },
     {
-      icon: <FaFileAlt />,
+      image: "/icons/online-form-filling.png",
       title: "Online Form Filling",
-      description: "Precision form submission with 99.8% accuracy guarantee",
       features: [
         "Government Exam & Job Applications",
         "Education & Admission Forms",
@@ -47,14 +31,12 @@ const Services = () => {
       ],
       link: "/services/form-filling",
       buttonText: "Start Submission",
-      gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+      color: "#8e44ad",
       stat: "10K+ Forms",
     },
     {
-      icon: <FaHeadset />,
+      image: "/icons/virtual-assistant.png",
       title: "Virtual Assistant",
-      description:
-        "Dedicated professional support for administrative excellence",
       features: [
         "Calendar management & scheduling",
         "Email management & correspondence",
@@ -63,13 +45,12 @@ const Services = () => {
       ],
       link: "/services/virtual-assistance",
       buttonText: "Hire Assistant",
-      gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+      color: "#16a085",
       stat: "24/7 Support",
     },
     {
-      icon: <FaShoppingCart />,
+      image: "/icons/Ecommerce.png",
       title: "E-Commerce Solutions",
-      description: "End-to-end e-commerce management for business growth",
       features: [
         "Product catalog management",
         "Inventory & order processing",
@@ -78,13 +59,12 @@ const Services = () => {
       ],
       link: "/services/e-commerce-solutions",
       buttonText: "Boost Sales",
-      gradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+      color: "#e74c3c",
       stat: "500+ Stores",
     },
     {
-      icon: <FaPlane />,
+      image: "/icons/travel-bookings1.jpg",
       title: "Travel & Hotel Booking",
-      description: "Seamless travel experiences with exclusive deals",
       features: [
         "Domestic & international flights",
         "Train tickets with real-time updates",
@@ -93,13 +73,12 @@ const Services = () => {
       ],
       link: "/services/travel-bookings",
       buttonText: "Plan Journey",
-      gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+      color: "#2980b9",
       stat: "5K+ Travelers",
     },
     {
-      icon: <MdDataExploration />,
+      image: "/icons/data-visualization.png",
       title: "Data & AI Solutions",
-      description: "Transform data into strategic business intelligence",
       features: [
         "Interactive dashboard development",
         "Custom data visualization",
@@ -108,7 +87,7 @@ const Services = () => {
       ],
       link: "/services/data-visualization",
       buttonText: "Get Insights",
-      gradient: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+      color: "#34495e",
       stat: "AI Powered",
     },
   ];
@@ -118,13 +97,24 @@ const Services = () => {
       <div className={styles.backgroundPattern}></div>
 
       <div className={styles.container}>
-        <h2 className={styles.sectionHeading}>Our Services</h2>
-        <p className={styles.sectionDescription}>
-          We provide tailored solutions designed to help businesses grow
-          efficiently. From innovative web development to enterprise-grade
-          solutions, our services are crafted to optimize your operations,
-          enhance productivity, and deliver measurable results.
-        </p>
+        {/* Header Section */}
+        <div className={styles.header}>
+          <div className={styles.sectionBadge}>
+            <FaRocket className={styles.badgeIcon} />
+            Premium Solutions
+          </div>
+
+          <h1 className={styles.mainTitle}>
+            Enterprise-Grade{" "}
+            <span className={styles.titleHighlight}>Services</span>
+          </h1>
+
+          <p className={styles.subtitle}>
+            Professional solutions designed to optimize operations, enhance
+            productivity, and drive measurable business growth through expert
+            service delivery.
+          </p>
+        </div>
 
         {/* Services Grid */}
         <div className={styles.servicesGrid}>
@@ -132,15 +122,18 @@ const Services = () => {
             <div
               key={index}
               className={styles.serviceCard}
-              style={{ "--card-gradient": service.gradient }}
+              style={{ "--card-color": service.color }}
             >
-              {/* Card Header */}
+              {/* Card Header with Image */}
               <div className={styles.cardHeader}>
-                <div
-                  className={styles.serviceIcon}
-                  style={{ background: service.gradient }}
-                >
-                  {service.icon}
+                <div className={styles.imageContainer}>
+                  <Image
+                    src={service.image}
+                    alt={service.title}
+                    width={120}
+                    height={120}
+                    className={styles.serviceImage}
+                  />
                 </div>
                 <div className={styles.serviceStat}>{service.stat}</div>
               </div>
@@ -148,12 +141,8 @@ const Services = () => {
               {/* Card Content */}
               <div className={styles.cardContent}>
                 <h3 className={styles.serviceTitle}>{service.title}</h3>
-                <p className={styles.serviceDescription}>
-                  {service.description}
-                </p>
 
                 <div className={styles.featuresSection}>
-                  <h4 className={styles.featuresTitle}>Key Features</h4>
                   <ul className={styles.featuresList}>
                     {service.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className={styles.featureItem}>
@@ -184,6 +173,8 @@ const Services = () => {
             </div>
           ))}
         </div>
+
+
       </div>
     </section>
   );

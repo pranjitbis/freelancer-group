@@ -7,6 +7,7 @@ import Nav from "../home/component/Nav/page";
 import Footer from "../home/footer/page";
 import founderImage from "../../public/about/sir-image.png";
 import teamImage from "../../public/about/team2.jpeg";
+import teamTow from "../../public/about/tem3.jpg";
 import Image from "next/image";
 import {
   FaShieldAlt,
@@ -621,7 +622,7 @@ export default function About() {
                   </motion.div>
                   <div className={styles.teamImageWrapper}>
                     <Image
-                      src={teamImage}
+                      src={teamTow}
                       alt="Aroliya Team Collaboration"
                       className={styles.teamImage}
                     />
