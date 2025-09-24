@@ -5,9 +5,11 @@
 
 /* Hero Section */
 .heroSection {
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("/team/meet-our.jpg");
+  background-position: center;
   color: white;
-  padding: 100px 0 80px;
+  padding: 200px 0 80px;
   text-align: center;
 }
 

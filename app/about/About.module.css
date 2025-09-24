@@ -1,10 +1,5 @@
 /* About.module.css */
 
-.aboutContainer {
-  min-height: 100vh;
-  background: #ffffff;
-}
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -14,7 +9,7 @@
 /* Hero Section */
 .heroSection {
   position: relative;
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   align-items: center;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -239,9 +234,11 @@
   transform: translateY(-50%);
 }
 
+
+
 /* Section Styles */
 .section {
-  padding: 100px 0;
+  padding: 60px 0 40px;
 }
 
 .sectionHeader {
@@ -715,6 +712,12 @@
   }
 }
 
+@media (max-width: 1390px) {
+  .heroSection {
+    min-height: 90vh;
+   
+  }
+}
 @media (max-width: 768px) {
   .container {
     padding: 0 16px;

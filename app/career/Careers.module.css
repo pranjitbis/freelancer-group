@@ -8,11 +8,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 100px 5% 50px;
+  padding: 40px 5% 70px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   position: relative;
-  overflow: hidden;
 }
 
 .heroContent {
@@ -162,7 +161,7 @@
 
 /* Culture Section */
 .culture {
-  padding: 100px 0;
+  padding: 70px 0 30px;
   background: #f7fafc;
 }
 
@@ -212,7 +211,7 @@
 
 /* Opportunities Section */
 .opportunities {
-  padding: 100px 0;
+  padding: 100px 0 10px;
   background: white;
 }
 
@@ -501,7 +500,7 @@
 }
 
 .howItWorksSection {
-  padding: 100px 0;
+  padding: 70px 0;
   background: #f7fafc;
 }
 
@@ -579,11 +578,7 @@
   line-height: 1.6;
 }
 
-/* Reviews Section */
-.jobReviewsSection {
-  padding: 100px 0;
-  background: white;
-}
+
 
 /* Wrapper for overflow hidden */
 .reviewsGridWrapper {
@@ -704,7 +699,7 @@
 
 /* Reviews Section */
 .jobReviewsSection {
-  padding: 100px 0;
+  padding: 40px 0 40px;
   background: white;
 }
 
