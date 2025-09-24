@@ -4,6 +4,7 @@ import Script from "next/script";
 // Google Analytics ID
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
+// Default metadata
 export const metadata = {
   title: "Aroliya - Travel Bookings, E-Commerce, AI & Virtual Assistants",
   description:
@@ -23,7 +24,7 @@ export const metadata = {
     siteName: "Aroliya",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/favicon.ico",
         width: 1200,
         height: 630,
         alt: "Aroliya - Premium Services",
@@ -32,14 +33,7 @@ export const metadata = {
     locale: "en_US",
     type: "website",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Aroliya - Travel Bookings, E-Commerce, AI & Virtual Assistants",
-    description:
-      "Your one-stop solution for premium services including Travel, E-Commerce, AI & Virtual Assistants.",
-    images: ["/twitter-image.jpg"],
-    creator: "@aroliya",
-  },
+
   verification: {
     google: "google5c018b3a646e13da",
   },
@@ -53,7 +47,6 @@ export default function RootLayout({ children }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        {/* Dynamic Canonical URL - Will be set per page */}
         <link rel="canonical" href="https://www.aroliya.com" />
 
         <link rel="icon" href="/favicon.ico" />
@@ -70,9 +63,8 @@ export default function RootLayout({ children }) {
         <meta name="distribution" content="global" />
         <meta property="og:site_name" content="Aroliya" />
         <meta property="og:type" content="website" />
-        <meta property="og:email" content="contact@aroliya.com" />
+        <meta property="og:email" content="info@aroliya.com" />
         <meta property="og:phone_number" content="+91-9870519002" />
-
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
           strategy="afterInteractive"
@@ -86,7 +78,6 @@ export default function RootLayout({ children }) {
           `}
         </Script>
 
-        {/* Razorpay Script */}
         <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="beforeInteractive"
@@ -94,45 +85,48 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <main>{children}</main>
-        <Script type="application/ld+json" strategy="afterInteractive">
+
+        <Script
+          id="structured-data"
+          type="application/ld+json"
+          strategy="afterInteractive"
+        >
           {`
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Aroliya",
-    "url": "https://www.aroliya.com",
-    "logo": "https://www.aroliya.com/logo.png",
-    "description": "Professional form filling, Travel & Hotel Bookings, Expert Virtual Assistant services, Complete E-Commerce Solutions, and Advanced Data & AI Solutions.",
-    "sameAs": [
-      "https://www.facebook.com/aroliya",
-      "https://www.linkedin.com/aroliya",
-      "https://www.twitter.com/aroliya",
-      "https://www.instagram.com/aroliya"
-    ],
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "telephone": "+91-9870519002",
-      "contactType": "customer service",
-      "email": "contact@aroliya.com",
-      "areaServed": "IN",
-      "availableLanguage": ["en", "hi"]
-    },
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "India"
-    },
-    "knowsAbout": [
-      "Form Filling Services",
-      "Travel Bookings",
-      "Hotel Reservations",
-      "Virtual Assistant",
-      "E-Commerce Solutions",
-      "Data Analytics",
-      "AI Solutions",
-      "Web Development"
-    ]
-  }
-  `}
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Aroliya",
+              "url": "https://www.aroliya.com",
+              "logo": "https://www.aroliya.com/favicon.ico",
+              "description": "Professional form filling, Travel & Hotel Bookings, Expert Virtual Assistant services, Complete E-Commerce Solutions, and Advanced Data & AI Solutions.",
+              "sameAs": [
+                "https://www.facebook.com/people/Aroliya-Group/61571008499035/",
+                "https://www.linkedin.com/company/aroliya-group/",
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+91-9870519002",
+                "contactType": "customer service",
+                "email": "contact@aroliya.com",
+                "areaServed": "IN",
+                "availableLanguage": ["en", "hi"]
+              },
+              "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "India"
+              },
+              "knowsAbout": [
+                "Form Filling Services",
+                "Travel Bookings",
+                "Hotel Reservations",
+                "Virtual Assistant",
+                "E-Commerce Solutions",
+                "Data Analytics",
+                "AI Solutions",
+                "Web Development"
+              ]
+            }
+          `}
         </Script>
       </body>
     </html>
