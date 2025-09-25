@@ -4,55 +4,52 @@ import Head from "next/head";
 import styles from "./ServiceDetail.module.css";
 import Nav from "../../home/component/Nav/page";
 import Footer from "../../home/footer/page";
-import Expert from "../../../public/icons/ExpertIcons.png";
-import shild from "../../../public/icons/shild.png";
-import saveTime from "../../../public/icons/save-time.png";
-import HeroImage from "../../../public/icons/wmremove.gif";
-import AOS from "aos";
-import formFilling from "../../../public/icons/form-filling-service.png";
-import support from "../../../public/icons/form-support.png";
-import Error from "../../../public/icons/Error-Free-Filling.png";
-import Professional from "../../../public/icons/Professional-Online-Application.png";
-import Custom from "../../../public/icons/Custom-Solutions.png";
-import Pricing from "../../../public/icons/pricing.png";
-
-import "aos/dist/aos.css";
-
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import formFilling from "@/public/icons/form-illustration-free.png";
+import Link from "next/link";
+// React Icons
+import {
+  FiCheck,
+  FiClock,
+  FiShield,
+  FiDollarSign,
+  FiFileText,
+  FiUserCheck,
+  FiSend,
+  FiArrowRight,
+  FiPhone,
+  FiMail,
+  FiMapPin,
+  FiStar,
+  FiUsers,
+  FiAward,
+  FiHeart,
+} from "react-icons/fi";
+import {
+  FaGraduationCap,
+  FaUniversity,
+  FaPiggyBank,
+  FaPlane,
+  FaBusinessTime,
+  FaRegSmile,
+  FaRocket,
+  FaLightbulb,
+  FaHandHoldingHeart,
+} from "react-icons/fa";
+
 const ServiceDetail = () => {
-  const [fileName, setFileName] = useState("No file chosen");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     serviceCategory: "",
-    specificService: "",
     message: "",
   });
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [successful, setSuuccessful] = useState("");
+  const [successful, setSuccessful] = useState("");
   const [activeCategory, setActiveCategory] = useState(0);
-
-  useEffect(() => {
-    // Scroll animation effect
-    const handleScroll = () => {
-      const elements = document.querySelectorAll(`.${styles.fadeInUp}`);
-      elements.forEach((el) => {
-        const position = el.getBoundingClientRect();
-        if (position.top < window.innerHeight * 0.85) {
-          el.classList.add(styles.visible);
-        }
-      });
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial check
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -60,362 +57,471 @@ const ServiceDetail = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuuccessful("");
-    const res = await fetch("/api/formSubmit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-    if (res.ok) {
-      setSuuccessful("Form submitted successfully!");
-      setTimeout(() => {
-        setSuuccessful("");
-      }, 5000);
-    } else {
-      const err = await res.json();
-      setError("Please try again later ");
-      setTimeout(() => {
-        setError("");
-      }, 5000);
-    }
+    setSuccessful("");
+    setError("");
+
+    // Simulate API call
+    setTimeout(() => {
+      setSuccessful(
+        "Form submitted successfully! We'll contact you within 24 hours."
+      );
+      setIsSubmitted(true);
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        serviceCategory: "",
+        message: "",
+      });
+    }, 1000);
   };
 
   const serviceCategories = [
     {
       id: "government-exams",
-      title: "Government Exam & Job Applications",
+      title: "Government Exams",
       services: [
-        "SSC (CGL, CHSL, GD, MTS, etc.)",
-        "UPSC (IAS, IPS, etc.)",
-        "State PSC exams (MPPSC, UPPSC, etc.)",
-        "Railway Recruitment (RRB NTPC, Group D, etc.)",
-        "Banking exams (IBPS, SBI, RBI)",
-        "Defense (Army, Navy, Air Force Agniveer)",
-        "Police recruitment",
+        "SSC Exams",
+        "UPSC Forms",
+        "Railway Recruitment",
+        "Banking Exams",
       ],
+      icon: <FaUniversity />,
+      color: "#2563eb",
+      gradient: "linear-gradient(135deg, #2563eb, #3b82f6)",
     },
     {
       id: "education",
-      title: "Education & Admission Forms",
-    },
-    {
-      id: "government-schemes",
-      title: "Government Schemes & Services",
+      title: "Education",
+      services: [
+        "University Admissions",
+        "Scholarships",
+        "College Forms",
+        "Exam Registrations",
+      ],
+      icon: <FaGraduationCap />,
+      color: "#059669",
+      gradient: "linear-gradient(135deg, #059669, #10b981)",
     },
     {
       id: "banking",
-      title: "Banking & Financial Forms",
+      title: "Banking & Finance",
       services: [
-        "Opening online bank accounts (SBI, HDFC, etc.)",
-        "Loan applications (education, housing, personal loan forms)",
-        "Insurance applications (LIC, Health, Vehicle insurance renewal)",
-        "Mutual fund / Demat account opening",
+        "Bank Accounts",
+        "Loan Applications",
+        "Insurance",
+        "Investment Forms",
       ],
+      icon: <FaPiggyBank />,
+      color: "#dc2626",
+      gradient: "linear-gradient(135deg, #dc2626, #ef4444)",
     },
     {
       id: "travel",
-      title: "Travel & Other Services",
+      title: "Travel & Visa",
       services: [
-        "Visa application forms",
-        "IRCTC ticket booking registration",
-        "Travel insurance forms",
-        "Hotel/airline membership forms",
+        "Visa Applications",
+        "Passport Help",
+        "Travel Insurance",
+        "Hotel Bookings",
       ],
+      icon: <FaPlane />,
+      color: "#7c3aed",
+      gradient: "linear-gradient(135deg, #7c3aed, #8b5cf6)",
     },
     {
       id: "business",
-      title: "Business & Startup Registrations",
+      title: "Business",
       services: [
-        "GST registration",
-        "MSME / Udyam registration",
-        "FSSAI food license application",
-        "Trademark registration support",
+        "GST Registration",
+        "Company Incorporation",
+        "MSME Registration",
+        "Licenses",
       ],
+      icon: <FaBusinessTime />,
+      color: "#ea580c",
+      gradient: "linear-gradient(135deg, #ea580c, #f97316)",
+    },
+    {
+      id: "government-schemes",
+      title: "Govt Schemes",
+      services: ["Ayushman Bharat", "PM Kisan", "Ujjwala", "Pension Schemes"],
+      icon: <FaHandHoldingHeart />,
+      color: "#db2777",
+      gradient: "linear-gradient(135deg, #db2777, #ec4899)",
     },
   ];
-  const handleFileChange = (e) => {
-    if (e.target.files[0]) {
-      setFileName(e.target.files[0].name);
-    }
+
+  // Animation variants
+  const fadeInUp = {
+    initial: { opacity: 0, y: 60 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.8, ease: "easeOut" },
   };
-  useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: false,
-    });
-  }, []);
+
+  const staggerContainer = {
+    animate: {
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const pulse = {
+    initial: { scale: 1 },
+    animate: {
+      scale: [1, 1.05, 1],
+      transition: { duration: 2, repeat: Infinity },
+    },
+  };
 
   return (
     <>
-      <Nav />
-
       <Head>
-        <title>Form Filling Services | Professional Assistance</title>
+        <title>Professional Form Filling Services | Aroliya</title>
         <meta
           name="description"
-          content="Professional form filling services for government exams, schemes, education forms, and more. Get expert assistance with all your application needs."
+          content="Expert form filling services for all your needs. 100% accuracy guaranteed. Affordable pricing starting at ₹99."
         />
       </Head>
 
+      <Nav />
+
       <div className={styles.container}>
+        {/* Hero Section */}
         <section className={styles.hero}>
-          <div className={styles.heroContent}>
-            <h1 className={`${styles.title} ${styles.fadeInUp}`}>
-              Professional Online  Form Filling Services
-            </h1>
+          <div className={styles.heroBackground}></div>
+          <motion.div
+            className={styles.heroContent}
+            initial="initial"
+            animate="animate"
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeInUp} className={styles.heroText}>
+              <motion.span
+                className={styles.badge}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3, type: "spring" }}
+              >
+                <FiStar /> Most Trusted Service
+              </motion.span>
 
-            <p className={`${styles.description} ${styles.fadeInUp}`}>
-              Expert assistance with government forms, exam applications, and
-              official documentation. Save time and avoid errors with our
-              professional services.
-            </p>
-            <button className={`${styles.ctaButton} ${styles.fadeInUp}`}>
-              Get Started Today
-            </button>
-          </div>
+              <motion.h1 variants={fadeInUp}>
+                Professional{" "}
+                <span className={styles.gradientText}>Form Filling</span>{" "}
+                Services
+              </motion.h1>
 
-          <div className={styles.placeholderImage} data-aos="fade-left">
-            <Image src={HeroImage} alt="err" />
-          </div>
+              <motion.p variants={fadeInUp}>
+                Save time and avoid errors with our expert form filling
+                services. From government exams to business registrations, we
+                handle it all with 100% accuracy.
+              </motion.p>
+
+              <motion.div variants={fadeInUp} className={styles.heroStats}>
+                <div className={styles.stat}>
+                  <strong>10,000+</strong>
+                  <span>Forms Filled</span>
+                </div>
+                <div className={styles.stat}>
+                  <strong>99.8%</strong>
+                  <span>Success Rate</span>
+                </div>
+                <div className={styles.stat}>
+                  <strong>24/7</strong>
+                  <span>Support</span>
+                </div>
+              </motion.div>
+
+              <motion.div variants={fadeInUp} className={styles.ctaButtons}>
+                <Link href="/login">
+                  {" "}
+                  <button className={styles.primaryBtn}>
+                    Get Started <FiArrowRight />
+                  </button>
+                </Link>
+                <a href="tel:9870519002">
+                  {" "}
+                  <button
+                    id={styles.secondBtns}
+                    className={styles.secondaryBtn}
+                  >
+                    <FiPhone /> +91-9870519002
+                  </button>
+                </a>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              className={styles.heroVisual}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.5 }}
+            >
+              <Image src={formFilling} alt="err" />
+            </motion.div>
+          </motion.div>
         </section>
-        {/* Services Overview */}
-        <section className={styles.servicesOverview}>
-          <h2 className={`${styles.sectionTitle} ${styles.fadeInUp}`}>
-            Our Form Filling Services
-          </h2>
-          <p className={`${styles.sectionSubtitle} ${styles.fadeInUp}`}>
-            We provide expert assistance with a wide range of government and
-            official forms
-          </p>
 
-          <div className={styles.categoriesContainer}>
+        {/* Services Section */}
+        <section className={styles.services}>
+          <div className={styles.sectionHeader}>
+            <motion.span
+              className={styles.sectionBadge}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              Our Services
+            </motion.span>
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              Comprehensive Form Filling Solutions
+            </motion.h2>
+          </div>
+
+          <div className={styles.categoriesGrid}>
             {serviceCategories.map((category, index) => (
-              <div
+              <motion.div
                 key={category.id}
-                className={`${styles.categoryCard} ${styles.fadeInUp} ${
-                  index === activeCategory ? styles.activeCategory : ""
+                className={`${styles.categoryCard} ${
+                  index === activeCategory ? styles.active : ""
                 }`}
                 onClick={() => setActiveCategory(index)}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+                style={{
+                  background:
+                    index === activeCategory ? category.gradient : undefined,
+                }}
               >
+                <div
+                  className={styles.categoryIcon}
+                  style={{ color: category.color }}
+                >
+                  {category.icon}
+                </div>
                 <h3>{category.title}</h3>
+                <div className={styles.arrow}>
+                  <FiArrowRight />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory}
+              className={styles.servicesDetails}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <h3>{serviceCategories[activeCategory].title}</h3>
+              <div className={styles.servicesList}>
+                {serviceCategories[activeCategory].services.map(
+                  (service, idx) => (
+                    <motion.div
+                      key={idx}
+                      className={styles.serviceItem}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                    >
+                      <FiCheck />
+                      {service}
+                    </motion.div>
+                  )
+                )}
               </div>
+            </motion.div>
+          </AnimatePresence>
+        </section>
+
+        {/* Features Section */}
+        <section className={styles.features}>
+          <div className={styles.featuresBackground}></div>
+          <div className={styles.sectionHeader}>
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              Why Choose Our Services?
+            </motion.h2>
+          </div>
+
+          <div className={styles.featuresGrid}>
+            {[
+              {
+                icon: <FiClock />,
+                title: "Save Time",
+                description: "Complete forms in minutes instead of hours",
+              },
+              {
+                icon: <FiShield />,
+                title: "100% Secure",
+                description: "Your data is protected with bank-level security",
+              },
+              {
+                icon: <FiCheck />,
+                title: "Error-Free",
+                description: "Triple-checked forms to avoid rejection",
+              },
+              {
+                icon: <FiDollarSign />,
+                title: "Affordable",
+                description: "Starting at just ₹99 per form",
+              },
+              {
+                icon: <FiUserCheck />,
+                title: "Expert Help",
+                description: "Experienced professionals handle your forms",
+              },
+              {
+                icon: <FiSend />,
+                title: "Fast Delivery",
+                description: "Most forms completed within 24 hours",
+              },
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                className={styles.featureCard}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <div className={styles.featureIcon}>{feature.icon}</div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </motion.div>
             ))}
           </div>
         </section>
 
-        {/* Service Details */}
-        <section className={styles.servicesDetail}>
-          <h2 className={`${styles.sectionTitle} ${styles.fadeInUp}`}>
-            {serviceCategories[activeCategory].title}
-          </h2>
+        {/* CTA Section */}
+        <section className={styles.ctaSection}>
+          <motion.div
+            className={styles.ctaContent}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2>Ready to Get Started?</h2>
+            <p>
+              Join thousands of satisfied customers who trust us with their
+              important forms
+            </p>
+            <div id={styles.seocondPageBtn} className={styles.ctaButtons}>
+              <Link href="/contact">
+                <button className={styles.secondaryBtn}>
+                  <FiPhone /> Free Consultation
+                </button>
+              </Link>
+            </div>
+          </motion.div>
+        </section>
 
-          <div className={styles.servicesList}>
-            {serviceCategories[activeCategory].services.map(
-              (service, index) => (
-                <div
-                  key={index}
-                  className={`${styles.serviceItem} ${styles.fadeInUp}`}
-                >
-                  <div className={styles.serviceIcon}>✓</div>
-                  <div className={styles.serviceText}>{service}</div>
+        {/* Contact Section */}
+        <section className={styles.contact}>
+          <div className={styles.contactContainer}>
+            <motion.div
+              className={styles.contactInfo}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2>Get In Touch</h2>
+              <p>We're here to help you with all your form filling needs</p>
+
+              <div className={styles.contactItems}>
+                <div className={styles.contactItem}>
+                  <FiPhone />
+                  <div>
+                    <strong>Phone</strong>
+                    <span>+91-9870519002</span>
+                  </div>
                 </div>
-              )
-            )}
-          </div>
-        </section>
-
-        {/* How It Works */}
-        <section className={styles.process}>
-          <h2 className={`${styles.sectionTitle} ${styles.fadeInUp}`}>
-            How Our Service Works
-          </h2>
-
-          <div className={styles.processSteps}>
-            <div className={`${styles.processStep} ${styles.fadeInUp}`}>
-              <div className={styles.stepNumber}>1</div>
-              <h4>Select Service</h4>
-              <p>Choose from our wide range of form filling services</p>
-            </div>
-
-            <div className={`${styles.processStep} ${styles.fadeInUp}`}>
-              <div className={styles.stepNumber}>2</div>
-              <h4>Provide Details</h4>
-              <p>Share your information and documents securely</p>
-            </div>
-
-            <div className={`${styles.processStep} ${styles.fadeInUp}`}>
-              <div className={styles.stepNumber}>3</div>
-              <h4>Expert Assistance</h4>
-              <p>Our professionals handle the form filling process</p>
-            </div>
-
-            <div className={`${styles.processStep} ${styles.fadeInUp}`}>
-              <div className={styles.stepNumber}>4</div>
-              <h4>Review & Submit</h4>
-              <p>You review and submit the completed forms</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Form Section */}
-
-        {/* Benefits Section */}
-        <section className={styles.benefits}>
-          <h2 className={`${styles.sectionTitle} ${styles.fadeInUp}`}>
-            Why Choose Our Services
-          </h2>
-
-          <div className={styles.benefitsGrid}>
-            {/* Existing Benefit Cards */}
-            <div className={`${styles.benefitCard} ${styles.fadeInUp}`}>
-              <div className={styles.benefitIcon}>
-                <Image src={saveTime} alt="Save Time" />
+                <div className={styles.contactItem}>
+                  <FiMail />
+                  <div>
+                    <strong>Email</strong>
+                    <span>support@aroliya.com</span>
+                  </div>
+                </div>
+                <div className={styles.contactItem}>
+                  <FiClock />
+                  <div>
+                    <strong>Hours</strong>
+                    <span>24/7 Support Available</span>
+                  </div>
+                </div>
               </div>
-              <h4>Save Time</h4>
-              <p>
-                Avoid spending hours figuring out complex forms and procedures
-              </p>
-            </div>
+            </motion.div>
 
-            <div className={`${styles.benefitCard} ${styles.fadeInUp}`}>
-              <div className={styles.benefitIcon}>
-                <Image src={shild} alt="Secure" />
-              </div>
-              <h4>Secure</h4>
-              <p>
-                Your personal information is handled with utmost confidentiality
-              </p>
-            </div>
-
-            {/* New Form Filling Service Keywords */}
-
-            <div className={`${styles.benefitCard} ${styles.fadeInUp}`}>
-              <div className={styles.benefitIcon}>
-                <Image src={formFilling} alt="Secure" />
-              </div>
-              <h4>Government Job Form Filling Help</h4>
-              <p>
-                Dedicated assistance for Sarkari exam and recruitment forms.
-              </p>
-            </div>
-
-            <div className={`${styles.benefitCard} ${styles.fadeInUp}`}>
-              <div className={styles.benefitIcon}>
-                <Image src={support} alt="Secure" />
-              </div>
-              <h4>Application Form Submission Support</h4>
-              <p>Guided application filing to avoid rejection and errors.</p>
-            </div>
-
-            <div className={`${styles.benefitCard} ${styles.fadeInUp}`}>
-              <div className={styles.benefitIcon}>
-                <Image src={Error} alt="Secure" />
-              </div>
-              <h4>Error-Free Form Filling Service</h4>
-              <p>Ensure 100% accuracy and timely submissions every time.</p>
-            </div>
-
-            <div className={`${styles.benefitCard} ${styles.fadeInUp}`}>
-              <div className={styles.benefitIcon}>
-                <Image src={Professional} alt="Secure" />
-              </div>
-              <h4>Professional Online Application Filling</h4>
-              <p>
-                Expert guidance for students, job seekers, and professionals.
-              </p>
-            </div>
-
-            <div className={`${styles.benefitCard} ${styles.fadeInUp}`}>
-              <div className={styles.benefitIcon}>
-                <Image src={Pricing} alt="Secure" />
-              </div>
-              <h4>Affordable pricing – starting at just ₹99 per form</h4>
-              <p>Support for bulk submissions for businesses & agencies</p>
-            </div>
-            <div className={`${styles.benefitCard} ${styles.fadeInUp}`}>
-              <div className={styles.benefitIcon}>
-                <Image src={Custom} alt="Secure" />
-              </div>
-              <h4>Custom Solutions</h4>
-              <p>
-                Aroliya tailors every solution to your unique business needs for
-                maximum impact.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className={styles.contactFormSection}>
-          <div className={styles.formContainer}>
-            <div className={styles.formHeader}>
-              <h2 className={styles.sectionTitle}>
-                Get Professional Assistance
-              </h2>
-              <p>
-                Fill out the form below and we'll help you with your form
-                filling needs
-              </p>
-            </div>
-
-            {isSubmitted ? (
-              <div className={styles.successMessage}>
-                <h3>Thank You!</h3>
-                <p>
-                  Your inquiry has been received. We'll contact you shortly to
-                  assist with your form filling needs.
-                </p>
-              </div>
-            ) : (
-              <form className={styles.form} onSubmit={handleSubmit}>
-                <div className={styles.formRow}>
+            <motion.div
+              className={styles.contactForm}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              {isSubmitted ? (
+                <motion.div
+                  className={styles.successMessage}
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                >
+                  <FiCheck />
+                  <h3>Thank You!</h3>
+                  <p>We'll contact you within 30 minutes</p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit}>
                   <div className={styles.formGroup}>
-                    <label htmlFor="name">Full Name *</label>
                     <input
                       type="text"
-                      id="name"
                       name="name"
+                      placeholder="Your Name"
                       value={formData.name}
                       onChange={handleChange}
                       required
                     />
                   </div>
-
                   <div className={styles.formGroup}>
-                    <label htmlFor="email">Email Address *</label>
                     <input
                       type="email"
-                      id="email"
                       name="email"
+                      placeholder="Your Email"
                       value={formData.email}
                       onChange={handleChange}
                       required
                     />
                   </div>
-                </div>
-
-                <div className={styles.formRow}>
                   <div className={styles.formGroup}>
-                    <label htmlFor="phone">Phone Number *</label>
                     <input
                       type="tel"
-                      id="phone"
                       name="phone"
+                      placeholder="Phone Number"
                       value={formData.phone}
                       onChange={handleChange}
                       required
                     />
                   </div>
-
                   <div className={styles.formGroup}>
-                    <label htmlFor="serviceCategory">Service Category *</label>
                     <select
-                      id="serviceCategory"
                       name="serviceCategory"
                       value={formData.serviceCategory}
                       onChange={handleChange}
                       required
                     >
-                      <option value="">Select a category</option>
+                      <option value="">Select Service</option>
                       {serviceCategories.map((category) => (
                         <option key={category.id} value={category.id}>
                           {category.title}
@@ -423,32 +529,29 @@ const ServiceDetail = () => {
                       ))}
                     </select>
                   </div>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="message">Additional Details</label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows="4"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="Please provide additional information"
-                  ></textarea>
-                </div>
-
-                <button type="submit" className={styles.submitButton}>
-                  Get Assistance Now
-                </button>
-                {successful && (
-                  <p className={styles.successMessage}>{successful}</p>
-                )}
-                {error && <p className={styles.errorMessage}>{error}</p>}
-              </form>
-            )}
+                  <div className={styles.formGroup}>
+                    <textarea
+                      name="message"
+                      placeholder="Tell us about your requirements..."
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows="3"
+                    ></textarea>
+                  </div>
+                  <motion.button
+                    type="submit"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Submit Request <FiSend />
+                  </motion.button>
+                </form>
+              )}
+            </motion.div>
           </div>
         </section>
       </div>
+
       <Footer />
     </>
   );

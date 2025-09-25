@@ -9,23 +9,35 @@ import {
   FaEnvelope,
   FaPhone,
   FaMapMarkerAlt,
+  FaShieldAlt,
+  FaAward,
 } from "react-icons/fa";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
         {/* Main Footer Content */}
         <div className={styles.mainContent}>
-          {/* Company Info */}
+          {/* Company Info with MSME Badge */}
           <div className={styles.companyInfo}>
-            <h3 className={styles.logo}>Aroliya</h3>
+            <div className={styles.logoSection}>
+              <h3 className={styles.logo}>Aroliya</h3>
+              <div className={styles.msmeBadge}>
+                <FaAward className={styles.badgeIcon} />
+                <span className={styles.msmeText}>MSME Registered</span>
+              </div>
+            </div>
             <p className={styles.description}>
               Providing exceptional services and solutions to businesses
               worldwide. We help you achieve your goals with innovation and
               excellence.
             </p>
+            <div className={styles.msmeCode}>
+              <strong>MSME Code:</strong> UDYAM-MP-09-0023051
+            </div>
             <div className={styles.socialLinks}>
               <a href="#" aria-label="Facebook" className={styles.socialLink}>
                 <FaFacebookF size={16} />
@@ -57,12 +69,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/portfolio" className={styles.link}>
+                <Link href="/our-team" className={styles.link}>
                   Team
                 </Link>
               </li>
               <li>
-                <Link href="/testimonials" className={styles.link}>
+                <Link href="/career" className={styles.link}>
                   Career
                 </Link>
               </li>
@@ -104,23 +116,12 @@ const Footer = () => {
                   Data Visualization
                 </Link>
               </li>
-              <li>
-                <Link href="/services/machine-learning" className={styles.link}>
-                  Machine Learning
-                </Link>
-              </li>
-              <li>
-                <Link href="/services/web-development" className={styles.link}>
-                  Web Development
-                </Link>
-              </li>
             </ul>
           </div>
 
           {/* Contact Info */}
           <div className={styles.contactInfo}>
             <h4 className={styles.sectionTitle}>Get In Touch</h4>
-
             <div className={styles.contactItem}>
               <FaPhone size={16} className={styles.contactIcon} />
               <a href="tel:+919870519002" className={styles.contactLink}>
@@ -132,6 +133,10 @@ const Footer = () => {
               <a href="mailto:info@aroliya.com" className={styles.contactLink}>
                 info@aroliya.com
               </a>
+            </div>
+            <div className={styles.trustBadge}>
+              <FaShieldAlt className={styles.trustIcon} />
+              <span>Trusted Business Partner</span>
             </div>
           </div>
         </div>

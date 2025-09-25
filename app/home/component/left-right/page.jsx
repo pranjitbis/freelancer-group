@@ -31,10 +31,10 @@ export default function ProfessionalServicesHero() {
             Clients Worldwide
           </span>
         </div>
-        <h1 className={styles.mainTitle}>
+        <h2 className={styles.mainTitle}>
           Professional Services Made{" "}
           <span className={styles.highlight}>Simple & Efficient</span>
-        </h1>
+        </h2>
         <p className={styles.subtitle}>
           Streamline your paperwork and travel planning with our expert
           services. We deliver accuracy, save you time, and eliminate the stress
