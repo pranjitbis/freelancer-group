@@ -37,6 +37,18 @@
     );
 }
 
+.animated {
+  background-color: rgb(28, 161, 139);
+  padding: 10px 20px;
+  color: rgb(233, 235, 238);
+  font-weight: 700;
+  margin: 40px 0px;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .heroContent {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -175,7 +187,7 @@
   align-items: center;
 }
 
-.heroVisual img{
+.heroVisual img {
   width: 100%;
   height: auto;
   max-width: 520px;

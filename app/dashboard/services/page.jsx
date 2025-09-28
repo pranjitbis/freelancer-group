@@ -143,27 +143,12 @@ export default function ServicesPage() {
   };
 
   const services = [
-    {
-      icon: <FiUsers size={40} color="#4361ee" />,
-      title: "Freelancer Services",
-      features: [
-        "Access verified client projects",
-        "Work across diverse categories",
-        "Build long-term client relationships",
-        "Secure, on-time payments",
-      ],
-      price: "₹1",
-      actualPrice: 1,
-      rating: 4.8,
-      reviews: 124,
-      buttonText: "Register Now",
-      popular: true,
-    },
+
     {
       icon: <FiEdit size={40} color="#f59e0b" />,
       title: "Online Form Filling",
       features: [
-        "Government Exam & Job Applications",
+        "Exam & Job Applications",
         "Education & Admission Forms",
         "Banking & Financial Forms",
         "Travel & Other Services",
@@ -173,7 +158,7 @@ export default function ServicesPage() {
       rating: 4.7,
       reviews: 89,
       buttonText: "Submit Request",
-      popular: false,
+      popular: true,
     },
     {
       icon: <FiMonitor size={40} color="#10b981" />,

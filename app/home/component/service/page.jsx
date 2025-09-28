@@ -22,7 +22,7 @@ const Services = () => {
       image: "/icons/online-form-filling.png",
       title: "Online Form Filling",
       features: [
-        "Government Exam & Job Applications",
+       "Exam & Job Applications",
         "Education & Admission Forms",
         "Banking & Financial Forms",
         "Travel & Visa Applications",

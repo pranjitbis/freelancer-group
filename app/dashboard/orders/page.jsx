@@ -100,12 +100,6 @@ export default function OrdersPage() {
   return (
     <div className={styles.ordersContent}>
       <div className={styles.pageHeader}>
-        <h2>{userRole === "admin" ? "Order Management" : "My Orders"}</h2>
-        {userRole !== "admin" && (
-          <p className={styles.userEmail}>
-            Showing orders for: {user?.email}
-          </p>
-        )}
         <div className={styles.headerActions}>
           <div className={styles.searchBox}>
             <FiSearch className={styles.searchIcon} />

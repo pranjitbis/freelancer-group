@@ -1,12 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import styles from "./dashboard.module.css";
-import {
-  FiShoppingBag,
-  FiClock,
-  FiCheck,
-  FiUsers,
-} from "react-icons/fi";
+import { FiShoppingBag, FiClock, FiCheck, FiUsers } from "react-icons/fi";
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null);
@@ -17,10 +12,17 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    console.log("Stored user:", storedUser); // Debug
+    
     if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setUser(userData);
-      setUserRole(userData.role || "user");
+      try {
+        const userData = JSON.parse(storedUser);
+        console.log("Parsed user data:", userData); // Debug
+        setUser(userData);
+        setUserRole(userData.role || "user");
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
     }
   }, []);
 
@@ -28,25 +30,29 @@ export default function DashboardPage() {
     if (user) {
       fetchData();
     }
-  }, [user]);
+  }, [user, userRole]); // Added userRole to dependencies
 
   const fetchData = async () => {
     try {
       setLoading(true);
+      console.log("Fetching data for user:", user); // Debug
 
       if (userRole === "admin") {
         const ordersRes = await fetch("/api/orders");
         const ordersData = await ordersRes.json();
+        console.log("Admin orders:", ordersData);
         setOrders(ordersData);
       } else {
         const ordersRes = await fetch(`/api/orders?email=${user.email}`);
         const ordersData = await ordersRes.json();
+        console.log("User orders:", ordersData);
         setOrders(ordersData);
       }
 
       if (userRole === "admin") {
         const usersRes = await fetch("/api/admin/users");
         const usersData = await usersRes.json();
+        console.log("Users data:", usersData);
         setUsers(usersData);
       }
     } catch (error) {
@@ -63,12 +69,23 @@ export default function DashboardPage() {
     completedOrders: orders.filter((o) => o.status === "completed").length,
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className={styles.dashboardContent}>
+        <div className={styles.loading}>Loading dashboard...</div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.dashboardContent}>
       <div className={styles.welcomeBanner}>
         <h2>{userRole === "admin" ? "Admin Dashboard" : "My Dashboard"}</h2>
         {userRole !== "admin" && (
-          <p className={styles.userEmail}>Logged in as: {user?.email}</p>
+          <p className={styles.userEmail}>
+            Welcome, {user?.name || user?.email || "User"}
+          </p>
         )}
       </div>
 
@@ -126,6 +143,15 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Debug info - remove in production */}
+      <div style={{ marginTop: '20px', padding: '10px', background: '#f5f5f5', borderRadius: '5px' }}>
+        <h4>Debug Info:</h4>
+        <p>User: {JSON.stringify(user)}</p>
+        <p>User Role: {userRole}</p>
+        <p>Orders Count: {orders.length}</p>
+        <p>Users Count: {users.length}</p>
       </div>
     </div>
   );

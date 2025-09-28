@@ -6,6 +6,7 @@ import Nav from "../../home/component/Nav/page";
 import Footer from "../../home/footer/page";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { IoCheckmarkDone } from "react-icons/io5";
 import formFilling from "@/public/icons/form-illustration-free.png";
 import Link from "next/link";
 // React Icons
@@ -57,29 +58,23 @@ const ServiceDetail = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccessful("");
-    setError("");
-
-    // Simulate API call
-    setTimeout(() => {
-      setSuccessful(
-        "Form submitted successfully! We'll contact you within 24 hours."
-      );
-      setIsSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        serviceCategory: "",
-        message: "",
-      });
-    }, 1000);
+    const res = await fetch("/api/formSubmit", {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setTimeout(setSuccessful("Data will be submit"), 2000);
+    } else {
+      setTimeout(setError("Server Error"), 2000);
+    }
   };
 
   const serviceCategories = [
     {
-      id: "government-exams",
-      title: "Government Exams",
+      id: "exams",
+      title: "Exams",
       services: [
         "SSC Exams",
         "UPSC Forms",
@@ -87,8 +82,8 @@ const ServiceDetail = () => {
         "Banking Exams",
       ],
       icon: <FaUniversity />,
-      color: "#2563eb",
-      gradient: "linear-gradient(135deg, #2563eb, #3b82f6)",
+      color: "#e1e7f3ff",
+      gradient: "linear-gradient(135deg, #3d5b9bff, #3b82f6)",
     },
     {
       id: "education",
@@ -215,8 +210,8 @@ const ServiceDetail = () => {
 
               <motion.p variants={fadeInUp}>
                 Save time and avoid errors with our expert form filling
-                services. From government exams to business registrations, we
-                handle it all with 100% accuracy.
+                services. From exams to business registrations, we handle it all
+                with 100% accuracy.
               </motion.p>
 
               <motion.div variants={fadeInUp} className={styles.heroStats}>
@@ -545,6 +540,13 @@ const ServiceDetail = () => {
                   >
                     Submit Request <FiSend />
                   </motion.button>
+                  <div className={styles.animated}>
+                    <p>
+                      {" "}
+                      <IoCheckmarkDone className={""}/>
+                    </p>
+                    <p>{successful}</p>
+                  </div>
                 </form>
               )}
             </motion.div>
