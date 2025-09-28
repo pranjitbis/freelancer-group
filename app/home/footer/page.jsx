@@ -99,7 +99,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/services/ecommerce" className={styles.link}>
+                <Link href="/services/e-eommerce-solutions" className={styles.link}>
                   E-Commerce Solutions
                 </Link>
               </li>
@@ -141,25 +141,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className={styles.bottomBar}>
-          <div className={styles.copyright}>
-            <p>&copy; {currentYear} Aroliya. All rights reserved.</p>
-          </div>
-          <div className={styles.legalLinks}>
-            <Link href="/privacy-policy" className={styles.legalLink}>
-              Privacy Policy
-            </Link>
-            <span className={styles.separator}>|</span>
-            <Link href="/terms-of-service" className={styles.legalLink}>
-              Terms of Service
-            </Link>
-            <span className={styles.separator}>|</span>
-            <Link href="/cookie-policy" className={styles.legalLink}>
-              Cookie Policy
-            </Link>
-          </div>
-        </div>
+
       </div>
     </footer>
   );

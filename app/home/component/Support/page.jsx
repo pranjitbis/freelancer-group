@@ -100,15 +100,6 @@ export default function EnterpriseCTA() {
                 <div className={styles.buttonHoverEffect}></div>
               </motion.button>
             </Link>
-            <Link href="/case-studies" className={styles.ctaLink}>
-              <motion.button
-                className={styles.secondaryCta}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span>View Case Studies</span>
-              </motion.button>
-            </Link>
           </motion.div>
 
           {/* Trust Indicators */}

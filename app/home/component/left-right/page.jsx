@@ -187,7 +187,7 @@ export default function ProfessionalServicesHero() {
           </div>
 
           <div className={styles.ctaContainer}>
-            <Link href="/travel-booking">
+            <Link href="/services/travel-bookings">
               <button className={`${styles.btn} ${styles.primaryBtn}`}>
                 <span>Plan Your Trip</span>
                 <FaArrowRight className={styles.btnArrow} />

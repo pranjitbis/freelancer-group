@@ -22,13 +22,14 @@ const Services = () => {
       image: "/icons/online-form-filling.png",
       title: "Online Form Filling",
       features: [
-       "Exam & Job Applications",
+        "Exam & Job Applications",
         "Education & Admission Forms",
         "Banking & Financial Forms",
         "Travel & Visa Applications",
       ],
       buttonText: "Start Submission",
       stat: "10K+ Forms",
+      link: "/services/form-filling"
     },
     {
       image: "/icons/virtual-assistant.png",
@@ -41,6 +42,7 @@ const Services = () => {
       ],
       buttonText: "Hire Assistant",
       stat: "24/7 Support",
+      link: "/services/virtual-assistance",
     },
     {
       image: "/icons/Ecommerce.png",
@@ -53,6 +55,7 @@ const Services = () => {
       ],
       buttonText: "Boost Sales",
       stat: "500+ Stores",
+      link: "/services/e-eommerce-solutions",
     },
     {
       image: "/icons/travel-bookings1.jpg",
@@ -65,6 +68,7 @@ const Services = () => {
       ],
       buttonText: "Plan Journey",
       stat: "5K+ Travelers",
+      link: "/services/travel-bookings",
     },
     {
       image: "/icons/data-visualization.png",
@@ -77,6 +81,7 @@ const Services = () => {
       ],
       buttonText: "Get Insights",
       stat: "AI Powered",
+      link: "/services/data-visualization",
     },
   ];
 

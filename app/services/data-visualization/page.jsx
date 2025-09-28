@@ -24,7 +24,7 @@ import {
   FaGraduationCap,
 } from "react-icons/fa";
 import data from "../../../public/icons/data-visualization.png";
-
+import Link from "next/link";
 const DataVisualization = () => {
   const features = [
     {
@@ -72,7 +72,7 @@ const DataVisualization = () => {
   const pricingPlans = [
     {
       name: "Starter",
-      price: "$59/mo",
+      price: "₹599/mo",
       features: [
         "Up to 3 Dashboards",
         "Basic Chart Types",
@@ -83,7 +83,7 @@ const DataVisualization = () => {
     },
     {
       name: "Professional",
-      price: "$129/mo",
+      price: "$1500/mo",
       features: [
         "Unlimited Dashboards",
         "20+ Chart Types",
@@ -211,8 +211,10 @@ const DataVisualization = () => {
               professional data visualization solutions.
             </p>
             <div className={styles.heroBtns}>
-              <button className={styles.btnPrimary}>Get Started</button>
-              <button className={styles.btnOutline}>See Demo</button>
+              <Link href="/register">
+                {" "}
+                <button className={styles.btnPrimary}>Get Started</button>
+              </Link>
             </div>
           </div>
           <div className={styles.heroImage}>
@@ -345,7 +347,9 @@ const DataVisualization = () => {
                   <li key={i}>✔ {feature}</li>
                 ))}
               </ul>
-              <button className={styles.btnPrimary}>Choose Plan</button>
+              <Link href="/register">
+                <button className={styles.btnPrimary}>Choose Plan</button>
+              </Link>
             </div>
           ))}
         </div>
@@ -381,7 +385,10 @@ const DataVisualization = () => {
         <p>
           Let’s help you transform raw data into actionable business insights.
         </p>
-        <button className={styles.btnPrimary}>Contact Us</button>
+        <Link href="/contact">
+          {" "}
+          <button className={styles.btnPrimary}>Contact Us</button>
+        </Link>
       </section>
       <Footer />
     </>

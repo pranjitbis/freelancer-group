@@ -65,9 +65,16 @@ const ServiceDetail = () => {
     });
     const data = await res.json();
     if (res.ok) {
-      setTimeout(setSuccessful("Data will be submit"), 2000);
+      function runtime() {
+        setSuccessful("Data will be submit"), clearTimeout();
+        setError("");
+      }
+      runtime();
+      setTimeout(() => {
+        setSuccessful("");
+      }, 4000);
     } else {
-      setTimeout(setError("Server Error"), 2000);
+      setTimeout(setError("Server Error"));
     }
   };
 
@@ -232,7 +239,7 @@ const ServiceDetail = () => {
               <motion.div variants={fadeInUp} className={styles.ctaButtons}>
                 <Link href="/login">
                   {" "}
-                  <button className={styles.primaryBtn}>
+                 <button className={styles.primaryBtn}>
                     Get Started <FiArrowRight />
                   </button>
                 </Link>
@@ -540,13 +547,15 @@ const ServiceDetail = () => {
                   >
                     Submit Request <FiSend />
                   </motion.button>
-                  <div className={styles.animated}>
-                    <p>
-                      {" "}
-                      <IoCheckmarkDone className={""}/>
-                    </p>
-                    <p>{successful}</p>
-                  </div>
+                  {successful && (
+                    <div className={styles.animated}>
+                      <p>
+                        {" "}
+                        <IoCheckmarkDone className={""} />
+                      </p>
+                      <p>{successful}</p>
+                    </div>
+                  )}
                 </form>
               )}
             </motion.div>

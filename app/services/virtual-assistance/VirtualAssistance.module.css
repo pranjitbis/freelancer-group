@@ -1,6 +1,7 @@
 /* VirtualAssistance.module.css */
 .container {
   margin: 0 auto;
+  scroll-behavior: smooth;
 }
 
 /* Hero Section */
@@ -123,7 +124,7 @@
 
 /* Services Section */
 .services {
-  padding: 80px 10px;
+  padding: 80px 10px 0;
   background-color: #f8f9fa;
   border-radius: 20px;
   margin: 0px 0 0;
@@ -224,11 +225,9 @@
 
 /* Process Section */
 .process {
-  position: relative;
-  bottom: 183px;
   background-color: white;
   z-index: 2;
-  padding: 40px 20px 0;
+  padding: 40px 20px 20px;
 }
 
 .processSteps {
@@ -278,13 +277,10 @@
 
 /* Pricing Section */
 .pricing {
-  padding: 50px 0 0;
+  padding: 50px 0 30px;
   background-color: #f8f9fa;
   border-radius: 20px;
   align-items: center;
-  position: relative;
-  z-index: 2;
-  bottom: 150px;
 }
 
 .pricingPlans {
@@ -404,7 +400,7 @@
   background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
   color: white;
   padding: 20px;
-  margin: -72px 0 0px;
+  margin: 72px 0 0px;
 }
 
 .contactContainer {
@@ -629,7 +625,6 @@
   }
 }
 @media (max-width: 400px) {
-
   .ctaButton,
   .primaryButton {
     padding: 16px 32px;

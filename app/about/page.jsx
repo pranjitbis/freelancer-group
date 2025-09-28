@@ -28,7 +28,7 @@ import {
   FaCode,
   FaChartLine,
 } from "react-icons/fa";
-
+import Link from "next/link";
 export default function About() {
   const [isVisible, setIsVisible] = useState(false);
   const [activeValue, setActiveValue] = useState(0);
@@ -296,20 +296,24 @@ export default function About() {
                 </motion.div>
 
                 <motion.div className={styles.heroButtons} variants={fadeInUp}>
-                  <motion.button
-                    className={styles.primaryButton}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Our Services
-                  </motion.button>
-                  <motion.button
-                    className={styles.secondaryButton}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Meet Our Team
-                  </motion.button>
+                  <Link href="/">
+                    <motion.button
+                      className={styles.primaryButton}
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Our Services
+                    </motion.button>
+                  </Link>
+                  <Link href="/our-team">
+                    <motion.button
+                      className={styles.secondaryButton}
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Meet Our Team
+                    </motion.button>
+                  </Link>
                 </motion.div>
               </motion.div>
 
@@ -798,20 +802,25 @@ export default function About() {
                 Let's discuss how we can help you achieve your digital goals
               </p>
               <div className={styles.ctaButtons}>
-                <motion.button
-                  className={styles.primaryButton}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Get Started
-                </motion.button>
-                <motion.button
-                  className={styles.secondaryButton}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Contact Us
-                </motion.button>
+                <Link href="/register">
+                  {" "}
+                  <motion.button
+                    className={styles.primaryButton}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Get Started
+                  </motion.button>
+                </Link>
+                <Link href="/contact">
+                  <motion.button
+                    className={styles.secondaryButton}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Contact Us
+                  </motion.button>
+                </Link>
               </div>
             </motion.div>
           </div>

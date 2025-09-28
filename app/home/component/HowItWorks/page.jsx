@@ -40,9 +40,6 @@ const HowItWorks = () => {
               <div className={styles.stepNumber}>{step.number}</div>
               <h3 className={styles.stepTitle}>{step.title}</h3>
               <p className={styles.stepDescription}>{step.description}</p>
-              <a href="#" className={styles.stepCta}>
-                {step.ctaText}
-              </a>
             </div>
           ))}
         </div>

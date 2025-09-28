@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import styles from "./ServicesHeader.module.css";
-
+import Link from "next/link";
 export default function ServicesHeader() {
   return (
     <div className={styles.heroSection}>
@@ -103,10 +103,10 @@ export default function ServicesHeader() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
           >
-            <button className={styles.primaryButton}>Get Started</button>
-            <button className={styles.secondaryButton}>
-              View Case Studies
-            </button>
+            <Link href="/register">
+              {" "}
+              <button className={styles.primaryButton}>Get Started</button>
+            </Link>
           </motion.div>
 
           {/* Trust Badge */}
@@ -115,8 +115,7 @@ export default function ServicesHeader() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-          >
-          </motion.div>
+          ></motion.div>
         </div>
       </div>
     </div>

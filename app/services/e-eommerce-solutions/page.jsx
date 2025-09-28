@@ -29,7 +29,7 @@ import {
   FaIndustry,
   FaChartBar,
 } from "react-icons/fa";
-
+import Link from "next/link";
 import Footer from "@/app/home/footer/page";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -100,6 +100,7 @@ const EcommerceSolutions = () => {
       ],
       button: "Get Started",
       primary: false,
+      link: "/register",
     },
     {
       name: "Business",
@@ -118,6 +119,7 @@ const EcommerceSolutions = () => {
       ],
       button: "Get Started",
       primary: true,
+      link: "/register",
     },
     {
       name: "Enterprise",
@@ -136,6 +138,7 @@ const EcommerceSolutions = () => {
       ],
       button: "Get Started",
       primary: false,
+      link: "/register",
     },
   ];
   const testimonials = [
@@ -393,16 +396,14 @@ const EcommerceSolutions = () => {
             <h1>E-Commerce Solutions by Aroliya</h1>
 
             <p>
-              In today's digital-first world, running a successful online store
-              requires more than just uploading products. From catalog
-              management and order processing to customer support and marketing,
-              every step matters. At Aroliya, we offer complete E-Commerce
-              Solutions designed to help you build, manage, and scale your
-              online business smoothly.
+              Aroliya powers seamless e-commerce: build, manage, scale with
+              complete solutions.
             </p>
             <div className={styles.heroBtns}>
-              <button className={styles.btnPrimary}>Start Now</button>
-              <button className={styles.btnOutline}>View Demo</button>
+              <Link href="/register">
+                {" "}
+                <button className={styles.btnPrimary}>Start Now</button>
+              </Link>
             </div>
           </div>
           <div className={styles.heroImage}>
@@ -526,13 +527,15 @@ const EcommerceSolutions = () => {
             >
               <h3>{plan.name}</h3>
               <p className={styles.price}>{plan.price}</p>
-              <button
-                className={
-                  plan.primary ? styles.btnPrimary : styles.btnSecondary
-                }
-              >
-                {plan.button}
-              </button>
+              <Link href={plan.link}>
+                <button
+                  className={
+                    plan.primary ? styles.btnPrimary : styles.btnSecondary
+                  }
+                >
+                  {plan.button}
+                </button>
+              </Link>
               <ul>
                 {plan.features.map((feature, i) => (
                   <li key={i} className={styles.featureItem}>
