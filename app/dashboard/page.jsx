@@ -13,7 +13,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     console.log("Stored user:", storedUser); // Debug
-    
+
     if (storedUser) {
       try {
         const userData = JSON.parse(storedUser);
@@ -143,15 +143,6 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Debug info - remove in production */}
-      <div style={{ marginTop: '20px', padding: '10px', background: '#f5f5f5', borderRadius: '5px' }}>
-        <h4>Debug Info:</h4>
-        <p>User: {JSON.stringify(user)}</p>
-        <p>User Role: {userRole}</p>
-        <p>Orders Count: {orders.length}</p>
-        <p>Users Count: {users.length}</p>
       </div>
     </div>
   );

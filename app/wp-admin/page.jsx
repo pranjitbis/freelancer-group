@@ -18,10 +18,19 @@ export default function DashboardPage() {
   const [yearlyRevenue, setYearlyRevenue] = useState(0);
 
   useEffect(() => {
-    fetch("/api/getYearlyRevenue")
-      .then((res) => res.json())
-      .then((data) => setYearlyRevenue(data.yearlyRevenue))
-      .catch((err) => console.error(err));
+    const fetchRevenue = async () => {
+      try {
+        const res = await fetch("/api/getYearlyRevenue", { method: "GET" });
+        if (!res.ok) throw new Error("Failed to fetch revenue");
+        const data = await res.json();
+        setYearlyRevenue(data.yearlyRevenue || 0);
+      } catch (err) {
+        console.error("Error fetching revenue:", err);
+        setYearlyRevenue(0);
+      }
+    };
+
+    fetchRevenue();
   }, []);
 
   useEffect(() => {

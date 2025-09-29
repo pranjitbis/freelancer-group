@@ -1,4 +1,3 @@
-// app/api/razorpay/route.js
 import Razorpay from "razorpay";
 
 const razorpay = new Razorpay({
@@ -14,7 +13,9 @@ async function getYearlyRevenue() {
   const from = Math.floor(startOfYear.getTime() / 1000);
   const to = Math.floor(endOfYear.getTime() / 1000);
 
+  // Razorpay payments fetch
   const payments = await razorpay.payments.all({ from, to, count: 100 });
+
   const yearlyRevenue = payments.items
     .filter((p) => p.status === "captured")
     .reduce((sum, p) => sum + p.amount / 100, 0);
@@ -27,9 +28,10 @@ export async function GET() {
     const yearlyRevenue = await getYearlyRevenue();
     return new Response(JSON.stringify({ yearlyRevenue }), { status: 200 });
   } catch (err) {
-    console.error(err);
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-    });
+    console.error("Razorpay API Error:", err);
+    return new Response(
+      JSON.stringify({ error: err.message || "Internal Server Error" }),
+      { status: 500 }
+    );
   }
 }

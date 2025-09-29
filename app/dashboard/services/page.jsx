@@ -143,7 +143,6 @@ export default function ServicesPage() {
   };
 
   const services = [
-
     {
       icon: <FiEdit size={40} color="#f59e0b" />,
       title: "Online Form Filling",
@@ -161,21 +160,22 @@ export default function ServicesPage() {
       popular: true,
     },
     {
-      icon: <FiMonitor size={40} color="#10b981" />,
-      title: "Virtual Assistant",
+      icon: <FiMonitor size={40} color="#3b82f6" />, // blue for tech/web
+      title: "Web Development",
       features: [
-        "Calendar booking and management",
-        "Email follow-ups and responses",
-        "Document formatting and editing",
-        "Data entry and organization",
+        "Custom website & web app development",
+        "Responsive and mobile-friendly design",
+        "E-commerce solutions & payment integration",
+        "SEO optimization and fast performance",
       ],
-      price: "₹399",
-      actualPrice: 399,
-      rating: 4.9,
-      reviews: 156,
-      buttonText: "Hire a VA",
+      price: "Custom",
+      actualPrice: 999,
+      rating: 5.0,
+      reviews: 245,
+      buttonText: "Build Your Website",
       popular: true,
     },
+
     {
       icon: <FiShoppingCart size={40} color="#ef4444" />,
       title: "E-Commerce Solutions",
