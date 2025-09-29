@@ -63,7 +63,7 @@ export default function ProfessionalServicesHero() {
                 <FaUserTie />
               </div>
               <div className={styles.featureContent}>
-                <h4>Government Forms</h4>
+                <h4>Official Forms</h4>
                 <p>Accurate submissions with guaranteed compliance</p>
               </div>
             </div>

@@ -80,17 +80,17 @@ const ServiceDetail = () => {
 
   const serviceCategories = [
     {
-      id: "exams",
-      title: "Exams",
+      id: "startup-msme",
+      title: "Startup & MSME",
       services: [
-        "SSC Exams",
-        "UPSC Forms",
-        "Railway Recruitment",
-        "Banking Exams",
+        "Business Registration",
+        "Udyam Aadhaar",
+        "Startup India",
+        "Subsidy Programs",
       ],
-      icon: <FaUniversity />,
-      color: "#e1e7f3ff",
-      gradient: "linear-gradient(135deg, #3d5b9bff, #3b82f6)",
+      icon: <FaLightbulb />, // You can also try FaIndustry, FaBuilding, or FaRocket if you want
+      color: "#d39720ff",
+      gradient: "linear-gradient(135deg, #55472fff, #d8a830ff)",
     },
     {
       id: "education",
@@ -103,7 +103,7 @@ const ServiceDetail = () => {
       ],
       icon: <FaGraduationCap />,
       color: "#059669",
-      gradient: "linear-gradient(135deg, #059669, #10b981)",
+      gradient: "linear-gradient(135deg, #4f7267ff, #10b981)",
     },
     {
       id: "banking",
@@ -116,7 +116,7 @@ const ServiceDetail = () => {
       ],
       icon: <FaPiggyBank />,
       color: "#dc2626",
-      gradient: "linear-gradient(135deg, #dc2626, #ef4444)",
+      gradient: "linear-gradient(135deg, #0a0606ff, #ef4444)",
     },
     {
       id: "travel",
@@ -129,7 +129,7 @@ const ServiceDetail = () => {
       ],
       icon: <FaPlane />,
       color: "#7c3aed",
-      gradient: "linear-gradient(135deg, #7c3aed, #8b5cf6)",
+      gradient: "linear-gradient(135deg, #182599ff, #8b5cf6)",
     },
     {
       id: "business",
@@ -142,15 +142,15 @@ const ServiceDetail = () => {
       ],
       icon: <FaBusinessTime />,
       color: "#ea580c",
-      gradient: "linear-gradient(135deg, #ea580c, #f97316)",
+      gradient: "linear-gradient(135deg, #8a4520ff, #f97316)",
     },
     {
-      id: "government-schemes",
-      title: "Govt Schemes",
+      id: "official-schemes",
+      title: "Official Schemes",
       services: ["Ayushman Bharat", "PM Kisan", "Ujjwala", "Pension Schemes"],
       icon: <FaHandHoldingHeart />,
       color: "#db2777",
-      gradient: "linear-gradient(135deg, #db2777, #ec4899)",
+      gradient: "linear-gradient(135deg, #751a43ff, #ec4899)",
     },
   ];
 
@@ -239,7 +239,7 @@ const ServiceDetail = () => {
               <motion.div variants={fadeInUp} className={styles.ctaButtons}>
                 <Link href="/login">
                   {" "}
-                 <button className={styles.primaryBtn}>
+                  <button className={styles.primaryBtn}>
                     Get Started <FiArrowRight />
                   </button>
                 </Link>

@@ -67,16 +67,16 @@ export default function Nav() {
         </div>
 
         <div data-aos="fade-left" className={styles.mediaIcons}>
-          <Link href="#">
+          <Link href="https://www.instagram.com/aroliya5280/">
             <FaInstagram />
           </Link>
-          <Link href="#">
+          <Link href="https://www.facebook.com/profile.php?id=61571008499035">
             <FaFacebook />
           </Link>
-          <Link href="#">
+          <Link href="https://www.linkedin.com/company/aroliya-group/">
             <FaLinkedin />
           </Link>
-          <Link href="#">
+          <Link href="https://x.com/Aroliya171825/">
             <FaXTwitter />
           </Link>
         </div>
@@ -133,6 +133,12 @@ export default function Nav() {
                     onClick={() => setServicesOpen(false)}
                   >
                     Virtual Assistance
+                  </Link>
+                  <Link
+                    href="/services/web-development"
+                    onClick={() => setServicesOpen(false)}
+                  >
+                    Web Development
                   </Link>
 
                   <Link

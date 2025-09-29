@@ -39,16 +39,32 @@ const Footer = () => {
               <strong>MSME Code:</strong> UDYAM-MP-09-0023051
             </div>
             <div className={styles.socialLinks}>
-              <a href="#" aria-label="Facebook" className={styles.socialLink}>
+              <a
+                href="https://www.facebook.com/profile.php?id=61571008499035"
+                aria-label="Facebook"
+                className={styles.socialLink}
+              >
                 <FaFacebookF size={16} />
               </a>
-              <a href="#" aria-label="Twitter" className={styles.socialLink}>
+              <a
+                href="https://x.com/Aroliya171825"
+                aria-label="Twitter"
+                className={styles.socialLink}
+              >
                 <FaTwitter size={16} />
               </a>
-              <a href="#" aria-label="Instagram" className={styles.socialLink}>
+              <a
+                href="https://www.instagram.com/aroliya5280/"
+                aria-label="Instagram"
+                className={styles.socialLink}
+              >
                 <FaInstagram size={16} />
               </a>
-              <a href="#" aria-label="LinkedIn" className={styles.socialLink}>
+              <a
+                href="https://www.linkedin.com/company/aroliya-group/"
+                aria-label="LinkedIn"
+                className={styles.socialLink}
+              >
                 <FaLinkedinIn size={16} />
               </a>
             </div>
@@ -99,12 +115,15 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/services/e-eommerce-solutions" className={styles.link}>
+                <Link
+                  href="/services/e-eommerce-solutions"
+                  className={styles.link}
+                >
                   E-Commerce Solutions
                 </Link>
               </li>
               <li>
-                <Link href="/services/travel-booking" className={styles.link}>
+                <Link href="/services/travel-bookings" className={styles.link}>
                   Travel Booking
                 </Link>
               </li>
@@ -140,8 +159,6 @@ const Footer = () => {
             </div>
           </div>
         </div>
-
-
       </div>
     </footer>
   );
