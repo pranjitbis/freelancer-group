@@ -12,10 +12,11 @@ export async function POST(req) {
     const formData = await req.formData();
     const file = formData.get("resume");
 
-    if (!file || !(file instanceof File)) {
-      return new Response(JSON.stringify({ error: "No file uploaded" }), {
-        status: 400,
-      });
+    if (!file || typeof file.arrayBuffer !== "function") {
+      return new Response(
+        JSON.stringify({ error: "No file uploaded or invalid file" }),
+        { status: 400 }
+      );
     }
 
     const uploadDir = path.join(process.cwd(), "public", "serviceRs");
@@ -23,14 +24,17 @@ export async function POST(req) {
     // Ensure folder exists
     fs.mkdirSync(uploadDir, { recursive: true });
 
-    // Convert File to Buffer
+    // Convert file to buffer
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Save file
-    const filePath = path.join(uploadDir, file.name);
+    // Generate unique filename to avoid overwriting
+    const timestamp = Date.now();
+    const safeName = file.name.replace(/\s+/g, "_");
+    const filePath = path.join(uploadDir, `${timestamp}_${safeName}`);
+
     fs.writeFileSync(filePath, buffer);
 
-    const fileUrl = `/serviceRs/${file.name}`;
+    const fileUrl = `/serviceRs/${timestamp}_${safeName}`;
     return new Response(JSON.stringify({ url: fileUrl }), { status: 200 });
   } catch (err) {
     console.error("Upload error:", err);
