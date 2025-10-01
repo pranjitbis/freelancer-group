@@ -2,6 +2,7 @@
 
 import Head from "next/head";
 import { useState, useEffect } from "react";
+import WhatsApp from '../../whatsapp_icon/page'
 import {
   FaShoppingCart,
   FaMobile,
@@ -388,6 +389,7 @@ const EcommerceSolutions = () => {
         />
       </Head>
       <Nav />
+      <WhatsApp />
 
       {/* Hero Section */}
       <section className={styles.hero}>

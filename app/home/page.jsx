@@ -9,7 +9,8 @@ import FAQ from "./component/faqs/page";
 import Right from "./component/left-right/page";
 import WhyChooseAroliya from "./WhyChooseAroliya/page";
 import ServicesHeader from "./component/ServiceHeader/page";
-import Support from "./component/Support/page"
+import Support from "./component/Support/page";
+import Whatsapp from "../whatsapp_icon/page";
 export default function page() {
   return (
     <div>
@@ -25,6 +26,7 @@ export default function page() {
       <Support />
       <FAQ />
       <Footer />
+      <Whatsapp />
     </div>
   );
 }

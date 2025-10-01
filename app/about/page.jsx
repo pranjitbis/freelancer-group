@@ -8,6 +8,7 @@ import Footer from "../home/footer/page";
 import founderImage from "../../public/about/sir-image.png";
 import teamImage from "../../public/about/team2.jpeg";
 import teamTow from "../../public/about/tem3.jpg";
+import Whasapp from '../whatsapp_icon/page'
 import Image from "next/image";
 import {
   FaShieldAlt,
@@ -168,6 +169,7 @@ export default function About() {
   return (
     <div>
       <Nav />
+      <Whasapp />
       <motion.div
         className={styles.aboutContainer}
         variants={containerVariants}

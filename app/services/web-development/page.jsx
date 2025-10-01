@@ -18,8 +18,9 @@ import {
   FiZap,
 } from "react-icons/fi";
 import { DiPhp } from "react-icons/di";
-import Nav from "../home/component/Nav/page";
-import Footer from "../home/footer/page";
+import Nav from "../../home/component/Nav/page";
+import Footer from "../../home/footer/page";
+import WhatsApp from "../../whatsapp_icon/page";
 import {
   SiNextdotjs,
   SiReact,
@@ -344,6 +345,7 @@ const Services = () => {
   return (
     <div className={styles.container}>
       <Nav />
+      <WhatsApp />
       <section className={styles.hero}>
         <div className={styles.heroBackground}></div>
         <div className={styles.heroContent}>

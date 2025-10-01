@@ -15,6 +15,7 @@ import Footer from "@/app/home/footer/page";
 import styles from "./DataVisualization.module.css";
 import Image from "next/image";
 import Nav from "@/app/home/component/Nav/page";
+import WhatsApp from '../../whatsapp_icon/page'
 import {
   FaChartLine,
   FaShoppingCart,
@@ -201,7 +202,7 @@ const DataVisualization = () => {
       </Head>
       <Nav />
 
-      {/* Hero Section */}
+      <WhatsApp />
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <div className={styles.heroText}>

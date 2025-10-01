@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 82vh;
+  min-height: 83.5vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -483,7 +483,6 @@
   }
 }
 
-/* Responsive design */
 @media (max-width: 480px) {
   .loginCard {
     padding: 1.5rem;

@@ -6,6 +6,7 @@ import styles from "./TravelBookings.module.css";
 import Image from "next/image";
 import Footer from "@/app/home/footer/page";
 import Link from "next/link";
+import WhatsApp from '../../whatsapp_icon/page'
 import {
   FaPlane,
   FaHotel,
@@ -389,6 +390,7 @@ const TravelBookings = () => {
       </Head>
 
       <Nav />
+      <WhatsApp />
 
       <div className={styles.travelBookingContainer}>
         {/* Header */}

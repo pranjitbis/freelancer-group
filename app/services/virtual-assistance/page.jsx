@@ -13,7 +13,7 @@ import CreativeServices from "../../../public/icons/CreativeServices.png";
 import Marketing from "../../../public/icons/Marketing.png";
 import technical from "../../../public/icons/technical-support.png";
 import TickMark from "../../../public/icons/Mark-Tick.png";
-
+import WhatsApp from '../../whatsapp_icon/page'
 const VirtualAssistance = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -245,6 +245,7 @@ const VirtualAssistance = () => {
         />
       </Head>
       <Nav />
+      <WhatsApp />
       <div className={styles.container}>
         {/* Hero Section */}
         <section className={styles.hero}>

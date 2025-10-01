@@ -38,7 +38,7 @@ import {
   FaLightbulb,
   FaHandHoldingHeart,
 } from "react-icons/fa";
-
+import WhatsApp from '../../whatsapp_icon/page'
 const ServiceDetail = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -188,6 +188,7 @@ const ServiceDetail = () => {
       </Head>
 
       <Nav />
+      <WhatsApp />
 
       <div className={styles.container}>
         {/* Hero Section */}
