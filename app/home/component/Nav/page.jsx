@@ -88,7 +88,6 @@ export default function Nav() {
 
       // Close mobile menu if open
       setIsOpen(false);
-
       // Redirect to home page
       window.location.href = "/";
     } catch (error) {
@@ -113,7 +112,7 @@ export default function Nav() {
       case "client":
         return "/client-dashboard";
       case "freelancer":
-        return "/freelancer-hub";
+        return "/freelancer-dashboard";
       case "admin":
         return "/wp-admin";
       default:
@@ -192,47 +191,6 @@ export default function Nav() {
                   className={styles.servicesDropdown}
                   onMouseLeave={() => setServicesOpen(false)}
                 >
-                  <li className={styles.servicesItem}>
-                    <div
-                      className={styles.servicesTrigger}
-                      onClick={() => setFreelancerOpen(!freelancerOpen)}
-                      onMouseEnter={() => setFreelancerOpen(true)}
-                    >
-                      <span>Freelancer Plan</span>
-                      <IoChevronDown
-                        className={`${styles.chevron} ${
-                          freelancerOpen ? styles.rotated : ""
-                        }`}
-                      />
-                    </div>
-
-                    {freelancerOpen && (
-                      <div
-                        className={styles.servicesDropdown}
-                        onMouseLeave={() => setFreelancerOpen(false)}
-                      >
-                        <Link
-                          href="/services/freelancer-hub/client-plan"
-                          onClick={() => {
-                            setFreelancerOpen(false);
-                            setIsOpen(false);
-                          }}
-                        >
-                          Client Plan
-                        </Link>
-                        <Link
-                          href="/services/freelancer-hub/freelancer-plan"
-                          onClick={() => {
-                            setFreelancerOpen(false);
-                            setIsOpen(false);
-                          }}
-                        >
-                          Freelancer Plan
-                        </Link>
-                      </div>
-                    )}
-                  </li>
-
                   <Link
                     href="/services/form-filling"
                     onClick={() => {
@@ -301,6 +259,47 @@ export default function Nav() {
                 Find Work
               </Link>
             </li>
+            <li className={styles.servicesItem}>
+              <div
+                className={styles.servicesTrigger}
+                onClick={() => setFreelancerOpen(!freelancerOpen)}
+                onMouseEnter={() => setFreelancerOpen(true)}
+              >
+                <span>Freelancer Hub</span>
+                <IoChevronDown
+                  className={`${styles.chevron} ${
+                    freelancerOpen ? styles.rotated : ""
+                  }`}
+                />
+              </div>
+
+              {freelancerOpen && (
+                <div
+                  className={styles.servicesDropdown}
+                  onMouseLeave={() => setFreelancerOpen(false)}
+                >
+                  <Link
+                    href="/services/freelancer-hub/freelancer-plan"
+                    onClick={() => {
+                      setFreelancerOpen(false);
+                      setIsOpen(false);
+                    }}
+                  >
+                    Join as a Freelancer
+                  </Link>
+                  <Link
+                    href="/services/freelancer-hub/client-plan"
+                    onClick={() => {
+                      setFreelancerOpen(false);
+                      setIsOpen(false);
+                    }}
+                  >
+                    Join as a Client
+                  </Link>
+                </div>
+              )}
+            </li>
+
             <li>
               <Link href="/career" onClick={() => setIsOpen(false)}>
                 Career

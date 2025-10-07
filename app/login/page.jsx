@@ -56,7 +56,7 @@ export default function Login() {
             router.push("/wp-admin");
             break;
           case "freelancer":
-            router.push("/freelancer-hub");
+            router.push("/find-work");
             break;
           case "client":
             router.push("/client-dashboard");

@@ -4,22 +4,21 @@ import Script from "next/script";
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export const metadata = {
-  title:
-    "Aroliya - India's No. 1 Platform for Smart Online Services | Form Filling, Travel Bookings, AI Solutions",
+  title: "Aroliya - India's No. 1 Platform for Smart Online Services",
   description:
-    "One-stop solution for Professional Form Filling, Travel & Hotel Bookings, Virtual Assistance, E-Commerce Development, and Advanced Data & AI Solutions. India's leading online service platform.",
+    "Explore Aroliya, India's trusted platform for online services — from Form Filling, Travel & Hotel Bookings, Virtual Assistance, and E-Commerce Development to AI-powered business solutions.",
   keywords:
-    "aroliya, form filling services, travel booking India, hotel reservation, virtual assistant services, e-commerce development, data analytics, AI solutions, web development, business solutions, online services",
-  authors: [{ name: "Aroliya" }],
-  creator: "Aroliya",
-  publisher: "Aroliya",
+    "aroliya, aroliya group, aroliya india, online services india, form filling, travel booking, hotel booking, virtual assistant, ecommerce development, ai solutions",
+  authors: [{ name: "Aroliya Group" }],
+  creator: "Aroliya Group",
+  publisher: "Aroliya Group",
   robots:
     "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
 
   openGraph: {
-    title: "Aroliya - India's No. 1 Platform for Smart Online Services",
+    title: "Aroliya - India's Leading Online Service Platform",
     description:
-      "Professional form filling, Travel & Hotel Bookings, Expert Virtual Assistant services, Complete E-Commerce Solutions, and Advanced Data & AI Solutions.",
+      "Smart digital solutions for your business — Form Filling, Travel Bookings, Virtual Assistance, Web & AI Services by Aroliya Group.",
     url: "https://www.aroliya.com",
     siteName: "Aroliya",
     images: [
@@ -27,22 +26,17 @@ export const metadata = {
         url: "/icons/wmremove.gif",
         width: 1200,
         height: 630,
-        alt: "Aroliya - India's Leading Online Services Platform",
+        alt: "Aroliya - Smart Online Service Platform",
       },
     ],
     locale: "en_IN",
     type: "website",
   },
 
-  verification: {
-    google: "google5c018b3a646e13da",
-  },
-  category: "technology services",
-
-  metadataBase: new URL("https://www.aroliya.com"),
   alternates: {
-    canonical: "/",
+    canonical: "https://www.aroliya.com",
   },
+  metadataBase: new URL("https://www.aroliya.com"),
 };
 
 export default function RootLayout({ children }) {
@@ -117,6 +111,25 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <main>{children}</main>
+
+        <Script
+          id="sitelinks-schema"
+          type="application/ld+json"
+          strategy="afterInteractive"
+        >
+          {`
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://www.aroliya.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.aroliya.com/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  `}
+        </Script>
 
         {/* Enhanced Structured Data for Site Links */}
         <Script
@@ -202,38 +215,42 @@ export default function RootLayout({ children }) {
 
         {/* Breadcrumb Structured Data */}
         <Script
-          id="breadcrumb-structured-data"
+          id="breadcrumb-schema"
           type="application/ld+json"
           strategy="afterInteractive"
         >
           {`
-            {
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              "itemListElement": [{
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://www.aroliya.com"
-              }, {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Services",
-                "item": "https://www.aroliya.com/services"
-              }, {
-                "@type": "ListItem",
-                "position": 3,
-                "name": "Virtual Assistance",
-                "item": "https://www.aroliya.com/services/virtual-assistance"
-              }]
-              }, {
-                "@type": "ListItem",
-                "position": 4,
-                "name": "Login",
-                "item": "https://www.aroliya.com/login"
-              }]
-            }
-          `}
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.aroliya.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Services",
+        "item": "https://www.aroliya.com/services"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "About Us",
+        "item": "https://www.aroliya.com/about"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "Contact",
+        "item": "https://www.aroliya.com/contact"
+      }
+    ]
+  }
+  `}
         </Script>
 
         <Script

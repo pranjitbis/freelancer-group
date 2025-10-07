@@ -120,7 +120,7 @@
   cursor: pointer;
 }
 
-@media (max-width: 1124px) {
+@media (max-width: 1191px) {
   .menuToggle {
     display: block;
   }
@@ -241,7 +241,7 @@
   }
 }
 
-@media (max-width: 1220px) {
+@media (max-width: 1191px) {
   .nav {
     padding: 0px 20px 0;
   }
