@@ -234,8 +234,10 @@
     gap: 1vw !important;
   }
   .navLinksOpen ul li a {
-    font-size: 1.1rem !important;
-
+    font-size: 1rem !important;
+  }
+  .servicesTrigger span {
+    font-size: 1rem !important;
   }
 }
 
@@ -243,11 +245,21 @@
   .nav {
     padding: 0px 20px 0;
   }
-
+  .navLinksOpen ul li a {
+    font-size: 1.2rem !important;
+  }
+  .servicesTrigger span {
+    font-size: 1.2rem !important;
+  }
   .navLinks {
     display: none;
   }
 
+  .navLinksOpen {
+    display: flex;
+    align-items: center;
+    gap: 10vw !important;
+  }
   .menuIcons {
     display: block;
     cursor: pointer;
