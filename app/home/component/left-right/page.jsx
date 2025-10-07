@@ -193,9 +193,6 @@ export default function ProfessionalServicesHero() {
                 <FaArrowRight className={styles.btnArrow} />
               </button>
             </Link>
-            <div className={styles.secondaryCta}>
-              <Link href="/travel-booking#deals">Explore Current Deals →</Link>
-            </div>
           </div>
         </div>
 

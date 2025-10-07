@@ -238,7 +238,7 @@ const ServiceDetail = () => {
               </motion.div>
 
               <motion.div variants={fadeInUp} className={styles.ctaButtons}>
-                <Link href="/login">
+                <Link href="/register">
                   {" "}
                   <button className={styles.primaryBtn}>
                     Get Started <FiArrowRight />

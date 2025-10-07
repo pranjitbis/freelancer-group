@@ -2,7 +2,7 @@
 
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import WhatsApp from '../../whatsapp_icon/page'
+import WhatsApp from "../../whatsapp_icon/page";
 import {
   FaShoppingCart,
   FaMobile,
@@ -590,9 +590,12 @@ const EcommerceSolutions = () => {
           <p>
             <strong>Ready to scale your online business?</strong>
           </p>
-          <button className={styles.ctaButton}>
-            Contact Us Now for a free consultation
-          </button>
+          <Link href="/contact">
+            {" "}
+            <button className={styles.ctaButton}>
+              Contact Us Now for a free consultation
+            </button>
+          </Link>
           <p className={styles.ctaSubtext}>
             We'll create a custom package tailored to your needs.
           </p>

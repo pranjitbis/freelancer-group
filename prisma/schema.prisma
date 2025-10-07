@@ -1,12 +1,143 @@
+// schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  status    String?  @default("active")
+  avatar    String?
+  wallet    Float    @default(0) // Add wallet balance
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  profile    UserProfile?
+  jobPosts   JobPost[]
+  proposals  Proposal[]
+  sentMessages Message[] @relation("MessageSender")
+  reviewsGiven Review[] @relation("ReviewGiven")
+  reviewsReceived Review[] @relation("ReviewReceived")
+  transactions Transaction[] // Add transactions relation
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  type        String   // 'credit' or 'debit'
+  status      String   @default("completed") // 'pending', 'completed', 'failed'
+  paymentId   String?  // Razorpay payment ID
+  orderId     String?  // Razorpay order ID
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserProfile {
+  id          Int      @id @default(autoincrement())
+  bio         String?
+  skills      String?
+  experience  String?
+  education   String?
+  portfolio   String?
+  avatar      String?
+  hourlyRate  Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model JobPost {
+  id              Int      @id @default(autoincrement())
+  title           String
+  description     String
+  category        String
+  skills          String
+  budget          Float
+  deadline        DateTime
+  experienceLevel String   @default("intermediate")
+  status          String   @default("active")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  proposals       Proposal[]
+  messages        Message[]
+  reviews         Review[]
+}
+
+model Proposal {
+  id          Int      @id @default(autoincrement())
+  coverLetter String
+  bidAmount   Float
+  timeframe   Int
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  jobId       Int
+  job         JobPost  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  
+  freelancerId Int
+  freelancer   User    @relation(fields: [freelancerId], references: [id], onDelete: Cascade)
+  
+  messages    Message[]
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  content     String
+  messageType String   @default("text")
+  fileUrl     String?
+  createdAt   DateTime @default(now())
+  
+  senderId    Int
+  sender      User    @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  jobId       Int?
+  job         JobPost? @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  
+  proposalId  Int?
+  proposal    Proposal? @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  
+  parentId    Int?
+  parent      Message? @relation("MessageReplies", fields: [parentId], references: [id])
+  replies     Message[] @relation("MessageReplies")
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  rating      Int
+  comment     String?
+  createdAt   DateTime @default(now())
+  
+  reviewerId  Int
+  reviewer    User     @relation("ReviewGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
+  
+  revieweeId  Int
+  reviewee    User     @relation("ReviewReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
+  
+  jobId       Int
+  job         JobPost  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// Your existing models
 model formdata {
   id              Int      @id @default(autoincrement())
   name            String
@@ -57,18 +188,7 @@ model order {
   @@index([userId], map: "Order_userId_fkey")
 }
 
-model user {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique(map: "User_email_key")
-  password  String
-  role      String   @default("user")
-  status    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime
-}
-
-model virtualassistance {
+model VirtualAssistance {
   id        Int      @id @default(autoincrement())
   name      String
   email     String

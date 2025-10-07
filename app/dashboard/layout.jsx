@@ -18,9 +18,24 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
 
   const navItems = [
-    { id: "dashboard", href: "/dashboard", icon: <FiHome size={20} />, label: "Dashboard" },
-    { id: "orders", href: "/dashboard/orders", icon: <FiShoppingBag size={20} />, label: "Orders" },
-    { id: "services", href: "/dashboard/services", icon: <FiGrid size={20} />, label: "Services" },
+    {
+      id: "dashboard",
+      href: "/dashboard",
+      icon: <FiHome size={20} />,
+      label: "Dashboard",
+    },
+    {
+      id: "orders",
+      href: "/dashboard/orders",
+      icon: <FiShoppingBag size={20} />,
+      label: "Orders",
+    },
+    {
+      id: "services",
+      href: "/dashboard/services",
+      icon: <FiGrid size={20} />,
+      label: "Services",
+    },
   ];
 
   return (
@@ -64,12 +79,7 @@ export default function DashboardLayout({ children }) {
 
           <div className={styles.sidebarFooter}>
             <div className={styles.navItem}>
-              <FiSettings size={20} />
-              <span>Settings</span>
-            </div>
-            <div className={styles.navItem}>
               <FiLogOut size={20} />
-              <span>Logout</span>
             </div>
           </div>
         </nav>

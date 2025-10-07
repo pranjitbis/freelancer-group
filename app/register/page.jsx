@@ -2,13 +2,14 @@
 import { useState, useEffect } from "react";
 import styles from "./Register.module.css";
 import Nav from "../home/component/Nav/page";
-
+import WhatsApp from "../whatsapp_icon/page";
 export default function Register() {
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    userType: "client", // Default to client
     acceptTerms: false,
   });
   const [message, setMessage] = useState("");
@@ -29,6 +30,7 @@ export default function Register() {
       newErrors.password = "Password must be at least 6 characters";
     if (form.password !== form.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match";
+    if (!form.userType) newErrors.userType = "Please select a user type";
     if (!form.acceptTerms)
       newErrors.acceptTerms = "You must accept the terms and conditions";
 
@@ -58,6 +60,7 @@ export default function Register() {
           name: form.name,
           email: form.email,
           password: form.password,
+          userType: form.userType,
         }),
       });
       const data = await res.json();
@@ -69,6 +72,7 @@ export default function Register() {
           email: "",
           password: "",
           confirmPassword: "",
+          userType: "client",
           acceptTerms: false,
         });
       }
@@ -82,6 +86,7 @@ export default function Register() {
   return (
     <>
       <Nav />
+      <WhatsApp />
       <div className={styles.container}>
         <div
           className={`${styles.registerCard} ${
@@ -94,7 +99,28 @@ export default function Register() {
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
-            {/* Name */}
+            {/* User Type Selection */}
+            <div className={styles.inputGroup}>
+              <label htmlFor="userType" className={styles.label}>
+                Register As
+              </label>
+              <select
+                id="userType"
+                name="userType"
+                className={`${styles.input} ${styles.select} ${
+                  errors.userType ? styles.inputError : ""
+                }`}
+                value={form.userType}
+                onChange={handleInputChange}
+              >
+                <option value="client">Client</option>
+                <option value="freelancer">Freelancer</option>
+                <option value="user">user</option>
+              </select>
+              {errors.userType && (
+                <span className={styles.errorText}>{errors.userType}</span>
+              )}
+            </div>
             <div className={styles.inputGroup}>
               <label htmlFor="name" className={styles.label}>
                 Full Name

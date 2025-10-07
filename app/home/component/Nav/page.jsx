@@ -11,6 +11,8 @@ import {
   FaInstagram,
   FaFacebook,
   FaLinkedin,
+  FaUser,
+  FaSignOutAlt,
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import AOS from "aos";
@@ -20,6 +22,9 @@ export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [freelancerOpen, setFreelancerOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -28,6 +33,11 @@ export default function Nav() {
   const toggleServices = () => {
     setServicesOpen(!servicesOpen);
   };
+
+  useEffect(() => {
+    // Check if user is logged in
+    checkUserStatus();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,6 +58,68 @@ export default function Nav() {
       once: false,
     });
   }, []);
+
+  const checkUserStatus = () => {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    } catch (error) {
+      console.error("Error checking user status:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      // Clear local storage
+      localStorage.removeItem("user");
+      setUser(null);
+
+      // Clear the token cookie by making API call
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Close mobile menu if open
+      setIsOpen(false);
+
+      // Redirect to home page
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const getDashboardLink = () => {
+    if (!user) return "/login";
+
+    switch (user.role) {
+      case "client":
+        return "/client-dashboard";
+      case "freelancer":
+        return "/freelancer-hub";
+      case "admin":
+        return "/wp-admin";
+      default:
+        return "/dashboard";
+    }
+  };
 
   return (
     <div>
@@ -93,10 +165,14 @@ export default function Nav() {
         >
           <ul data-aos="zoom-in">
             <li>
-              <Link href="/">Home</Link>
+              <Link href="/" onClick={() => setIsOpen(false)}>
+                Home
+              </Link>
             </li>
             <li>
-              <Link href="/about">About Us</Link>
+              <Link href="/about" onClick={() => setIsOpen(false)}>
+                About Us
+              </Link>
             </li>
             <li className={styles.servicesItem}>
               <div
@@ -116,46 +192,99 @@ export default function Nav() {
                   className={styles.servicesDropdown}
                   onMouseLeave={() => setServicesOpen(false)}
                 >
-                  <Link
-                    href="/services/freelancer-hub"
-                    onClick={() => setServicesOpen(false)}
-                  >
-                    Freelancer Hub
-                  </Link>
+                  <li className={styles.servicesItem}>
+                    <div
+                      className={styles.servicesTrigger}
+                      onClick={() => setFreelancerOpen(!freelancerOpen)}
+                      onMouseEnter={() => setFreelancerOpen(true)}
+                    >
+                      <span>Freelancer Plan</span>
+                      <IoChevronDown
+                        className={`${styles.chevron} ${
+                          freelancerOpen ? styles.rotated : ""
+                        }`}
+                      />
+                    </div>
+
+                    {freelancerOpen && (
+                      <div
+                        className={styles.servicesDropdown}
+                        onMouseLeave={() => setFreelancerOpen(false)}
+                      >
+                        <Link
+                          href="/services/freelancer-hub/client-plan"
+                          onClick={() => {
+                            setFreelancerOpen(false);
+                            setIsOpen(false);
+                          }}
+                        >
+                          Client Plan
+                        </Link>
+                        <Link
+                          href="/services/freelancer-hub/freelancer-plan"
+                          onClick={() => {
+                            setFreelancerOpen(false);
+                            setIsOpen(false);
+                          }}
+                        >
+                          Freelancer Plan
+                        </Link>
+                      </div>
+                    )}
+                  </li>
+
                   <Link
                     href="/services/form-filling"
-                    onClick={() => setServicesOpen(false)}
+                    onClick={() => {
+                      setServicesOpen(false);
+                      setIsOpen(false);
+                    }}
                   >
                     Form Filling Services
                   </Link>
                   <Link
                     href="/services/virtual-assistance"
-                    onClick={() => setServicesOpen(false)}
+                    onClick={() => {
+                      setServicesOpen(false);
+                      setIsOpen(false);
+                    }}
                   >
                     Virtual Assistance
                   </Link>
                   <Link
                     href="/services/web-development"
-                    onClick={() => setServicesOpen(false)}
+                    onClick={() => {
+                      setServicesOpen(false);
+                      setIsOpen(false);
+                    }}
                   >
                     Web Development
                   </Link>
 
                   <Link
                     href="/services/e-eommerce-solutions"
-                    onClick={() => setServicesOpen(false)}
+                    onClick={() => {
+                      setServicesOpen(false);
+                      setIsOpen(false);
+                    }}
                   >
                     E-Commerce Solutions
                   </Link>
                   <Link
                     href="/services/travel-bookings"
-                    onClick={() => setServicesOpen(false)}
+                    onClick={() => {
+                      setServicesOpen(false);
+                      setIsOpen(false);
+                    }}
                   >
                     Travel & Hotel Booking
                   </Link>
                   <Link
                     href="/services/data-visualization"
-                    onClick={() => setServicesOpen(false)}
+                    onClick={() => {
+                      setServicesOpen(false);
+                      setIsOpen(false);
+                    }}
                   >
                     Data and AI solution
                   </Link>
@@ -163,23 +292,58 @@ export default function Nav() {
               )}
             </li>
             <li>
-              <Link href="/our-team">Our Team</Link>
+              <Link href="/our-team" onClick={() => setIsOpen(false)}>
+                Our Team
+              </Link>
             </li>
             <li>
-              <Link href="/career">Career</Link>
+              <Link href="/find-work" onClick={() => setIsOpen(false)}>
+                Find Work
+              </Link>
             </li>
             <li>
-              <Link href="/contact">Contact Us</Link>
+              <Link href="/career" onClick={() => setIsOpen(false)}>
+                Career
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" onClick={() => setIsOpen(false)}>
+                Contact Us
+              </Link>
             </li>
           </ul>
 
           <div data-aos="fade-left" className={styles.buttons}>
-            <Link href="/login">
-              <button>Login</button>
-            </Link>
-            <Link href="/register">
-              <button id={styles.signUp}>Sign Up</button>
-            </Link>
+            {user ? (
+              // User is logged in - Show user info and logout
+              <div className={styles.userLoggedIn}>
+                <Link
+                  href={getDashboardLink()}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <button className={styles.dashboardBtn}>
+                    <FaUser className={styles.btnIcon} />
+                    Dashboard
+                  </button>
+                </Link>
+                <div className={styles.userInfo}>
+                  <div className={styles.userAvatar}>
+                    {getInitials(user.name)}
+                  </div>
+                  <span className={styles.userName}>{user.name}</span>
+                </div>
+              </div>
+            ) : (
+              // User is not logged in - Show login/signup buttons
+              <>
+                <Link href="/login" onClick={() => setIsOpen(false)}>
+                  <button>Login</button>
+                </Link>
+                <Link href="/register" onClick={() => setIsOpen(false)}>
+                  <button id={styles.signUp}>Sign Up</button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
 

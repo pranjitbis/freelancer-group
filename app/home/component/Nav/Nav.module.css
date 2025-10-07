@@ -13,8 +13,6 @@
   box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.137);
 }
 
-
-
 .mediaIcons {
   display: flex;
   gap: 30px;
@@ -127,7 +125,6 @@
     display: block;
   }
 
-
   .navLinks {
     position: fixed;
     top: 0px;
@@ -226,18 +223,19 @@
   gap: 20vw;
 }
 
-
-
 .menuIcons {
   display: none;
 }
 
-/* Mobile View */
-@media (max-width: 1390px) {
+@media (max-width: 1490px) {
   .navLinksOpen {
     display: flex;
     align-items: center;
-    gap: 3vw !important;
+    gap: 1vw !important;
+  }
+  .navLinksOpen ul li a {
+    font-size: 1.1rem !important;
+
   }
 }
 
@@ -334,7 +332,7 @@
 }
 
 /* Desktop styles - ensure navLinks is visible on desktop */
-@media (min-width: 1191px) {
+@media (min-width: 1091px) {
   .navLinks {
     display: flex !important; /* Force display on desktop */
   }
@@ -351,7 +349,7 @@
   }
 }
 /* Services Dropdown Styles */
-.servicesTrigger span{
+.servicesTrigger span {
   font-size: 20px;
   color: #353535;
 }
@@ -405,7 +403,7 @@
 }
 
 /* Mobile responsiveness for dropdown */
-@media (max-width: 968px) {
+@media (max-width: 1168px) {
   .servicesDropdown {
     position: static;
     box-shadow: none;
@@ -413,14 +411,119 @@
     padding: 0.5rem 0 0.5rem 1.5rem;
     min-width: auto;
   }
-  
+
   .servicesDropdown a {
     padding: 0.5rem 0;
     color: #fff;
   }
-  
+
   .servicesDropdown a:hover {
     background-color: transparent;
     color: #4facfe;
+  }
+}
+
+/* User Logged In Styles */
+.userLoggedIn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboardBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.dashboardBtn:hover {
+  background: #2980b9;
+  transform: translateY(-1px);
+}
+
+.btnIcon {
+  font-size: 0.9rem;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  font-size: 0.8rem;
+}
+
+.userName {
+  color: white;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.logoutBtn {
+  background: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoutBtn:hover {
+  background: #e74c3c;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 768px) {
+  .userLoggedIn {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .userInfo {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .dashboardBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .logoutBtn {
+    width: 100%;
+    padding: 12px;
   }
 }

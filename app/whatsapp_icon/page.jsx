@@ -2,7 +2,7 @@
 import React from "react";
 import { FaWhatsapp } from "react-icons/fa";
 
-const whatsappNumber = "919876543210"; // Replace with your number
+const whatsappNumber = "9870519002"; // Replace with your number
 const message = "Hello! I want to chat."; // Optional default message
 
 export default function StickyWhatsApp() {

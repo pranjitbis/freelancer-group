@@ -10,7 +10,22 @@ export async function POST(req) {
     const body = await req.json();
     const { email, password } = body;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    // Validate input
+    if (!email || !password) {
+      return new Response(
+        JSON.stringify({ error: "Email and password are required" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email: email.trim().toLowerCase(),
+      },
+    });
 
     if (!user) {
       return new Response(
@@ -35,19 +50,24 @@ export async function POST(req) {
 
     // ✅ Create JWT
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.name,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" } // Extended to 7 days for better UX
     );
 
-    // ✅ Await the cookies store before using
-    const cookieStore = await cookies(); // <-- await here
+    // ✅ Set HTTP-only cookie
+    const cookieStore = await cookies();
     cookieStore.set({
       name: "token",
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60,
+      maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
       sameSite: "strict",
     });
@@ -55,9 +75,18 @@ export async function POST(req) {
     return new Response(
       JSON.stringify({
         message: "Login successful",
-        role: user.role, // frontend can use this for redirect
+        role: user.role,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   } catch (error) {
     console.error("Login error:", error);

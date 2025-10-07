@@ -12,7 +12,7 @@ import {
   FiXCircle,
   FiUser,
 } from "react-icons/fi";
-import { IoIosJournal } from "react-icons/io";
+import { IoIosJournal, IoIosContact } from "react-icons/io";
 import { FcAssistant } from "react-icons/fc";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -93,6 +93,23 @@ export default function AdminLayout({ children }) {
               >
                 <IoIosJournal />
                 <span>Jop Application</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/wp-admin/contact"
+                className={isActive("/wp-admin/contact")}
+              >
+                <IoIosContact />
+                <span>Contact Data</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/wp-admin/payments"
+                className={isActive("/wp-admin/payments")}
+              >
+                <span>Transaction History</span>
               </Link>
             </li>
           </ul>

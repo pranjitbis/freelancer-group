@@ -124,7 +124,7 @@ export default function Contact() {
                 )}
               </div>
               <div className={styles.contactInfo}>
-                <Image src={contactImage} />
+                <Image src={contactImage} alt="err" />
                 <h2>Contact Information</h2>
                 <p>
                   Feel free to reach out to us for any questions about our

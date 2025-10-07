@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
 import { encrypt, decrypt } from "@/lib/cryptoUtils";
+
+const prisma = new PrismaClient();
+
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { name, email, phone, serviceCategory, message, userId } = body;
-    console.log(phone);
+    const { name, email, phone, serviceCategory, message } = body;
 
-    // ✅ Proper validation (check required fields)
     if (!name || !email) {
       return new Response(
         JSON.stringify({ error: "Name and Email are required" }),
@@ -15,7 +15,7 @@ export async function POST(req) {
       );
     }
 
-    const newForm = await prisma.formData.create({
+    const newForm = await prisma.formdata.create({
       data: {
         name,
         email: encrypt(email),
@@ -33,16 +33,19 @@ export async function POST(req) {
     });
   }
 }
+
 export async function GET() {
   try {
-    const forms = await prisma.formData.findMany({
+    const forms = await prisma.formdata.findMany({
       orderBy: { id: "desc" },
     });
+
     const decryptedForms = forms.map((f) => ({
       ...f,
       email: decrypt(f.email),
       phone: decrypt(f.phone),
     }));
+
     return new Response(JSON.stringify(decryptedForms), { status: 200 });
   } catch (err) {
     console.error("Error fetching form data:", err);

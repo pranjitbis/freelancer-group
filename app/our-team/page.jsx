@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import WhatsApp from "../whatsapp_icon/page";
 import {
   FaTwitter,
   FaLinkedin,
@@ -255,6 +256,7 @@ const Team = () => {
   return (
     <div className={styles.pageWrapper}>
       <Navs />
+      <WhatsApp />
 
       {/* Hero Section */}
       <section className={styles.heroSection}>

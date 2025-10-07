@@ -40,6 +40,7 @@ import {
   FaMobileAlt,
   FaShare,
 } from "react-icons/fa";
+import WhatsApp from "../whatsapp_icon/page";
 import {
   MdTravelExplore,
   MdOutlineDesignServices,
@@ -392,6 +393,7 @@ export default function Careers() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Nav />
+      <WhatsApp />
       <main className={styles.main}>
         {/* Hero Section */}
         <section className={styles.hero}>

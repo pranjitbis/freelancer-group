@@ -1,0 +1,492 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+/* Add these styles to your existing CSS */
+
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.userInfo {
+  background: #f7fafc;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #667eea;
+}
+
+.userInfo p {
+  margin: 5px 0;
+  color: #4a5568;
+}
+
+.userInfo strong {
+  color: #2d3748;
+}
+.walletCard {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.memimomaount {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #c91d1d; /* green success color */
+  padding: 0px 0px 20;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.memimomaount:hover {
+  background: #d1f5e1;
+  transform: translateY(-2px);
+}
+
+.walletHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.walletInfo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.walletIcon {
+  font-size: 2rem;
+  opacity: 0.9;
+}
+
+.walletInfo h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.walletInfo p {
+  margin: 5px 0 0 0;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.rechargeButton {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+
+.rechargeButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.balance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rupeeIcon {
+  font-size: 1.5rem;
+  opacity: 0.9;
+}
+
+.balanceAmount {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.rechargeModal {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: #1a202c;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #a0aec0;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  color: #718096;
+}
+
+.presetAmounts {
+  margin-bottom: 25px;
+}
+
+.presetAmounts h4 {
+  margin-bottom: 15px;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.amountGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.amountButton {
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.amountButton:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.amountButton.selected {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+.customAmount {
+  margin-bottom: 30px;
+}
+
+.customAmount h4 {
+  margin-bottom: 15px;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.amountInput {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a0aec0;
+}
+
+.amountInput input {
+  width: 100%;
+  padding: 15px 15px 15px 40px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: border-color 0.2s;
+}
+
+.amountInput input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.minAmount {
+  color: #718096;
+  font-size: 0.875rem;
+  margin: 5px 0 0 0;
+}
+
+.payButton {
+  width: 100%;
+  background: #48bb78;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 20px;
+}
+
+.payButton:hover:not(:disabled) {
+  background: #38a169;
+}
+
+.payButton:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
+}
+
+.securityNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #48bb78;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Transaction Section */
+.transactionSection {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sectionIcon {
+  color: #667eea;
+  font-size: 1.2rem;
+}
+
+.sectionHeader h3 {
+  margin: 0;
+  color: #1a202c;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.transactionList {
+  space-y: 12px;
+}
+
+.transactionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+
+.transactionItem:hover {
+  border-color: #cbd5e0;
+}
+
+.transactionInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+.transactionType {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.typeIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+}
+
+.typeIcon.credit {
+  background: #c6f6d5;
+  color: #276749;
+}
+
+.typeIcon.debit {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+.transactionDesc {
+  display: block;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 4px;
+}
+
+.transactionDate {
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+.transactionAmount {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.transactionAmount.credit {
+  color: #276749;
+}
+
+.transactionAmount.debit {
+  color: #c53030;
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status.completed {
+  background: #c6f6d5;
+  color: #276749;
+}
+
+.status.pending {
+  background: #fefcbf;
+  color: #744210;
+}
+
+.status.failed {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+.noTransactions {
+  text-align: center;
+  padding: 40px 20px;
+  color: #718096;
+}
+
+.noTransactions p {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.noTransactions span {
+  font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .walletHeader {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .rechargeButton {
+    align-self: flex-start;
+  }
+
+  .balanceAmount {
+    font-size: 2.5rem;
+  }
+
+  .amountGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .transactionInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .transactionItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .status {
+    align-self: flex-start;
+  }
+}
