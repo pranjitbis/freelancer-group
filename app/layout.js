@@ -233,8 +233,8 @@ export default function RootLayout({ children }) {
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "Services",
-        "item": "https://www.aroliya.com/services"
+        "name": "login",
+        "item": "https://www.aroliya.com/login"
       },
       {
         "@type": "ListItem",

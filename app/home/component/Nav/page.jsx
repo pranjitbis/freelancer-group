@@ -1,143 +1,57 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import logo from "../../../../public/logo/logo.png";
-import styles from "./Nav.module.css";
 import Link from "next/link";
-import { MdMarkEmailRead } from "react-icons/md";
 import { IoMenu, IoClose, IoChevronDown } from "react-icons/io5";
-import {
-  FaPhoneAlt,
-  FaInstagram,
-  FaFacebook,
-  FaLinkedin,
-  FaUser,
-  FaSignOutAlt,
-} from "react-icons/fa";
+import { FaInstagram, FaFacebook, FaLinkedin, FaUser } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { MdMarkEmailRead } from "react-icons/md";
+import { FaPhoneAlt } from "react-icons/fa";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import logo from "../../../../public/logo/logo.png";
+import styles from "./Nav.module.css";
 
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false);
+  const [dropdown, setDropdown] = useState({
+    services: false,
+    freelancer: false,
+  });
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [freelancerOpen, setFreelancerOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const toggleServices = () => {
-    setServicesOpen(!servicesOpen);
-  };
 
   useEffect(() => {
-    // Check if user is logged in
-    checkUserStatus();
-  }, []);
+    AOS.init({ duration: 1000 });
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsFixed(true);
-      } else {
-        setIsFixed(false);
-      }
-    };
-
+    const handleScroll = () => setIsFixed(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: false,
-    });
-  }, []);
-
-  const checkUserStatus = () => {
-    try {
-      const userData = localStorage.getItem("user");
-      if (userData) {
-        setUser(JSON.parse(userData));
-      }
-    } catch (error) {
-      console.error("Error checking user status:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      // Clear local storage
-      localStorage.removeItem("user");
-      setUser(null);
-
-      // Clear the token cookie by making API call
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      // Close mobile menu if open
-      setIsOpen(false);
-      // Redirect to home page
-      window.location.href = "/";
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  };
-
-  const getInitials = (name) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  const toggleDropdown = (name) =>
+    setDropdown((prev) => ({ ...prev, [name]: !prev[name] }));
 
   const getDashboardLink = () => {
     if (!user) return "/login";
-
-    switch (user.role) {
-      case "client":
-        return "/client-dashboard";
-      case "freelancer":
-        return "/freelancer-dashboard";
-      case "admin":
-        return "/wp-admin";
-      default:
-        return "/dashboard";
-    }
+    if (user.role === "client") return "/client-dashboard";
+    if (user.role === "freelancer") return "/freelancer-dashboard";
+    if (user.role === "admin") return "/wp-admin";
+    return "/dashboard";
   };
 
   return (
-    <div>
-      {/* Topbar (scrolls away) */}
-      <div className={styles.topbar}>
-        <div data-aos="fade-right" className={styles.email}>
-          <span>
-            <MdMarkEmailRead />
-          </span>
-          <p>Info@aroliya.com</p>
-          <div className={styles.mainIcons}>
-            <span>
-              <FaPhoneAlt />
-            </span>
-            <p>+91-9870519002</p>
-          </div>
+    <header className={`${styles.header} ${isFixed ? styles.fixed : ""}`}>
+      {/* Top Bar */}
+      <div className={styles.topBar}>
+        <div className={styles.topLeft}>
+          <MdMarkEmailRead /> <span>Info@aroliya.com</span>
+          <FaPhoneAlt style={{ marginLeft: "1rem" }} />{" "}
+          <span>+91-9870519002</span>
         </div>
-
-        <div data-aos="fade-left" className={styles.mediaIcons}>
+        <div className={styles.topRight}>
           <Link href="https://www.instagram.com/aroliya5280/">
             <FaInstagram />
           </Link>
@@ -153,209 +67,102 @@ export default function Nav() {
         </div>
       </div>
 
-      {/* Nav (becomes fixed after scroll) */}
-      <nav className={`${styles.nav} ${isFixed ? styles.fixed : ""}`}>
-        <div data-aos="fade-right" className={styles.logo}>
-          <Image src={logo} alt="Elenxia Logo" width={150} height={40} />
-        </div>
+      {/* Navbar */}
+      <nav className={styles.nav}>
+        <Link href="/" className={styles.logo}>
+          <Image src={logo} alt="Aroliya Logo" width={150} height={50} />
+        </Link>
 
-        <div
-          className={`${styles.navLinksOpen} ${isOpen ? styles.active : ""}`}
-        >
-          <ul data-aos="zoom-in">
-            <li>
-              <Link href="/" onClick={() => setIsOpen(false)}>
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/about" onClick={() => setIsOpen(false)}>
-                About Us
-              </Link>
-            </li>
-            <li className={styles.servicesItem}>
-              <div
-                className={styles.servicesTrigger}
-                onClick={toggleServices}
-                onMouseEnter={() => setServicesOpen(true)}
-              >
-                <span>Services</span>
-                <IoChevronDown
-                  className={`${styles.chevron} ${
-                    servicesOpen ? styles.rotated : ""
-                  }`}
-                />
+        <ul className={`${styles.navLinks} ${isOpen ? styles.active : ""}`}>
+          <li>
+            <Link href="/" onClick={() => setIsOpen(false)}>
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link href="/about" onClick={() => setIsOpen(false)}>
+              About Us
+            </Link>
+          </li>
+          <li>
+            <Link href="/our-team" onClick={() => setIsOpen(false)}>
+              Our Team
+            </Link>
+          </li>
+          <li>
+            <Link href="/find-work" onClick={() => setIsOpen(false)}>
+              Find Work
+            </Link>
+          </li>
+          <li>
+            <Link href="/career" onClick={() => setIsOpen(false)}>
+              Career
+            </Link>
+          </li>
+          <li>
+            <Link href="/contact-us" onClick={() => setIsOpen(false)}>
+              Contact Us
+            </Link>
+          </li>
+
+          {/* 💼 Services Dropdown */}
+          <li className={styles.dropdown}>
+            <button onClick={() => toggleDropdown("services")}>
+              Services <IoChevronDown />
+            </button>
+            {dropdown.services && (
+              <div className={styles.dropdownMenu}>
+                <Link href="/services/form-filling">Form Filling</Link>
+                <Link href="/services/web-development">Web Development</Link>
+                <Link href="/services/e-commerce-solutions">E-Commerce</Link>
+                <Link href="/services/travel-bookings">Travel & Hotel</Link>
+                <Link href="/services/data-visualization">Data & AI</Link>
               </div>
-              {servicesOpen && (
-                <div
-                  className={styles.servicesDropdown}
-                  onMouseLeave={() => setServicesOpen(false)}
-                >
-                  <Link
-                    href="/services/form-filling"
-                    onClick={() => {
-                      setServicesOpen(false);
-                      setIsOpen(false);
-                    }}
-                  >
-                    Form Filling Services
-                  </Link>
-                  <Link
-                    href="/services/virtual-assistance"
-                    onClick={() => {
-                      setServicesOpen(false);
-                      setIsOpen(false);
-                    }}
-                  >
-                    Virtual Assistance
-                  </Link>
-                  <Link
-                    href="/services/web-development"
-                    onClick={() => {
-                      setServicesOpen(false);
-                      setIsOpen(false);
-                    }}
-                  >
-                    Web Development
-                  </Link>
-
-                  <Link
-                    href="/services/e-eommerce-solutions"
-                    onClick={() => {
-                      setServicesOpen(false);
-                      setIsOpen(false);
-                    }}
-                  >
-                    E-Commerce Solutions
-                  </Link>
-                  <Link
-                    href="/services/travel-bookings"
-                    onClick={() => {
-                      setServicesOpen(false);
-                      setIsOpen(false);
-                    }}
-                  >
-                    Travel & Hotel Booking
-                  </Link>
-                  <Link
-                    href="/services/data-visualization"
-                    onClick={() => {
-                      setServicesOpen(false);
-                      setIsOpen(false);
-                    }}
-                  >
-                    Data and AI solution
-                  </Link>
-                </div>
-              )}
-            </li>
-            <li>
-              <Link href="/our-team" onClick={() => setIsOpen(false)}>
-                Our Team
-              </Link>
-            </li>
-            <li>
-              <Link href="/find-work" onClick={() => setIsOpen(false)}>
-                Find Work
-              </Link>
-            </li>
-            <li className={styles.servicesItem}>
-              <div
-                className={styles.servicesTrigger}
-                onClick={() => setFreelancerOpen(!freelancerOpen)}
-                onMouseEnter={() => setFreelancerOpen(true)}
-              >
-                <span>Freelancer Hub</span>
-                <IoChevronDown
-                  className={`${styles.chevron} ${
-                    freelancerOpen ? styles.rotated : ""
-                  }`}
-                />
-              </div>
-
-              {freelancerOpen && (
-                <div
-                  className={styles.servicesDropdown}
-                  onMouseLeave={() => setFreelancerOpen(false)}
-                >
-                  <Link
-                    href="/services/freelancer-hub/freelancer-plan"
-                    onClick={() => {
-                      setFreelancerOpen(false);
-                      setIsOpen(false);
-                    }}
-                  >
-                    Join as a Freelancer
-                  </Link>
-                  <Link
-                    href="/services/freelancer-hub/client-plan"
-                    onClick={() => {
-                      setFreelancerOpen(false);
-                      setIsOpen(false);
-                    }}
-                  >
-                    Join as a Client
-                  </Link>
-                </div>
-              )}
-            </li>
-
-            <li>
-              <Link href="/career" onClick={() => setIsOpen(false)}>
-                Career
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" onClick={() => setIsOpen(false)}>
-                Contact Us
-              </Link>
-            </li>
-          </ul>
-
-          <div data-aos="fade-left" className={styles.buttons}>
-            {user ? (
-              // User is logged in - Show user info and logout
-              <div className={styles.userLoggedIn}>
-                <Link
-                  href={getDashboardLink()}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <button className={styles.dashboardBtn}>
-                    <FaUser className={styles.btnIcon} />
-                    Dashboard
-                  </button>
-                </Link>
-                <div className={styles.userInfo}>
-                  <div className={styles.userAvatar}>
-                    {getInitials(user.name)}
-                  </div>
-                  <span className={styles.userName}>{user.name}</span>
-                </div>
-              </div>
-            ) : (
-              // User is not logged in - Show login/signup buttons
-              <>
-                <Link href="/login" onClick={() => setIsOpen(false)}>
-                  <button>Login</button>
-                </Link>
-                <Link href="/register" onClick={() => setIsOpen(false)}>
-                  <button id={styles.signUp}>Sign Up</button>
-                </Link>
-              </>
             )}
-          </div>
+          </li>
+
+          {/* 👥 Freelancer Hub Dropdown */}
+          <li className={styles.dropdown}>
+            <button onClick={() => toggleDropdown("freelancer")}>
+              Freelancer Hub <IoChevronDown />
+            </button>
+            {dropdown.freelancer && (
+              <div className={styles.dropdownMenu}>
+                <Link href="/services/freelancer-hub/freelancer-plan">
+                  Join as Freelancer
+                </Link>
+                <Link href="/services/freelancer-hub/client-plan">
+                  Join as Client
+                </Link>
+              </div>
+            )}
+          </li>
+        </ul>
+
+        <div className={styles.actions}>
+          {user ? (
+            <Link href={getDashboardLink()} className={styles.dashboardBtn}>
+              <FaUser /> Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link href="/login">
+                <button className={styles.loginBtn}>Login</button>
+              </Link>
+              <Link href="/register">
+                <button className={styles.signUpBtn}>Join Now</button>
+              </Link>
+            </>
+          )}
         </div>
 
-        <div className={styles.menuIcons}>
-          <button
-            className={`${isOpen ? styles.isClose : styles.open}`}
-            onClick={toggleMenu}
-            aria-label="Toggle navigation menu"
-          >
-            {isOpen ? <IoClose size={28} /> : <IoMenu size={28} />}
-          </button>
-        </div>
+        <button
+          className={styles.menuToggle}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <IoClose size={26} /> : <IoMenu size={26} />}
+        </button>
       </nav>
-    </div>
+    </header>
   );
 }
