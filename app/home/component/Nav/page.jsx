@@ -112,11 +112,12 @@ export default function Nav() {
             </button>
             {dropdown.services && (
               <div className={styles.dropdownMenu}>
+                <Link href="/services/data-visualization">Data Visualization</Link>
                 <Link href="/services/form-filling">Form Filling</Link>
                 <Link href="/services/web-development">Web Development</Link>
-                <Link href="/services/e-commerce-solutions">E-Commerce</Link>
-                <Link href="/services/travel-bookings">Travel & Hotel</Link>
-                <Link href="/services/data-visualization">Data & AI</Link>
+                <Link href="/services/e-commerce-solutions">E-Commerce Solutions</Link>
+                <Link href="/services/travel-bookings">Travel & bookings</Link>
+                <Link href="/services/data-visualization">Data & AI solutions</Link>
               </div>
             )}
           </li>
