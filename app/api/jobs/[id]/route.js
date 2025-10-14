@@ -9,6 +9,11 @@ export async function GET(request, { params }) {
     const { id } = await params;
     const jobId = parseInt(id);
 
+    // Validate jobId
+    if (isNaN(jobId)) {
+      return NextResponse.json({ error: "Invalid job ID" }, { status: 400 });
+    }
+
     const job = await prisma.jobPost.findUnique({
       where: { id: jobId },
       include: {
@@ -17,9 +22,8 @@ export async function GET(request, { params }) {
             id: true,
             name: true,
             email: true,
-            avatar: true, // Added avatar field from User model
+            avatar: true,
             profile: {
-              // ✅ Changed from UserProfile to profile
               select: {
                 avatar: true,
                 bio: true,
@@ -34,9 +38,8 @@ export async function GET(request, { params }) {
                 id: true,
                 name: true,
                 email: true,
-                avatar: true, // Added avatar field from User model
+                avatar: true,
                 profile: {
-                  // ✅ Changed from UserProfile to profile
                   select: {
                     avatar: true,
                     bio: true,
@@ -45,6 +48,8 @@ export async function GET(request, { params }) {
                 },
               },
             },
+            // Remove conversation include if it's causing issues
+            // conversation: true,
           },
           orderBy: { createdAt: "desc" },
         },
@@ -54,9 +59,8 @@ export async function GET(request, { params }) {
               select: {
                 id: true,
                 name: true,
-                avatar: true, // Added avatar field from User model
+                avatar: true,
                 profile: {
-                  // ✅ Changed from UserProfile to profile
                   select: {
                     avatar: true,
                   },
@@ -69,9 +73,8 @@ export async function GET(request, { params }) {
                   select: {
                     id: true,
                     name: true,
-                    avatar: true, // Added avatar field from User model
+                    avatar: true,
                     profile: {
-                      // ✅ Changed from UserProfile to profile
                       select: {
                         avatar: true,
                       },
@@ -117,18 +120,36 @@ export async function GET(request, { params }) {
     return NextResponse.json({ job: jobWithParsedSkills });
   } catch (error) {
     console.error("Get job error:", error);
-    return NextResponse.json({ error: "Failed to fetch job" }, { status: 500 });
+
+    // Handle specific Prisma errors
+    if (error.code === "P2022") {
+      return NextResponse.json(
+        { error: "Database schema mismatch. Please run database migrations." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Failed to fetch job", details: error.message },
+      { status: 500 }
+    );
   }
 }
 
 export async function PUT(request, { params }) {
   try {
-    // Await params in Next.js 14
     const { id } = await params;
     const jobId = parseInt(id);
 
-    const body = await request.json();
+    // Validate jobId
+    if (isNaN(jobId)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid job ID" },
+        { status: 400 }
+      );
+    }
 
+    const body = await request.json();
     console.log("🔄 Updating job ID:", jobId, "with data:", body);
 
     const {
@@ -262,9 +283,16 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    // Await params in Next.js 14
     const { id } = await params;
     const jobId = parseInt(id);
+
+    // Validate jobId
+    if (isNaN(jobId)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid job ID" },
+        { status: 400 }
+      );
+    }
 
     console.log("🗑️ Deleting job ID:", jobId);
 
@@ -300,6 +328,7 @@ export async function DELETE(request, { params }) {
       {
         success: false,
         error: "Failed to delete job",
+        details: error.message,
       },
       { status: 500 }
     );

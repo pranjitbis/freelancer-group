@@ -1,0 +1,817 @@
+.container {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.headerContent {
+  display: flex;
+  justify-content: between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: #475569;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.backButton:hover {
+  background: #e2e8f0;
+}
+
+.headerMain {
+  flex: 1;
+}
+
+.headerMain h1 {
+  margin: 0 0 8px 0;
+  font-size: 1.8em;
+  color: #1e293b;
+}
+
+.headerMain p {
+  margin: 0;
+  color: #64748b;
+  font-size: 1em;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+}
+
+.stat {
+  text-align: center;
+  padding: 12px 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.statNumber {
+  display: block;
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.statLabel {
+  font-size: 0.875em;
+  color: #64748b;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.searchBox {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterIcon {
+  color: #64748b;
+}
+
+.filterSelect {
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+}
+
+/* Proposals Grid */
+.proposalsSection {
+  margin-bottom: 40px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.emptyIcon {
+  font-size: 3em;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.emptyState h3 {
+  margin: 0 0 8px 0;
+  color: #374151;
+}
+
+.emptyState p {
+  margin: 0 0 20px 0;
+  color: #6b7280;
+}
+
+.postJobButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.postJobButton:hover {
+  background: #2563eb;
+}
+
+.proposalsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+/* Proposal Card */
+.proposalCard {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0;
+}
+
+.proposalHeader {
+  display: flex;
+  justify-content: between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.jobInfo {
+  flex: 1;
+}
+
+.jobTitle {
+  margin: 0 0 8px 0;
+  font-size: 1.2em;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.metaInfo {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.budget {
+  color: #059669;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.category {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8em;
+  font-weight: 600;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+/* Proposal Details */
+.proposalDetails {
+  margin-bottom: 20px;
+}
+
+.freelancerInfo {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.freelancerHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.freelancerName {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 1em;
+}
+
+.freelancerEmail {
+  color: #64748b;
+  font-size: 0.875em;
+}
+
+.freelancerDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.freelancerTitle {
+  color: #475569;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.hourlyRate,
+.location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #64748b;
+  font-size: 0.8em;
+}
+
+.proposalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bidInfo {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bidItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+.bidIcon {
+  color: #6b7280;
+  font-size: 0.8em;
+}
+
+.savings {
+  color: #059669;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.skillsSection {
+  margin-top: 8px;
+}
+
+.skillsSection strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #374151;
+  font-size: 0.9em;
+}
+
+.skillsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skillTag {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 500;
+}
+
+.moreSkills {
+  color: #6b7280;
+  font-size: 0.75em;
+  font-style: italic;
+}
+
+.coverLetterPreview {
+  margin-top: 8px;
+}
+
+.coverLetterPreview p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+/* Proposal Footer */
+.proposalFooter {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.proposalMeta {
+  flex: 1;
+}
+
+.submittedDate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 0.8em;
+}
+
+.proposalActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.viewButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.875em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.viewButton:hover {
+  background: #2563eb;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.acceptButton,
+.rejectButton,
+.completeButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.acceptButton {
+  background: #10b981;
+  color: white;
+}
+
+.acceptButton:hover:not(:disabled) {
+  background: #059669;
+}
+
+.rejectButton {
+  background: #ef4444;
+  color: white;
+}
+
+.rejectButton:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.completeButton {
+  background: #3b82f6;
+  color: white;
+}
+
+.completeButton:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.acceptButton:disabled,
+.rejectButton:disabled,
+.completeButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actionSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.5em;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.closeButton:hover {
+  background: #f1f5f9;
+  color: #374151;
+}
+
+.modalBody {
+  padding: 24px;
+}
+
+.detailSection {
+  margin-bottom: 32px;
+}
+
+.detailSection h3 {
+  margin: 0 0 16px 0;
+  color: #1e293b;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detailItem strong {
+  color: #374151;
+  font-size: 0.9em;
+}
+
+.detailItem span {
+  color: #64748b;
+  font-size: 0.9em;
+}
+
+.jobDescription {
+  margin-top: 12px;
+}
+
+.jobDescription strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.jobDescription p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 4px solid #3b82f6;
+}
+
+/* Freelancer Modal Info */
+.freelancerModalInfo {
+  margin-top: 16px;
+}
+
+.freelancerHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.avatarLarge {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.2em;
+}
+
+.freelancerHeader h4 {
+  margin: 0 0 4px 0;
+  color: #1e293b;
+  font-size: 1.3em;
+}
+
+.freelancerHeader p {
+  margin: 0;
+  color: #64748b;
+}
+
+.freelancerDetailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.skillsSection {
+  margin-bottom: 20px;
+}
+
+.skillsSection strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.bioSection {
+  margin-top: 20px;
+}
+
+.bioSection strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.bioSection p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.coverLetterFull {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+  line-height: 1.6;
+  color: #374151;
+  white-space: pre-wrap;
+}
+
+.modalFooter {
+  padding: 24px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  gap: 16px;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+}
+
+.closeModalButton {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.closeModalButton:hover {
+  background: #4b5563;
+}
+
+/* Loading */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+
+  .headerContent {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .stats {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .filters {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .searchBox {
+    max-width: none;
+  }
+
+  .proposalsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .proposalHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .proposalFooter {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .proposalActions {
+    justify-content: space-between;
+  }
+
+  .modalContent {
+    margin: 20px;
+    max-height: calc(100vh - 40px);
+  }
+
+  .modalBody {
+    padding: 16px;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .modalActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .modalActions button {
+    flex: 1;
+  }
+}

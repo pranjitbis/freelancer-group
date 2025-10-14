@@ -1,0 +1,935 @@
+/* app/freelancer-dashboard/messages/FreelancerMessages.module.css */
+.freelancerMessages {
+  min-height: 100vh;
+  background: #f0f2f5;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
+  height: 100vh;
+}
+
+/* Header */
+.header {
+  background: #7e57c2;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.backButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 0.25rem 0;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.headerStats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+}
+
+.statNumber {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+/* Content Layout */
+.content {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  height: calc(100vh - 80px);
+  background: white;
+}
+
+/* Sidebar */
+.sidebar {
+  border-right: 1px solid #e6e6e6;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarHeader {
+  padding: 1rem;
+  background: #f0f2f5;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.searchBox {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #54656f;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  background: white;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.searchInput:focus {
+  background: white;
+  box-shadow: 0 0 0 2px #7e57c2;
+}
+
+.conversationsList {
+  flex: 1;
+  overflow-y: auto;
+  background: white;
+}
+
+.conversationItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #f0f2f5;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.conversationItem:hover {
+  background: #f5f5f5;
+}
+
+.conversationItem.active {
+  background: #f3e5f5;
+}
+
+.conversationAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7e57c2 0%, #5e35b1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.conversationInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.conversationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.conversationHeader h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #3b4a54;
+}
+
+.time {
+  font-size: 0.75rem;
+  color: #667781;
+  flex-shrink: 0;
+}
+
+.lastMessage {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #667781;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.projectTag {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: #f3e5f5;
+  color: #7e57c2;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  margin-right: 0.5rem;
+}
+
+.paymentBadge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: #fff3e0;
+  color: #f57c00;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.unreadBadge {
+  background: #7e57c2;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.noConversations {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #667781;
+}
+
+.noConversationsIcon {
+  margin-bottom: 1rem;
+  color: #ccd0d5;
+}
+
+.noConversations span {
+  font-size: 0.875rem;
+  color: #999;
+}
+
+/* Chat Area */
+.chatArea {
+  display: flex;
+  flex-direction: column;
+  background: #efeae2;
+  position: relative;
+}
+
+.chatHeader {
+  padding: 1rem 1.5rem;
+  background: #f0f2f5;
+  border-bottom: 1px solid #e6e6e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.chatAvatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7e57c2 0%, #5e35b1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.chatUserInfo h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3b4a54;
+}
+
+.userStatus {
+  margin: 0;
+  color: #667781;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.typingIndicator {
+  color: #7e57c2;
+  font-style: italic;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.chatActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.paymentRequestButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #7e57c2;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.paymentRequestButton:hover {
+  background: #6a45b8;
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  color: #54656f;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuButton:hover {
+  background: #e6e6e6;
+}
+
+/* Payment Request Form */
+.paymentRequestForm {
+  background: white;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  margin: 1rem;
+  padding: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.formHeader h4 {
+  margin: 0;
+  color: #3b4a54;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #667781;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  background: #f0f2f5;
+  color: #3b4a54;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #3b4a54;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  outline: none;
+  font-family: inherit;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  border-color: #7e57c2;
+  box-shadow: 0 0 0 2px rgba(126, 87, 194, 0.1);
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.formActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.cancelButton {
+  padding: 0.75rem 1.5rem;
+  background: #667781;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton:hover {
+  background: #54656f;
+}
+
+.submitButton {
+  padding: 0.75rem 1.5rem;
+  background: #7e57c2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #6a45b8;
+}
+
+.submitButton:disabled {
+  background: #ccd0d5;
+  cursor: not-allowed;
+}
+
+/* Messages Container */
+.messagesContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23f0f0f0' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+.noMessages {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #667781;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.noMessagesIcon {
+  margin-bottom: 1rem;
+  color: #ccd0d5;
+}
+
+.noMessages span {
+  font-size: 0.875rem;
+  color: #999;
+  margin-top: 0.5rem;
+}
+
+.dateDivider {
+  text-align: center;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.dateDivider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e6e6e6;
+  z-index: 1;
+}
+
+.dateDivider span {
+  background: #f0f2f5;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: #667781;
+  position: relative;
+  z-index: 2;
+}
+
+/* Message Layout */
+.messageWrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  max-width: 70%;
+}
+
+.sentWrapper {
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+.receivedWrapper {
+  margin-right: auto;
+}
+
+.messageAvatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #7e57c2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.messageContentWrapper {
+  flex: 1;
+}
+
+/* Message Bubbles */
+.message {
+  margin-bottom: 0.25rem;
+}
+
+.messageBubble {
+  background: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.message.sent .messageBubble {
+  background: #d9fdd3;
+  border-top-right-radius: 2px;
+}
+
+.message.received .messageBubble {
+  background: white;
+  border-top-left-radius: 2px;
+}
+
+.messageBubble p {
+  margin: 0 0 0.25rem 0;
+  color: #3b4a54;
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.messageMeta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.messageTime {
+  font-size: 0.7rem;
+  color: #667781;
+}
+
+.messageStatus {
+  display: flex;
+  align-items: center;
+}
+
+.sentIcon {
+  color: #667781;
+  font-size: 0.7rem;
+}
+
+.readIcon {
+  color: #53bdeb;
+  font-size: 0.7rem;
+}
+
+/* Payment Request Styles */
+.paymentRequest {
+  background: white;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  padding: 1rem;
+  max-width: 400px;
+}
+
+.sentPayment {
+  background: #f3e5f5;
+  border-color: #7e57c2;
+}
+
+.receivedPayment {
+  background: white;
+}
+
+.paymentHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: #3b4a54;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.paymentIcon {
+  color: #7e57c2;
+}
+
+.paymentDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.paymentAmount strong {
+  font-size: 1.25rem;
+  color: #3b4a54;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.paymentAmount p {
+  margin: 0;
+  color: #667781;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.paymentStatus {
+  text-align: center;
+}
+
+.status {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status.approved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status.rejected {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status.pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.paymentCompleted {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  max-width: 400px;
+}
+
+.successIcon {
+  color: #10b981;
+}
+
+.systemMessage {
+  text-align: center;
+  color: #667781;
+  font-style: italic;
+  font-size: 0.8rem;
+  margin: 1rem 0;
+}
+
+/* Input Area */
+.inputContainer {
+  padding: 1rem;
+  background: #f0f2f5;
+  border-top: 1px solid #e6e6e6;
+}
+
+.inputWrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  background: white;
+  border-radius: 25px;
+  padding: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.attachButton,
+.emojiButton {
+  background: none;
+  border: none;
+  color: #54656f;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attachButton:hover,
+.emojiButton:hover {
+  background: #f0f2f5;
+}
+
+.messageInputContainer {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.messageInput {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  background: transparent;
+  outline: none;
+  resize: none;
+  max-height: 120px;
+}
+
+.sendButton {
+  background: #7e57c2;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: #6a45b8;
+  transform: scale(1.05);
+}
+
+.sendButton:disabled {
+  background: #ccd0d5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* No Conversation State */
+.noConversation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #f8fafc;
+}
+
+.noConversationContent {
+  text-align: center;
+  color: #667781;
+  max-width: 500px;
+  padding: 2rem;
+}
+
+.noConversationIcon {
+  margin-bottom: 1rem;
+  color: #ccd0d5;
+}
+
+.noConversation h3 {
+  margin: 0 0 0.5rem 0;
+  color: #3b4a54;
+  font-size: 1.5rem;
+}
+
+.noConversation p {
+  margin: 0 0 2rem 0;
+  color: #667781;
+  line-height: 1.5;
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.featureIcon {
+  color: #7e57c2;
+  font-size: 1.25rem;
+}
+
+.featureItem span {
+  color: #3b4a54;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .content {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid #e6e6e6;
+    max-height: 300px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .headerContent {
+    width: 100%;
+  }
+
+  .headerStats {
+    align-self: flex-end;
+  }
+
+  .messageWrapper {
+    max-width: 85%;
+  }
+
+  .paymentRequestForm {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+
+  .chatActions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .paymentRequestButton {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}

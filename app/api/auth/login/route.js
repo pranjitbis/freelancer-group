@@ -57,7 +57,7 @@ export async function POST(req) {
         name: user.name,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" } // Extended to 7 days for better UX
+      { expiresIn: "7d" }
     );
 
     // ✅ Set HTTP-only cookie
@@ -82,6 +82,7 @@ export async function POST(req) {
           email: user.email,
           role: user.role,
         },
+        token: token, // Also return token in response for immediate client-side use
       }),
       {
         status: 200,

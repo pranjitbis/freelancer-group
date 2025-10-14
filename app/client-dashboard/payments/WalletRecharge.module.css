@@ -1,146 +1,512 @@
 .container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
-/* Add these styles to your existing CSS */
 
-.loadingState {
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  gap: 20px;
+}
+
+.headerMain h1 {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  color: #2d3748;
+}
+
+.headerMain p {
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+.walletInfo {
+  display: flex;
+  gap: 20px;
+}
+
+.walletBalance {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.walletIcon {
+  font-size: 24px;
+  color: #48bb78;
+}
+
+.balanceLabel {
+  display: block;
+  font-size: 0.875rem;
+  color: #718096;
+  margin-bottom: 4px;
+}
+
+.balanceAmount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #718096;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  background: #f7fafc;
+  color: #4a5568;
+}
+
+.activeTab {
+  background: #667eea;
+  color: white;
+}
+
+.content {
+  min-height: 400px;
+}
+
+.tabContent {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: #718096;
+}
+
+.emptyIcon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.emptyState h3 {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+  color: #4a5568;
+}
+
+/* Payment Grid */
+.paymentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.paymentCard {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.paymentCard:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.cardHeader h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2d3748;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status.pending {
+  background: #fffaf0;
+  color: #dd6b20;
+  border: 1px solid #fed7aa;
+}
+
+.status.approved {
+  background: #f0fff4;
+  color: #38a169;
+  border: 1px solid #9ae6b4;
+}
+
+.status.completed {
+  background: #ebf8ff;
+  color: #3182ce;
+  border: 1px solid #90cdf4;
+}
+
+.status.rejected {
+  background: #fed7d7;
+  color: #e53e3e;
+  border: 1px solid #fc8181;
+}
+
+.cardBody {
+  padding: 20px;
+}
+
+.freelancerInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #667eea;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.freelancerName {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.requestDate {
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+.paymentDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.amount {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.currencyIcon {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.dueDate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+.description {
+  margin-bottom: 16px;
+}
+
+.description p {
+  margin: 0;
+  color: #4a5568;
+  line-height: 1.5;
+}
+
+.cardActions {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 20px;
+  flex-wrap: wrap;
+}
+
+.cardActions button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rejectButton {
+  background: #fed7d7;
+  color: #e53e3e;
+}
+
+.rejectButton:hover:not(:disabled) {
+  background: #feb2b2;
+}
+
+.approveButton {
+  background: #c6f6d5;
+  color: #38a169;
+}
+
+.approveButton:hover:not(:disabled) {
+  background: #9ae6b4;
+}
+
+.releaseButton {
+  background: #bee3f8;
+  color: #3182ce;
+}
+
+.releaseButton:hover:not(:disabled) {
+  background: #90cdf4;
+}
+
+.messageButton {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.messageButton:hover:not(:disabled) {
+  background: #cbd5e0;
+}
+
+.cardActions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* History Table */
+.historyTable {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.historyTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.historyTable th,
+.historyTable td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.historyTable th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.historyTable tr:hover {
+  background: #f8fafc;
+}
+
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.amountCell {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.viewButton,
+.downloadButton {
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.viewButton {
+  background: #bee3f8;
+  color: #3182ce;
+}
+
+.viewButton:hover {
+  background: #90cdf4;
+}
+
+.downloadButton {
+  background: #c6f6d5;
+  color: #38a169;
+}
+
+.downloadButton:hover {
+  background: #9ae6b4;
+}
+
+/* Loading */
+.loadingContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
+  height: 400px;
+  gap: 16px;
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #667eea;
+  border: 4px solid #e2e8f0;
+  border-left: 4px solid #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 16px;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
+/* Add these styles to your existing ClientPayments.module.css */
 
-.userInfo {
-  background: #f7fafc;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border-left: 4px solid #667eea;
-}
-
-.userInfo p {
-  margin: 5px 0;
-  color: #4a5568;
-}
-
-.userInfo strong {
-  color: #2d3748;
-}
-.walletCard {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 30px;
-  border-radius: 16px;
-  margin-bottom: 30px;
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-}
-
-.memimomaount {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #c91d1d; /* green success color */
-  padding: 0px 0px 20;
-  border-radius: 8px;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
-}
-
-.memimomaount:hover {
-  background: #d1f5e1;
-  transform: translateY(-2px);
-}
-
-.walletHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-}
-
+/* Wallet Info Section */
 .walletInfo {
   display: flex;
+  gap: 20px;
   align-items: center;
-  gap: 15px;
 }
 
-.walletIcon {
-  font-size: 2rem;
-  opacity: 0.9;
-}
-
-.walletInfo h3 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.walletInfo p {
-  margin: 5px 0 0 0;
-  opacity: 0.8;
-  font-size: 0.9rem;
-}
-
-.rechargeButton {
-  background: rgba(255, 255, 255, 0.2);
+.rechargeBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #48bb78;
   color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  padding: 10px 20px;
+  border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.rechargeBtn:hover {
+  background: #38a169;
+  transform: translateY(-1px);
+}
+
+/* Recharge History */
+.rechargeHistory {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.creditAmount {
+  color: #38a169;
+  font-weight: 600;
+}
+
+.paymentId {
+  font-family: monospace;
+  background: #f7fafc;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.description {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rechargeNowBtn {
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.3s;
-  backdrop-filter: blur(10px);
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.3s ease;
 }
 
-.rechargeButton:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+.rechargeNowBtn:hover {
+  background: #5a67d8;
+  transform: translateY(-1px);
 }
 
-.balance {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.rupeeIcon {
-  font-size: 1.5rem;
-  opacity: 0.9;
-}
-
-.balanceAmount {
-  font-size: 3rem;
-  font-weight: 800;
-  line-height: 1;
-}
-
-/* Modal Styles */
+/* Recharge Modal */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -157,67 +523,81 @@
 
 .rechargeModal {
   background: white;
-  border-radius: 16px;
-  padding: 30px;
+  border-radius: 12px;
+  padding: 0;
   max-width: 500px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .modalHeader h2 {
   margin: 0;
-  color: #1a202c;
   font-size: 1.5rem;
-  font-weight: 700;
+  color: #2d3748;
 }
 
 .closeButton {
   background: none;
   border: none;
-  font-size: 2rem;
-  color: #a0aec0;
+  font-size: 24px;
   cursor: pointer;
-  line-height: 1;
+  color: #718096;
+  padding: 4px;
+  border-radius: 4px;
 }
 
 .closeButton:hover {
-  color: #718096;
+  background: #f7fafc;
+  color: #4a5568;
+}
+
+.userInfo {
+  padding: 20px 24px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.userInfo p {
+  margin: 4px 0;
+  color: #4a5568;
 }
 
 .presetAmounts {
-  margin-bottom: 25px;
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .presetAmounts h4 {
-  margin-bottom: 15px;
+  margin: 0 0 16px 0;
   color: #2d3748;
-  font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .amountGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
 .amountButton {
-  background: #f7fafc;
+  padding: 16px;
   border: 2px solid #e2e8f0;
-  padding: 15px;
+  background: white;
   border-radius: 8px;
+  cursor: pointer;
   font-weight: 600;
   color: #4a5568;
-  cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 }
 
 .amountButton:hover {
@@ -226,19 +606,20 @@
 }
 
 .amountButton.selected {
-  background: #667eea;
   border-color: #667eea;
+  background: #667eea;
   color: white;
 }
 
 .customAmount {
-  margin-bottom: 30px;
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .customAmount h4 {
-  margin-bottom: 15px;
+  margin: 0 0 16px 0;
   color: #2d3748;
-  font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .amountInput {
@@ -248,20 +629,19 @@
 
 .inputIcon {
   position: absolute;
-  left: 15px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #a0aec0;
+  color: #718096;
 }
 
 .amountInput input {
   width: 100%;
-  padding: 15px 15px 15px 40px;
+  padding: 12px 12px 12px 36px;
   border: 2px solid #e2e8f0;
   border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  transition: border-color 0.2s;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
 }
 
 .amountInput input:focus {
@@ -270,32 +650,52 @@
 }
 
 .minAmount {
-  color: #718096;
+  margin: 0;
   font-size: 0.875rem;
-  margin: 5px 0 0 0;
+  color: #718096;
+}
+
+.errorMessage {
+  color: #e53e3c;
+  text-align: center;
+  margin: 16px 24px 0;
+  padding: 12px;
+  background: #fed7d7;
+  border-radius: 6px;
+  font-size: 0.875rem;
 }
 
 .payButton {
-  width: 100%;
+  width: calc(100% - 48px);
+  margin: 24px;
+  padding: 16px;
   background: #48bb78;
   color: white;
   border: none;
-  padding: 16px;
   border-radius: 8px;
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
-  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .payButton:hover:not(:disabled) {
   background: #38a169;
+  transform: translateY(-1px);
 }
 
 .payButton:disabled {
-  background: #a0aec0;
+  opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
+}
+
+.buttonSpinner {
+  animation: spin 1s linear infinite;
 }
 
 .securityNote {
@@ -303,190 +703,56 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  padding: 16px 24px 24px;
+  color: #718096;
+  font-size: 0.875rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.securityNote svg {
   color: #48bb78;
-  font-size: 0.875rem;
-  font-weight: 500;
 }
 
-/* Transaction Section */
-.transactionSection {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-}
-
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.sectionIcon {
-  color: #667eea;
-  font-size: 1.2rem;
-}
-
-.sectionHeader h3 {
-  margin: 0;
-  color: #1a202c;
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.transactionList {
-  space-y: 12px;
-}
-
-.transactionItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  transition: border-color 0.2s;
-}
-
-.transactionItem:hover {
-  border-color: #cbd5e0;
-}
-
-.transactionInfo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex: 1;
-}
-
-.transactionType {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.typeIcon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-}
-
-.typeIcon.credit {
-  background: #c6f6d5;
-  color: #276749;
-}
-
-.typeIcon.debit {
-  background: #fed7d7;
-  color: #c53030;
-}
-
-.transactionDesc {
-  display: block;
-  font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 4px;
-}
-
-.transactionDate {
-  font-size: 0.875rem;
-  color: #718096;
-}
-
-.transactionAmount {
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.transactionAmount.credit {
-  color: #276749;
-}
-
-.transactionAmount.debit {
-  color: #c53030;
-}
-
-.status {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.status.completed {
-  background: #c6f6d5;
-  color: #276749;
-}
-
-.status.pending {
-  background: #fefcbf;
-  color: #744210;
-}
-
-.status.failed {
-  background: #fed7d7;
-  color: #c53030;
-}
-
-.noTransactions {
-  text-align: center;
-  padding: 40px 20px;
-  color: #718096;
-}
-
-.noTransactions p {
-  margin: 0 0 8px 0;
-  font-weight: 600;
-}
-
-.noTransactions span {
-  font-size: 0.875rem;
-}
-
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
-  .container {
-    padding: 15px;
-  }
-
-  .walletHeader {
+  .walletInfo {
     flex-direction: column;
-    gap: 15px;
-  }
-
-  .rechargeButton {
-    align-self: flex-start;
-  }
-
-  .balanceAmount {
-    font-size: 2.5rem;
+    align-items: stretch;
   }
 
   .amountGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .transactionInfo {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .modalOverlay {
+    padding: 10px;
   }
 
-  .transactionItem {
+  .rechargeModal {
+    max-height: 95vh;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
   }
 
-  .status {
-    align-self: flex-start;
+  .paymentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs {
+    overflow-x: auto;
+  }
+
+  .historyTable {
+    overflow-x: auto;
   }
 }

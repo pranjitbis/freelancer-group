@@ -1,20 +1,27 @@
 import { NextResponse } from "next/server";
 
 const AUTH_COOKIE_NAME = "token";
-const LOGIN_PATH = "/login";
+const LOGIN_PATH = "/auth/login"; // Fixed path to match your login page
 const PUBLIC_PATHS = [
-  "/login",
+  "/",
+  "/auth/login",
+  "/auth/register", 
   "/api/auth/login",
   "/api/auth/verify",
   "/api/auth/register",
+  "/api/auth/logout",
   "/_next",
   "/favicon.ico",
+  "/find-work",
+  "/home",
 ];
 
 // Paths that require authentication
 const PROTECTED_PATHS = [
   "/dashboard",
-  "/wp-admin", // Adding wp-admin to protected paths
+  "/wp-admin",
+  "/freelancer-dashboard",
+  "/client-dashboard",
 ];
 
 function redirectToLogin(request) {
@@ -39,66 +46,80 @@ function isProtectedPath(pathname) {
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
 
+  console.log(`🛡️ Middleware checking: ${pathname}`);
+
   // Skip middleware for public paths
   if (isPublicPath(pathname)) {
+    console.log(`✅ Public path, skipping auth: ${pathname}`);
     return NextResponse.next();
   }
 
   // Only check authentication for protected paths
   if (!isProtectedPath(pathname)) {
+    console.log(`✅ Non-protected path, skipping auth: ${pathname}`);
     return NextResponse.next();
   }
 
-  const { cookies } = request;
-  const token = cookies.get(AUTH_COOKIE_NAME)?.value;
+  console.log(`🔒 Protected path, checking auth: ${pathname}`);
+
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
 
   // If there's no token cookie - redirect to login
   if (!token) {
-    console.log("No token found, redirecting to login");
+    console.log("❌ No token found, redirecting to login");
     return redirectToLogin(request);
   }
 
-  try {
-    const verifyUrl = new URL("/api/auth/verify", request.url);
+  console.log("✅ Token found, verifying...");
 
-    const verifyRes = await fetch(verifyUrl.toString(), {
-      method: "POST",
+  try {
+    // Verify token by calling the verify API
+    const verifyUrl = new URL("/api/auth/verify", request.url);
+    
+    const verifyRes = await fetch(verifyUrl, {
+      method: "GET", // Use GET instead of POST
       headers: {
         "Content-Type": "application/json",
-        Cookie: request.headers.get("cookie") || "", // Forward cookies
+        Cookie: `${AUTH_COOKIE_NAME}=${token}`, // Pass the token as cookie
       },
-      body: JSON.stringify({ token }),
     });
 
     if (verifyRes.ok) {
-      const userData = await verifyRes.json();
+      const data = await verifyRes.json();
+      console.log("✅ Token verified successfully:", data.user);
 
       // Check if accessing admin routes requires admin role
       if (pathname.startsWith("/wp-admin")) {
-        if (userData.role !== "admin") {
-          // Redirect non-admin users trying to access wp-admin
-          const url = new URL("/login", request.url);
+        if (data.user.role !== "admin") {
+          console.log("❌ Non-admin user trying to access admin area");
+          const url = new URL("/unauthorized", request.url);
           return NextResponse.redirect(url);
         }
+        console.log("✅ Admin access granted");
       }
 
-      // Clone the request headers and set user data for use in routes
+      // Add user data to headers for use in routes
       const requestHeaders = new Headers(request.headers);
-      requestHeaders.set("x-user-data", JSON.stringify(userData));
+      requestHeaders.set("x-user-id", data.user.id);
+      requestHeaders.set("x-user-role", data.user.role);
+      requestHeaders.set("x-user-email", data.user.email);
 
-      const response = NextResponse.next();
-      response.headers.set("x-user-data", JSON.stringify(userData));
+      const response = NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
 
       return response;
     } else {
-      console.log("Token verification failed, redirecting to login");
-      // Clear invalid token
+      console.log("❌ Token verification failed");
+      // Clear invalid token and redirect to login
       const response = redirectToLogin(request);
       response.cookies.delete(AUTH_COOKIE_NAME);
       return response;
     }
   } catch (err) {
-    console.error("Middleware verify error:", err);
+    console.error("🚨 Middleware verify error:", err);
     // Clear invalid token on error
     const response = redirectToLogin(request);
     response.cookies.delete(AUTH_COOKIE_NAME);

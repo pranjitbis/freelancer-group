@@ -89,22 +89,6 @@ export default function Nav() {
               Our Team
             </Link>
           </li>
-          <li>
-            <Link href="/find-work" onClick={() => setIsOpen(false)}>
-              Find Work
-            </Link>
-          </li>
-          <li>
-            <Link href="/career" onClick={() => setIsOpen(false)}>
-              Career
-            </Link>
-          </li>
-          <li>
-            <Link href="/contact-us" onClick={() => setIsOpen(false)}>
-              Contact Us
-            </Link>
-          </li>
-
           {/* 💼 Services Dropdown */}
           <li className={styles.dropdown}>
             <button onClick={() => toggleDropdown("services")}>
@@ -112,16 +96,20 @@ export default function Nav() {
             </button>
             {dropdown.services && (
               <div className={styles.dropdownMenu}>
-                <Link href="/services/form-filling">Form Filling</Link>
+                <Link href="/services/virtual-assistance">Virtual Assistance</Link>
+                <Link href="/services/form-filling">Online Form Filling</Link>
                 <Link href="/services/web-development">Web Development</Link>
-                <Link href="/services/e-commerce-solutions">E-Commerce</Link>
-                <Link href="/services/travel-bookings">Travel & Hotel</Link>
-                <Link href="/services/data-visualization">Data & AI</Link>
+                <Link href="/services/e-commerce-solutions">E-Commerce Solution</Link>
+                <Link href="/services/travel-bookings">Travel & Hotel booking</Link>
+                <Link href="/services/data-visualization">Data & AI Solution</Link>
               </div>
             )}
           </li>
-
-          {/* 👥 Freelancer Hub Dropdown */}
+          <li>
+            <Link href="/find-work" onClick={() => setIsOpen(false)}>
+              Find Work
+            </Link>
+          </li>
           <li className={styles.dropdown}>
             <button onClick={() => toggleDropdown("freelancer")}>
               Freelancer Hub <IoChevronDown />
@@ -137,6 +125,19 @@ export default function Nav() {
               </div>
             )}
           </li>
+
+          <li>
+            <Link href="/career" onClick={() => setIsOpen(false)}>
+              Career
+            </Link>
+          </li>
+          <li>
+            <Link href="/contact-us" onClick={() => setIsOpen(false)}>
+              Contact Us
+            </Link>
+          </li>
+
+          {/* 👥 Freelancer Hub Dropdown */}
         </ul>
 
         <div className={styles.actions}>
@@ -150,7 +151,7 @@ export default function Nav() {
                 <button className={styles.loginBtn}>Login</button>
               </Link>
               <Link href="/register">
-                <button className={styles.signUpBtn}>Join Now</button>
+                <button className={styles.signUpBtn}>Register</button>
               </Link>
             </>
           )}

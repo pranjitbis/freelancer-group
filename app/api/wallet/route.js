@@ -8,44 +8,69 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
 
+    console.log("💰 Fetching wallet for user:", userId);
+
     if (!userId) {
       return NextResponse.json(
-        { success: false, error: "User ID is required" },
+        { error: "User ID is required" },
         { status: 400 }
       );
     }
 
+    // Get user with wallet balance
     const user = await prisma.user.findUnique({
       where: { id: parseInt(userId) },
       select: {
         id: true,
         name: true,
         wallet: true,
-        transactions: {
-          orderBy: { createdAt: "desc" },
-          take: 10,
-        },
       },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { success: false, error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
+    // Get transaction history
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        userId: parseInt(userId),
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 20, // Limit to last 20 transactions
+    });
+
+    console.log(
+      "✅ Wallet balance:",
+      user.wallet,
+      "Transactions:",
+      transactions.length
+    );
 
     return NextResponse.json({
       success: true,
       wallet: {
         balance: user.wallet,
-        transactions: user.transactions,
+        userId: user.id,
+        userName: user.name,
+        transactions: transactions.map((transaction) => ({
+          id: transaction.id,
+          amount: transaction.amount,
+          type: transaction.type,
+          status: transaction.status,
+          description: transaction.description,
+          paymentId: transaction.paymentId,
+          orderId: transaction.orderId,
+          createdAt: transaction.createdAt,
+        })),
       },
     });
   } catch (error) {
-    console.error("Get wallet error:", error);
+    console.error("❌ Get wallet error:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch wallet" },
+      { error: "Failed to fetch wallet" },
       { status: 500 }
     );
   }
