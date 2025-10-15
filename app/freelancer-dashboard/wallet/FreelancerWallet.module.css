@@ -1,7 +1,6 @@
 /* FreelancerWallet.module.css */
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -20,7 +19,7 @@
 .headerMain h1 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: white;
+  color: rgb(121, 121, 121);
   margin-bottom: 8px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

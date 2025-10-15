@@ -32,9 +32,22 @@ export async function GET(request) {
 
     if (search) {
       where.OR = [
-        { title: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { skills: { contains: search, mode: "insensitive" } },
+        {
+          title: {
+            contains: search,
+            // Remove mode: "insensitive" - Prisma handles case sensitivity based on database
+          },
+        },
+        {
+          description: {
+            contains: search,
+          },
+        },
+        {
+          skills: {
+            contains: search,
+          },
+        },
       ];
     }
 
@@ -122,6 +135,8 @@ export async function GET(request) {
         createdAt: job.createdAt.toISOString(),
         updatedAt: job.updatedAt.toISOString(),
         deadline: job.deadline.toISOString(),
+        // Full description without any truncation
+        description: job.description,
       };
     });
 
@@ -252,6 +267,8 @@ export async function POST(request) {
       createdAt: job.createdAt.toISOString(),
       updatedAt: job.updatedAt.toISOString(),
       deadline: job.deadline.toISOString(),
+      // Full description without any truncation
+      description: job.description,
     };
 
     return NextResponse.json(
@@ -297,7 +314,7 @@ export async function POST(request) {
   }
 }
 
-// PUT - Update a job (optional)
+// PUT - Update a job
 export async function PUT(request) {
   try {
     const body = await request.json();
@@ -348,6 +365,8 @@ export async function PUT(request) {
       createdAt: updatedJob.createdAt.toISOString(),
       updatedAt: updatedJob.updatedAt.toISOString(),
       deadline: updatedJob.deadline.toISOString(),
+      // Full description without any truncation
+      description: updatedJob.description,
     };
 
     return NextResponse.json({
@@ -379,7 +398,7 @@ export async function PUT(request) {
   }
 }
 
-// DELETE - Delete a job (optional)
+// DELETE - Delete a job
 export async function DELETE(request) {
   try {
     const { searchParams } = new URL(request.url);

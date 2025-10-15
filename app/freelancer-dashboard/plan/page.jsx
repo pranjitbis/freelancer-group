@@ -26,6 +26,9 @@ import {
   FaAward,
   FaMedal,
   FaBusinessTime,
+  FaCreditCard,
+  FaExchangeAlt,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import styles from "./Plans.module.css";
 
@@ -39,6 +42,7 @@ export default function PlansPage() {
   const [authLoading, setAuthLoading] = useState(true);
   const [currency, setCurrency] = useState("INR");
   const [hoveredPlan, setHoveredPlan] = useState(null);
+  const [showNoConnectsError, setShowNoConnectsError] = useState(false);
   const router = useRouter();
 
   // Professional color scheme with elegant borders
@@ -59,13 +63,13 @@ export default function PlansPage() {
     error: "#dc2626",
   };
 
-  // Currency conversion rates
+  // Fixed currency conversion rates (₹999 = $11.33 exactly)
   const exchangeRates = {
     INR: 1,
-    USD: 0.012,
+    USD: 0.01133, // 999 * 0.01133 = 11.33 exactly
   };
 
-  // Enhanced plans data with professional icons and colors
+  // Enhanced plans data with updated premium pricing
   const basePlans = [
     {
       id: "free",
@@ -73,11 +77,31 @@ export default function PlansPage() {
       price: 0,
       connects: 10,
       features: [
-        { text: "10 connects per month", icon: FaRocket, color: colors.primary },
-        { text: "1 connect per proposal", icon: FaPaperPlane, color: colors.primary },
-        { text: "Basic profile visibility", icon: FaUsers, color: colors.primary },
-        { text: "Standard email support", icon: FaShieldAlt, color: colors.primary },
-        { text: "Access to basic job posts", icon: FaBusinessTime, color: colors.primary },
+        {
+          text: "10 connects per month",
+          icon: FaRocket,
+          color: colors.primary,
+        },
+        {
+          text: "1 connect per proposal",
+          icon: FaPaperPlane,
+          color: colors.primary,
+        },
+        {
+          text: "Basic profile visibility",
+          icon: FaUsers,
+          color: colors.primary,
+        },
+        {
+          text: "Standard email support",
+          icon: FaShieldAlt,
+          color: colors.primary,
+        },
+        {
+          text: "Access to basic job posts",
+          icon: FaBusinessTime,
+          color: colors.primary,
+        },
         { text: "Email notifications", icon: FaCheck, color: colors.success },
       ],
       limitations: [
@@ -96,19 +120,44 @@ export default function PlansPage() {
     {
       id: "premium",
       name: "Professional Plan",
-      price: 1,
-      connects: 100,
+      price: 999, // ₹999
+      connects: 15, // 15 connects
       features: [
-        { text: "100 connects per month", icon: FaBolt, color: colors.premium },
-        { text: "1 connect per proposal", icon: FaPaperPlane, color: colors.premium },
-        { text: "Enhanced profile visibility", icon: FaChartLine, color: colors.premium },
-        { text: "Priority 24/7 support", icon: FaShieldAlt, color: colors.premium },
+        { text: "15 connects per month", icon: FaBolt, color: colors.premium },
+        {
+          text: "1 connect per proposal",
+          icon: FaPaperPlane,
+          color: colors.premium,
+        },
+        {
+          text: "Enhanced profile visibility",
+          icon: FaChartLine,
+          color: colors.premium,
+        },
+        {
+          text: "Priority 24/7 support",
+          icon: FaShieldAlt,
+          color: colors.premium,
+        },
         { text: "Access to all job posts", icon: FaGem, color: colors.premium },
         { text: "Featured proposals", icon: FaStar, color: colors.premium },
-        { text: "Advanced analytics dashboard", icon: FaChartLine, color: colors.premium },
+        {
+          text: "Advanced analytics dashboard",
+          icon: FaChartLine,
+          color: colors.premium,
+        },
         { text: "Higher search ranking", icon: FaAward, color: colors.premium },
         { text: "Premium profile badge", icon: FaMedal, color: colors.premium },
-        { text: "Early access to features", icon: FaRocket, color: colors.premium },
+        {
+          text: "Early access to features",
+          icon: FaRocket,
+          color: colors.premium,
+        },
+        {
+          text: "Credit card payments supported",
+          icon: FaCreditCard,
+          color: colors.premium,
+        },
       ],
       limitations: [],
       popular: true,
@@ -120,18 +169,34 @@ export default function PlansPage() {
     },
   ];
 
-  const plans = basePlans.map((plan) => ({
-    ...plan,
-    displayPrice:
-      currency === "INR"
-        ? plan.price
-        : Math.round(plan.price * exchangeRates[currency]),
-    currency: currency,
-  }));
+  // Calculate display prices based on currency
+  const plans = basePlans.map((plan) => {
+    let displayPrice = plan.price;
+
+    if (currency === "USD" && plan.price > 0) {
+      // For USD, calculate exactly ₹999 = $11.33
+      displayPrice = Math.round(plan.price * exchangeRates.USD * 100) / 100;
+    }
+
+    return {
+      ...plan,
+      displayPrice,
+      currency: currency,
+    };
+  });
 
   useEffect(() => {
     checkAuthentication();
   }, []);
+
+  useEffect(() => {
+    // Check if user has 0 connects and show error
+    if (userPlan && userPlan.connects - userPlan.usedConnects <= 0) {
+      setShowNoConnectsError(true);
+    } else {
+      setShowNoConnectsError(false);
+    }
+  }, [userPlan]);
 
   const checkAuthentication = async () => {
     try {
@@ -217,14 +282,15 @@ export default function PlansPage() {
     setCurrency(newCurrency);
   };
 
+  const toggleCurrency = () => {
+    setCurrency(currency === "INR" ? "USD" : "INR");
+  };
+
   const formatPrice = (price, currency) => {
     if (currency === "INR") {
-      return `₹${price.toLocaleString("en-IN")}`;
+      return `₹${price}`;
     } else {
-      return `$${price.toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}`;
+      return `$${price}`;
     }
   };
 
@@ -274,8 +340,14 @@ export default function PlansPage() {
 
       try {
         const razorpayCurrency = currency === "INR" ? "INR" : "USD";
-        const razorpayAmount =
-          currency === "INR" ? plan.price : plan.displayPrice;
+
+        // FIXED: Send the actual amount without converting to paisa/cents
+        let razorpayAmount;
+        if (currency === "INR") {
+          razorpayAmount = plan.price; // Send ₹999 as 999
+        } else {
+          razorpayAmount = plan.displayPrice; // Send $11.33 as 11.33
+        }
 
         const response = await fetch("/api/payments/create-order", {
           method: "POST",
@@ -301,7 +373,7 @@ export default function PlansPage() {
           amount: orderData.order.amount,
           currency: orderData.order.currency,
           name: "Freelance Platform",
-          description: `Premium Plan - ${plan.connects} connects monthly`,
+          description: `Professional Plan - ${plan.connects} connects monthly`,
           order_id: orderData.order.id,
           handler: async function (response) {
             try {
@@ -327,10 +399,11 @@ export default function PlansPage() {
                 setUserPlan((prev) => ({
                   ...prev,
                   planType: "premium",
-                  connects: 100,
+                  connects: 15,
                   usedConnects: 0,
                 }));
-                alert("🎉 Premium plan activated successfully!");
+                setShowNoConnectsError(false);
+                alert("🎉 Professional plan activated successfully!");
                 router.refresh();
               } else {
                 alert(verifyResult.error || "Payment verification failed");
@@ -353,6 +426,16 @@ export default function PlansPage() {
             },
           },
         };
+
+        // Add payment method configuration for international cards
+        if (razorpayCurrency === "USD") {
+          options.method = {
+            netbanking: false,
+            card: true,
+            upi: false,
+            wallet: false,
+          };
+        }
 
         const rzp = new window.Razorpay(options);
         rzp.open();
@@ -377,6 +460,11 @@ export default function PlansPage() {
   const getConnectUsagePercentage = () => {
     if (!userPlan) return 0;
     return Math.round((userPlan.usedConnects / userPlan.connects) * 100);
+  };
+
+  const getAvailableConnects = () => {
+    if (!userPlan) return 10;
+    return userPlan.connects - userPlan.usedConnects;
   };
 
   const getHistoryIcon = (type) => {
@@ -490,8 +578,21 @@ export default function PlansPage() {
           >
             <FaArrowLeft /> Back to Dashboard
           </motion.button>
-          
+
           <div className={styles.navControls}>
+            <motion.button
+              onClick={toggleCurrency}
+              className={styles.currencyToggleBtn}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title={`Switch to ${currency === "INR" ? "USD" : "INR"}`}
+            >
+              <FaExchangeAlt className={styles.exchangeIcon} />
+              <span>
+                Switch to {currency === "INR" ? "USD ($)" : "INR (₹)"}
+              </span>
+            </motion.button>
+
             <motion.div
               className={styles.currencySelector}
               whileHover={{ scale: 1.05 }}
@@ -516,17 +617,57 @@ export default function PlansPage() {
           <div className={styles.headerContent}>
             <h1>Choose Your Plan</h1>
             <p>Select the perfect plan that matches your freelance journey</p>
+            <div className={styles.paymentInfo}>
+              <FaCreditCard className={styles.creditCardIcon} />
+              <span>Credit cards accepted for both INR and USD payments</span>
+            </div>
           </div>
         </motion.section>
+
+        {/* No Connects Error Banner */}
+        <AnimatePresence>
+          {showNoConnectsError && (
+            <motion.div
+              className={styles.errorBanner}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className={styles.errorContent}>
+                <FaExclamationTriangle className={styles.errorIcon} />
+                <div className={styles.errorText}>
+                  <h4>You're out of connects! 🚨</h4>
+                  <p>
+                    You have 0 connects remaining. Upgrade your plan to continue
+                    submitting proposals.
+                  </p>
+                </div>
+                <motion.button
+                  onClick={() =>
+                    document
+                      .getElementById("plans-section")
+                      .scrollIntoView({ behavior: "smooth" })
+                  }
+                  className={styles.rechargeButton}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <FaCrown /> Recharge Now
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Current Plan & Connects */}
         <section className={styles.currentPlanSection}>
           <motion.div
             className={styles.currentPlanCard}
             variants={itemVariants}
-            whileHover={{ 
+            whileHover={{
               borderColor: colors.borderHover,
-              boxShadow: "0 8px 25px -8px rgba(0, 0, 0, 0.15)"
+              boxShadow: "0 8px 25px -8px rgba(0, 0, 0, 0.15)",
             }}
           >
             <div className={styles.planHeader}>
@@ -534,8 +675,10 @@ export default function PlansPage() {
                 <div className={styles.planTitle}>
                   <motion.div
                     className={`${styles.planIconWrapper} ${
-                      userPlan?.planType === "premium" ? styles.premium : styles.free
-                    }`}
+                      userPlan?.planType === "premium"
+                        ? styles.premium
+                        : styles.free
+                    } ${getAvailableConnects() === 0 ? styles.noConnects : ""}`}
                     animate={{
                       scale: [1, 1.05, 1],
                     }}
@@ -550,6 +693,9 @@ export default function PlansPage() {
                     ) : (
                       <FaSeedling />
                     )}
+                    {getAvailableConnects() === 0 && (
+                      <div className={styles.zeroConnectsBadge}>0</div>
+                    )}
                   </motion.div>
                   <div>
                     <h2>
@@ -558,7 +704,9 @@ export default function PlansPage() {
                       Plan
                     </h2>
                     <p>
-                      {userPlan?.planType === "premium"
+                      {getAvailableConnects() === 0
+                        ? "No connects remaining! Please recharge 🔄"
+                        : userPlan?.planType === "premium"
                         ? "Premium features unlocked 🎉"
                         : "Upgrade to unlock premium features"}
                     </p>
@@ -568,15 +716,17 @@ export default function PlansPage() {
                   <div className={styles.connectsOverview}>
                     <div className={styles.connectsCount}>
                       <motion.span
-                        className={styles.availableConnects}
-                        key={userPlan ? userPlan.connects - userPlan.usedConnects : 10}
+                        className={`${styles.availableConnects} ${
+                          getAvailableConnects() === 0
+                            ? styles.zeroConnects
+                            : ""
+                        }`}
+                        key={getAvailableConnects()}
                         initial={{ scale: 1.2 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.3 }}
                       >
-                        {userPlan
-                          ? userPlan.connects - userPlan.usedConnects
-                          : 10}
+                        {getAvailableConnects()}
                       </motion.span>
                       <span className={styles.connectsLabel}>
                         Connects Available
@@ -585,7 +735,11 @@ export default function PlansPage() {
                     <div className={styles.connectsProgress}>
                       <div className={styles.progressBar}>
                         <motion.div
-                          className={styles.progressFill}
+                          className={`${styles.progressFill} ${
+                            getAvailableConnects() === 0
+                              ? styles.zeroProgress
+                              : ""
+                          }`}
                           initial={{ width: 0 }}
                           animate={{ width: `${getConnectUsagePercentage()}%` }}
                           transition={{ duration: 1, ease: "easeOut" }}
@@ -612,7 +766,8 @@ export default function PlansPage() {
                   <FaCalendar className={styles.calendarIcon} />
                   <span>Resets in {getDaysUntilReset()} days</span>
                 </div>
-                {userPlan?.planType === "free" && (
+                {(userPlan?.planType === "free" ||
+                  getAvailableConnects() === 0) && (
                   <motion.button
                     className={styles.upgradeButton}
                     onClick={() =>
@@ -620,10 +775,16 @@ export default function PlansPage() {
                         .getElementById("plans-section")
                         .scrollIntoView({ behavior: "smooth" })
                     }
-                    whileHover={{ scale: 1.05, boxShadow: `0 4px 15px ${colors.premium}40` }}
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: `0 4px 15px ${colors.premium}40`,
+                    }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <FaCrown /> Upgrade to Pro
+                    <FaCrown />{" "}
+                    {getAvailableConnects() === 0
+                      ? "Recharge Now"
+                      : "Upgrade to Pro"}
                   </motion.button>
                 )}
               </div>
@@ -643,7 +804,10 @@ export default function PlansPage() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                     >
-                      <feature.icon className={styles.featureCheck} style={{ color: feature.color }} />
+                      <feature.icon
+                        className={styles.featureCheck}
+                        style={{ color: feature.color }}
+                      />
                       <span>{feature.text}</span>
                     </motion.div>
                   ))}
@@ -654,10 +818,7 @@ export default function PlansPage() {
 
         {/* Available Plans */}
         <section id="plans-section" className={styles.plansSection}>
-          <motion.div
-            className={styles.plansGrid}
-            variants={containerVariants}
-          >
+          <motion.div className={styles.plansGrid} variants={containerVariants}>
             {plans.map((plan, index) => (
               <motion.div
                 key={plan.id}
@@ -674,8 +835,8 @@ export default function PlansPage() {
                 onHoverEnd={() => setHoveredPlan(null)}
                 style={{
                   borderColor: plan.borderColor,
-                  borderWidth: '2px',
-                  borderStyle: 'solid'
+                  borderWidth: "2px",
+                  borderStyle: "solid",
                 }}
               >
                 {plan.popular && (
@@ -721,10 +882,13 @@ export default function PlansPage() {
                         scale: hoveredPlan === plan.id ? [1, 1.1, 1] : 1,
                       }}
                       transition={{ duration: 0.3 }}
-                      style={{ 
-                        background: plan.id === 'premium' ? colors.premiumGradient : colors.gradient,
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent'
+                      style={{
+                        background:
+                          plan.id === "premium"
+                            ? colors.premiumGradient
+                            : colors.gradient,
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
                       }}
                     >
                       {plan.connects}
@@ -735,7 +899,7 @@ export default function PlansPage() {
                   </div>
                   <div className={styles.planPrice}>
                     {plan.price === 0 ? (
-                      <motion.span 
+                      <motion.span
                         className={styles.free}
                         animate={{ scale: [1, 1.05, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
@@ -748,9 +912,10 @@ export default function PlansPage() {
                           {getCurrencySymbol()}
                         </span>
                         <span className={styles.amount}>
-                          {plan.displayPrice.toLocaleString()}
+                          {plan.displayPrice}
                         </span>
                         <span className={styles.period}>/month</span>
+                       
                       </>
                     )}
                   </div>
@@ -772,7 +937,10 @@ export default function PlansPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: idx * 0.05 }}
                       >
-                        <feature.icon className={styles.featureIcon} style={{ color: feature.color }} />
+                        <feature.icon
+                          className={styles.featureIcon}
+                          style={{ color: feature.color }}
+                        />
                         <span>{feature.text}</span>
                       </motion.li>
                     ))}
@@ -809,11 +977,11 @@ export default function PlansPage() {
                   }`}
                   whileHover={
                     !loading && userPlan?.planType !== plan.id
-                      ? { 
+                      ? {
                           scale: 1.05,
-                          boxShadow: plan.popular 
+                          boxShadow: plan.popular
                             ? `0 8px 25px ${colors.premium}40`
-                            : `0 8px 25px ${colors.primary}40`
+                            : `0 8px 25px ${colors.primary}40`,
                         }
                       : {}
                   }
@@ -861,9 +1029,9 @@ export default function PlansPage() {
           <motion.div
             className={styles.historyCard}
             variants={itemVariants}
-            whileHover={{ 
+            whileHover={{
               borderColor: colors.borderHover,
-              boxShadow: "0 8px 25px -8px rgba(0, 0, 0, 0.1)"
+              boxShadow: "0 8px 25px -8px rgba(0, 0, 0, 0.1)",
             }}
           >
             <div className={styles.historyHeader}>

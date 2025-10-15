@@ -386,24 +386,6 @@ export default function FreelancerWallet() {
         </div>
       )}
 
-      {/* Sync Status Indicator */}
-      <div className={styles.syncStatus}>
-        <div className={styles.syncInfo}>
-          <FaInfoCircle />
-          <span>
-            Payments sync automatically. Last sync: {formatTimeAgo(lastSync)}
-          </span>
-        </div>
-        <button
-          className={styles.syncNowButton}
-          onClick={manualSyncPayments}
-          disabled={syncing}
-          title="Sync payments now"
-        >
-          {syncing ? <FaSpinner className={styles.spinner} /> : <FaSync />}
-          {syncing ? "Syncing..." : "Sync Now"}
-        </button>
-      </div>
 
       {/* Header */}
       <div className={styles.header}>

@@ -5,6 +5,14 @@
   padding: 20px;
 }
 
+.paymentInfo {
+  color: #475569;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
 .loadingContainer {
   display: flex;
   flex-direction: column;

@@ -8,6 +8,85 @@
   min-height: 100vh;
 }
 
+/* Active dots styles */
+.activeDots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.activeDot {
+  transform: scale(1.2);
+}
+
+.inactiveDot {
+  opacity: 0.5;
+}
+
+.sidebarDots {
+  padding: 10px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mobileDots {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+/* Active dot indicator in nav items */
+.activeDotIndicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumbSeparator {
+  color: #d1d5db;
+}
+
+/* Mobile header content */
+.mobileHeaderContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.mobileHeaderContent h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
 /* Mobile Header */
 .mobileHeader {
   display: none;

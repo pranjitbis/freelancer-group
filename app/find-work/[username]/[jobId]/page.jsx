@@ -26,7 +26,6 @@ import {
   FaShieldAlt,
   FaChartBar,
   FaAward,
-  FaMapMarkerAlt,
   FaDollarSign,
   FaCalendarAlt,
   FaTasks,
@@ -40,15 +39,50 @@ export default function JobDetailPage() {
   const [error, setError] = useState("");
   const [isSaved, setIsSaved] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [exchangeRate, setExchangeRate] = useState(83);
+  const [currency, setCurrency] = useState("usd");
   const params = useParams();
   const router = useRouter();
+
+  const currencyOptions = [
+    { value: "usd", label: "USD Only", icon: FaDollarSign },
+    { value: "inr", label: "INR Only", icon: FaMoneyBillWave },
+  ];
 
   useEffect(() => {
     if (params.jobId) {
       fetchJob();
       checkSavedStatus();
+      fetchExchangeRate();
     }
   }, [params.jobId]);
+
+  const fetchExchangeRate = async () => {
+    try {
+      setExchangeRate(83);
+    } catch (error) {
+      console.error("Error fetching exchange rate:", error);
+      setExchangeRate(83);
+    }
+  };
+
+  const formatUSD = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatINR = (amount) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   const extractJobId = (formattedJobId) => {
     const match = formattedJobId.match(/-(\d+)$/);
@@ -115,38 +149,145 @@ export default function JobDetailPage() {
     return `JOB-${id.toString().padStart(6, "0")}`;
   };
 
-  const getTimeAgo = (date) => {
-    const now = new Date();
-    const posted = new Date(date);
-    const diff = now - posted;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  // Format client join date properly
+  const formatJoinDate = (dateString) => {
+    if (!dateString) {
+      return "Recently joined";
+    }
+    
+    try {
+      const date = new Date(dateString);
+      
+      if (isNaN(date.getTime())) {
+        console.warn("Invalid date received:", dateString);
+        return "Recently joined";
+      }
+      
+      // Format: "January 15, 2024"
+      return new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }).format(date);
+    } catch (error) {
+      console.error("Error formatting join date:", error, "Date string:", dateString);
+      return "Recently joined";
+    }
+  };
 
-    if (hours < 1) return "Just now";
-    if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-    if (days === 1) return "1 day ago";
-    if (days < 7) return `${days} days ago`;
-    if (days < 30)
-      return `${Math.floor(days / 7)} week${
-        Math.floor(days / 7) > 1 ? "s" : ""
+  // Format relative time (e.g., "2 months ago")
+  const formatRelativeTime = (dateString) => {
+    if (!dateString) return "Recently";
+    
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffInMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
+      
+      if (diffInMonths === 0) {
+        return "This month";
+      } else if (diffInMonths === 1) {
+        return "1 month ago";
+      } else if (diffInMonths < 12) {
+        return `${diffInMonths} months ago`;
+      } else {
+        const years = Math.floor(diffInMonths / 12);
+        return years === 1 ? "1 year ago" : `${years} years ago`;
+      }
+    } catch (error) {
+      return "Recently";
+    }
+  };
+
+  // Convert USD to INR
+  const convertToINR = (usdAmount) => {
+    return Math.round(usdAmount * exchangeRate);
+  };
+
+  // Format currency display
+  const formatBudget = (budget) => {
+    const inrAmount = convertToINR(budget);
+    const usdFormatted = formatUSD(budget);
+    const inrFormatted = formatINR(inrAmount);
+
+    switch (currency) {
+      case "usd":
+        return {
+          display: usdFormatted,
+          tooltip: inrFormatted,
+        };
+      case "inr":
+        return {
+          display: inrFormatted,
+          tooltip: usdFormatted,
+        };
+      default:
+        return {
+          display: usdFormatted,
+          secondary: inrFormatted,
+          tooltip: null,
+        };
+    }
+  };
+
+  const getTimeAgo = (date) => {
+    if (!date) return "Recently";
+    
+    try {
+      const now = new Date();
+      const posted = new Date(date);
+      
+      if (isNaN(posted.getTime())) {
+        return "Recently";
+      }
+      
+      const diff = now - posted;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+      if (hours < 1) return "Just now";
+      if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+      if (days === 1) return "1 day ago";
+      if (days < 7) return `${days} days ago`;
+      if (days < 30)
+        return `${Math.floor(days / 7)} week${
+          Math.floor(days / 7) > 1 ? "s" : ""
+        } ago`;
+      return `${Math.floor(days / 30)} month${
+        Math.floor(days / 30) > 1 ? "s" : ""
       } ago`;
-    return `${Math.floor(days / 30)} month${
-      Math.floor(days / 30) > 1 ? "s" : ""
-    } ago`;
+    } catch (error) {
+      console.error("Error calculating time ago:", error);
+      return "Recently";
+    }
   };
 
   const getUrgencyLevel = (deadline) => {
-    const now = new Date();
-    const deadlineDate = new Date(deadline);
-    const diffDays = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
+    if (!deadline) {
+      return { level: "low", label: "Flexible", color: "#059669" };
+    }
+    
+    try {
+      const now = new Date();
+      const deadlineDate = new Date(deadline);
+      
+      if (isNaN(deadlineDate.getTime())) {
+        return { level: "low", label: "Flexible", color: "#059669" };
+      }
+      
+      const diffDays = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
 
-    if (diffDays <= 1)
-      return { level: "critical", label: "Urgent", color: "#dc2626" };
-    if (diffDays <= 3)
-      return { level: "high", label: "Soon", color: "#ea580c" };
-    if (diffDays <= 7)
-      return { level: "medium", label: "This week", color: "#d97706" };
-    return { level: "low", label: "Flexible", color: "#059669" };
+      if (diffDays <= 1)
+        return { level: "critical", label: "Urgent", color: "#dc2626" };
+      if (diffDays <= 3)
+        return { level: "high", label: "Soon", color: "#ea580c" };
+      if (diffDays <= 7)
+        return { level: "medium", label: "This week", color: "#d97706" };
+      return { level: "low", label: "Flexible", color: "#059669" };
+    } catch (error) {
+      console.error("Error calculating urgency level:", error);
+      return { level: "low", label: "Flexible", color: "#059669" };
+    }
   };
 
   const shareJob = (platform) => {
@@ -214,6 +355,7 @@ export default function JobDetailPage() {
   const urgency = getUrgencyLevel(job.deadline);
   const isFeatured = job.budget > 1000;
   const isVerifiedClient = job.user.avgRating > 4.0;
+  const budget = formatBudget(job.budget);
 
   return (
     <div className={styles.container}>
@@ -234,6 +376,30 @@ export default function JobDetailPage() {
           </motion.button>
 
           <div className={styles.navActions}>
+            {/* Currency Toggle */}
+            <div className={styles.currencyToggle}>
+              <div className={styles.currencyButtons}>
+                {currencyOptions.map((option) => {
+                  const IconComponent = option.icon;
+                  return (
+                    <button
+                      key={option.value}
+                      className={`${styles.currencyButton} ${
+                        currency === option.value ? styles.active : ""
+                      }`}
+                      onClick={() => setCurrency(option.value)}
+                      title={option.label}
+                    >
+                      <IconComponent className={styles.currencyIcon} />
+                      <span className={styles.currencyText}>
+                        {option.value.toUpperCase()}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <motion.button
               onClick={() => setShowShareModal(true)}
               className={styles.shareButton}
@@ -322,9 +488,16 @@ export default function JobDetailPage() {
                 </div>
                 <div className={styles.overviewContent}>
                   <span className={styles.overviewLabel}>Budget</span>
-                  <strong className={styles.overviewValue}>
-                    ${job.budget.toLocaleString()}
-                  </strong>
+                  <div className={styles.budgetDisplay}>
+                    <strong className={styles.budgetPrimary}>
+                      {budget.display}
+                    </strong>
+                    {budget.secondary && (
+                      <span className={styles.budgetSecondary}>
+                        {budget.secondary}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -335,7 +508,7 @@ export default function JobDetailPage() {
                 <div className={styles.overviewContent}>
                   <span className={styles.overviewLabel}>Deadline</span>
                   <strong className={styles.overviewValue}>
-                    {new Date(job.deadline).toLocaleDateString()}
+                    {job.deadline ? new Date(job.deadline).toLocaleDateString() : "Flexible"}
                   </strong>
                 </div>
               </div>
@@ -379,7 +552,7 @@ export default function JobDetailPage() {
               </h2>
             </div>
             <div className={styles.descriptionContent}>
-              {job.description.split("\n").map((paragraph, index) => (
+              {job.description && job.description.split("\n").map((paragraph, index) => (
                 <motion.p
                   key={index}
                   initial={{ opacity: 0, y: 10 }}
@@ -405,10 +578,10 @@ export default function JobDetailPage() {
               </h2>
             </div>
             <div className={styles.skillsGrid}>
-              {job.skills.map((skill, index) => (
+              {job.skills && job.skills.map((skill, index) => (
                 <motion.div
                   key={index}
-                  className={styles.skillTag}
+                  className={styles.skillsTag}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
@@ -473,7 +646,11 @@ export default function JobDetailPage() {
                     </span>
                   </div>
                   <div className={styles.memberSince}>
-                    Member since {new Date(job.user.createdAt).getFullYear()}
+                    <FaCalendarAlt />
+                    <span>Member since {formatJoinDate(job.user.createdAt)}</span>
+                    <span className={styles.relativeTime}>
+                      ({formatRelativeTime(job.user.createdAt)})
+                    </span>
                   </div>
                 </div>
 
@@ -509,7 +686,7 @@ export default function JobDetailPage() {
               <div>
                 <strong>{urgency.label} Deadline</strong>
                 <span>
-                  Apply before {new Date(job.deadline).toLocaleDateString()}
+                  Apply before {job.deadline ? new Date(job.deadline).toLocaleDateString() : "Open"}
                 </span>
               </div>
             </motion.div>
@@ -536,7 +713,7 @@ export default function JobDetailPage() {
                   { label: "Job ID", value: formatJobId(job.id) },
                   { label: "Client", value: job.user.name },
                   { label: "Proposals", value: job._count?.proposals || 0 },
-                  { label: "Budget", value: `$${job.budget.toLocaleString()}` },
+                  { label: "Budget", value: budget.display },
                 ].map((stat, index) => (
                   <motion.div
                     key={stat.label}

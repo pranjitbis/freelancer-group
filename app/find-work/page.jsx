@@ -6,25 +6,22 @@ import Nav from "../home/component/Nav/page";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSearch,
-  FaFilter,
   FaBriefcase,
   FaUser,
   FaMoneyBillWave,
   FaClock,
   FaStar,
-  FaMapMarkerAlt,
   FaFire,
-  FaRocket,
-  FaRegClock,
   FaCheckCircle,
   FaRegHeart,
   FaHeart,
-  FaSortAmountDown,
-  FaEye,
   FaCalendarAlt,
   FaTags,
+  FaDollarSign,
+  FaGlobeAmericas,
 } from "react-icons/fa";
 import { IoStatsChart } from "react-icons/io5";
+import { RiMoneyRupeeCircleFill } from "react-icons/ri";
 
 export default function FreelancerHub() {
   const [jobs, setJobs] = useState([]);
@@ -45,23 +42,19 @@ export default function FreelancerHub() {
   const [savedJobs, setSavedJobs] = useState(new Set());
   const [viewedJobs, setViewedJobs] = useState(new Set());
   const [user, setUser] = useState(null);
+  const [exchangeRate, setExchangeRate] = useState(83); // Default INR rate
+  const [currency, setCurrency] = useState("usd"); // "usd", "inr", or "both"
   const router = useRouter();
 
   const categories = [
-    { value: "all", label: "All Categories", icon: "🌐" },
-    { value: "web-development", label: "Web Development", icon: "💻" },
-    { value: "mobile-development", label: "Mobile Development", icon: "📱" },
-    { value: "graphic-design", label: "Graphic Design", icon: "🎨" },
-    { value: "digital-marketing", label: "Digital Marketing", icon: "📈" },
-    {
-      value: "writing-translation",
-      label: "Writing & Translation",
-      icon: "✍️",
-    },
-    { value: "video-animation", label: "Video & Animation", icon: "🎥" },
-    { value: "data-science", label: "Data Science", icon: "📊" },
-    { value: "ai-ml", label: "AI & ML", icon: "🤖" },
-    { value: "cybersecurity", label: "Cybersecurity", icon: "🔒" },
+    { value: "all", label: "All Categories" },
+    { value: "web-development", label: "Web Development" },
+    { value: "mobile-development", label: "Mobile Development" },
+    { value: "graphic-design", label: "Graphic Design" },
+    { value: "digital-marketing", label: "Digital Marketing" },
+    { value: "video-animation", label: "Video & Animation" },
+    { value: "data-science", label: "Data Science" },
+    { value: "ai-ml", label: "AI & ML" },
   ];
 
   const experienceLevels = [
@@ -77,14 +70,50 @@ export default function FreelancerHub() {
     { value: "deadline", label: "Urgent First" },
   ];
 
+  const currencyOptions = [
+    { value: "usd", label: "USD Only", icon: FaDollarSign },
+    { value: "inr", label: "INR Only", icon: RiMoneyRupeeCircleFill },
+  ];
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
       setUser(JSON.parse(userData));
     }
+    fetchExchangeRate();
     fetchJobs();
     loadSavedJobs();
   }, [filters, pagination.currentPage]);
+
+  // Fetch current USD to INR exchange rate
+  const fetchExchangeRate = async () => {
+    try {
+      setExchangeRate(83); // Fixed rate for demo
+    } catch (error) {
+      console.error("Error fetching exchange rate:", error);
+      setExchangeRate(83); // Fallback rate
+    }
+  };
+
+  // Format USD with standard international formatting
+  const formatUSD = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  // Format INR with Indian numbering system (2,20,727 format)
+  const formatINR = (amount) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   const fetchJobs = async () => {
     try {
@@ -141,6 +170,38 @@ export default function FreelancerHub() {
     const username = job.user.name.toLowerCase().replace(/\s+/g, "-");
     const jobId = `JOB-${job.id.toString().padStart(6, "0")}`;
     router.push(`/find-work/${username}/${jobId}`);
+  };
+
+  // Convert USD to INR
+  const convertToINR = (usdAmount) => {
+    return Math.round(usdAmount * exchangeRate);
+  };
+
+  // Format currency display based on selected currency option
+  const formatBudget = (budget) => {
+    const inrAmount = convertToINR(budget);
+    const usdFormatted = formatUSD(budget);
+    const inrFormatted = formatINR(inrAmount);
+
+    switch (currency) {
+      case "usd":
+        return {
+          display: usdFormatted,
+          tooltip: inrFormatted,
+        };
+      case "inr":
+        return {
+          display: inrFormatted,
+          tooltip: usdFormatted,
+        };
+      case "both":
+      default:
+        return {
+          display: usdFormatted,
+          secondary: inrFormatted,
+          tooltip: null,
+        };
+    }
   };
 
   const getTimeAgo = (date) => {
@@ -212,12 +273,48 @@ export default function FreelancerHub() {
   return (
     <div className={styles.container}>
       <Nav />
-
       {/* Advanced Search Section */}
       <section className={styles.searchSection}>
         <div className={styles.searchContainer}>
           <div className={styles.searchHeader}>
-            <h2>Discover Perfect Projects</h2>
+            <div className={styles.headerTop}>
+              <div className={styles.headerText}>
+                <h1 className={styles.mainTitle}>Find Your Next Project</h1>
+                <p className={styles.subtitle}>
+                  Discover opportunities that match your skills and expertise
+                </p>
+              </div>
+              <div className={styles.currencyControls}>
+                <div className={styles.currencyToggle}>
+                  <span className={styles.currencyLabel}>
+                    Display Currency:
+                  </span>
+                  <div className={styles.currencyButtons}>
+                    {currencyOptions.map((option) => {
+                      const IconComponent = option.icon;
+                      return (
+                        <button
+                          key={option.value}
+                          className={`${styles.currencyButton} ${
+                            currency === option.value ? styles.active : ""
+                          }`}
+                          onClick={() => setCurrency(option.value)}
+                          title={option.label}
+                        >
+                          <IconComponent className={styles.currencyIcon} />
+                          <span className={styles.currencyText}>
+                            {option.value.toUpperCase()}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className={styles.exchangeRate}>
+                  <small>1 USD = {formatINR(exchangeRate)}</small>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className={styles.searchRow}>
@@ -232,11 +329,37 @@ export default function FreelancerHub() {
               />
             </div>
 
-            <div className={styles.quickFilters}>
+            <div className={styles.filterControls}>
+              <select
+                value={filters.category}
+                onChange={(e) => handleFilterChange("category", e.target.value)}
+                className={styles.filterSelect}
+              >
+                {categories.map((category) => (
+                  <option key={category.value} value={category.value}>
+                    {category.label}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={filters.experienceLevel}
+                onChange={(e) =>
+                  handleFilterChange("experienceLevel", e.target.value)
+                }
+                className={styles.filterSelect}
+              >
+                {experienceLevels.map((level) => (
+                  <option key={level.value} value={level.value}>
+                    {level.label}
+                  </option>
+                ))}
+              </select>
+
               <select
                 value={filters.sortBy}
                 onChange={(e) => handleFilterChange("sortBy", e.target.value)}
-                className={styles.sortSelect}
+                className={styles.filterSelect}
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -248,61 +371,6 @@ export default function FreelancerHub() {
           </div>
         </div>
       </section>
-
-      {/* Featured Jobs Carousel */}
-      {featuredJobs.length > 0 && (
-        <section className={styles.featuredSection}>
-          <div className={styles.sectionHeader}>
-            <div className={styles.headerTitle}>
-              <FaFire className={styles.featuredIcon} />
-              <h2>Featured Opportunities</h2>
-            </div>
-            <span className={styles.sectionBadge}>Premium</span>
-          </div>
-
-          <div className={styles.featuredGrid}>
-            {featuredJobs.map((job) => (
-              <motion.div
-                key={job.id}
-                className={styles.featuredCard}
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                onClick={() => handleJobClick(job)}
-              >
-                <div className={styles.featuredBadge}>
-                  <FaStar />
-                  Featured
-                </div>
-                <div className={styles.cardHeader}>
-                  <h3>{job.title}</h3>
-                  <div className={styles.budgetHighlight}>
-                    ${job.budget.toLocaleString()}
-                  </div>
-                </div>
-                <p className={styles.featuredDescription}>
-                  {truncateDescription(job.description, 25)}
-                </p>
-                <div className={styles.featuredSkills}>
-                  {job.skills.slice(0, 4).map((skill, index) => (
-                    <span key={index} className={styles.featuredSkillTag}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-                <div className={styles.clientInfo}>
-                  <div className={styles.rating}>
-                    <FaStar />
-                    <span>{job.user.avgRating || "New"}</span>
-                  </div>
-                  <span>•</span>
-                  <span>{job.user.reviewCount || 0} reviews</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* Main Jobs Grid */}
       <motion.section
         className={styles.jobsSection}
@@ -311,9 +379,14 @@ export default function FreelancerHub() {
         animate="visible"
       >
         <div className={styles.sectionHeader}>
-          <div className={styles.headerTitle}>
-            <IoStatsChart className={styles.statsIcon} />
-            <h2>All Opportunities</h2>
+          <div className={styles.headerContent}>
+            <IoStatsChart className={styles.sectionIcon} />
+            <div>
+              <h2 className={styles.sectionTitle}>All Projects</h2>
+              <p className={styles.sectionDescription}>
+                Browse all available opportunities
+              </p>
+            </div>
           </div>
           <div className={styles.resultsInfo}>
             <span className={styles.resultCount}>
@@ -322,151 +395,168 @@ export default function FreelancerHub() {
           </div>
         </div>
 
-        <div className={styles.jobsGrid}>
-          {jobs.map((job) => {
-            const urgency = getUrgencyLevel(job.deadline);
-            const isSaved = savedJobs.has(job.id);
-            const isViewed = viewedJobs.has(job.id);
+        {loading ? (
+          <div className={styles.loadingState}>
+            <div className={styles.loadingSpinner}></div>
+            <p>Loading projects...</p>
+          </div>
+        ) : (
+          <div className={styles.jobsGrid}>
+            {jobs.map((job) => {
+              const urgency = getUrgencyLevel(job.deadline);
+              const isSaved = savedJobs.has(job.id);
+              const isViewed = viewedJobs.has(job.id);
+              const budget = formatBudget(job.budget);
 
-            return (
-              <motion.div
-                key={job.id}
-                className={`${styles.jobCard} ${isViewed ? styles.viewed : ""}`}
-                variants={itemVariants}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              >
-                {/* Card Header with Client Info */}
-                <div className={styles.cardHeader}>
-                  <div className={styles.clientSection}>
-                    <div className={styles.avatar}>
-                      {job.user.profile?.avatar ? (
-                        <img
-                          src={job.user.profile.avatar}
-                          alt={job.user.name}
-                        />
-                      ) : (
-                        <FaUser />
-                      )}
-                      {job.user.avgRating > 4.5 && (
-                        <div
-                          className={styles.premiumBadge}
-                          title="Top Rated Client"
-                        >
+              return (
+                <motion.div
+                  key={job.id}
+                  className={`${styles.jobCard} ${
+                    isViewed ? styles.viewed : ""
+                  }`}
+                  variants={itemVariants}
+                  whileHover={{ y: -2 }}
+                >
+                  {/* Card Header */}
+                  <div className={styles.cardHeader}>
+                    <div className={styles.clientInfo}>
+                      <div className={styles.avatar}>
+                        {job.user.profile?.avatar ? (
+                          <img
+                            src={job.user.profile.avatar}
+                            alt={job.user.name}
+                          />
+                        ) : (
+                          <FaUser />
+                        )}
+                        {job.user.avgRating > 4.5 && (
+                          <div
+                            className={styles.verifiedBadge}
+                            title="Top Rated Client"
+                          >
+                            <FaCheckCircle />
+                          </div>
+                        )}
+                      </div>
+                      <div className={styles.clientDetails}>
+                        <h4 className={styles.clientName}>{job.user.name}</h4>
+                        <div className={styles.rating}>
                           <FaStar />
+                          <span>{job.user.avgRating || "New"}</span>
+                          <span className={styles.reviewCount}>
+                            ({job.user.reviewCount || 0})
+                          </span>
                         </div>
-                      )}
+                      </div>
                     </div>
-                    <div className={styles.clientDetails}>
-                      <h4>{job.user.name}</h4>
-                      <div className={styles.rating}>
-                        <FaStar />
-                        <span>{job.user.avgRating || "New"}</span>
-                        <span>({job.user.reviewCount || 0})</span>
+
+                    <div className={styles.cardActions}>
+                      <button
+                        className={`${styles.saveButton} ${
+                          isSaved ? styles.saved : ""
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSaveJob(job.id);
+                        }}
+                        title={isSaved ? "Remove from saved" : "Save job"}
+                      >
+                        {isSaved ? <FaHeart /> : <FaRegHeart />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Job Content */}
+                  <div className={styles.jobContent}>
+                    <h3
+                      className={styles.jobTitle}
+                      onClick={() => handleJobClick(job)}
+                    >
+                      {job.title}
+                    </h3>
+
+                    <div className={styles.jobMeta}>
+                      <div className={styles.metaItem}>
+                        <FaCalendarAlt />
+                        <span>{getTimeAgo(job.createdAt)}</span>
+                      </div>
+                      <div className={styles.metaItem}>
+                        <FaClock />
+                        <span style={{ color: urgency.color }}>
+                          {urgency.label}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div
+                      className={styles.budget}
+                      title={budget.tooltip || undefined}
+                    >
+                      <FaMoneyBillWave />
+                      <div className={styles.budgetAmounts}>
+                        <div className={styles.budgetPrimary}>
+                          {budget.display}
+                        </div>
+                        {budget.secondary && (
+                          <div className={styles.budgetSecondary}>
+                            {budget.secondary}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <p className={styles.jobDescription}>
+                      {truncateDescription(job.description, 20)}
+                    </p>
+
+                    <div className={styles.skillsContainer}>
+                      <div className={styles.skillsHeader}>
+                        <FaTags />
+                        <span>Required Skills</span>
+                      </div>
+                      <div className={styles.skills}>
+                        {job.skills.slice(0, 5).map((skill, index) => (
+                          <span key={index} className={styles.skillTag}>
+                            {skill}
+                          </span>
+                        ))}
+                        {job.skills.length > 5 && (
+                          <span className={styles.moreSkills}>
+                            +{job.skills.length - 5}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className={styles.additionalInfo}>
+                      <div className={styles.infoItem}>
+                        <FaBriefcase />
+                        <span>{job.category.replace("-", " ")}</span>
+                      </div>
+                      <div className={styles.infoItem}>
+                        <FaUser />
+                        <span>{job.experienceLevel}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className={styles.cardActions}>
-                    <button
-                      className={`${styles.saveButton} ${
-                        isSaved ? styles.saved : ""
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSaveJob(job.id);
-                      }}
-                    >
-                      {isSaved ? <FaHeart /> : <FaRegHeart />}
-                    </button>
-                    <div
-                      className={styles.urgency}
-                      style={{ color: urgency.color }}
-                    >
-                      <FaClock />
-                      {urgency.label}
+                  {/* Card Footer */}
+                  <div className={styles.cardFooter}>
+                    <div className={styles.proposals}>
+                      <span>{job._count?.proposals || 0} proposals</span>
                     </div>
+                    <button
+                      className={styles.viewButton}
+                      onClick={() => handleJobClick(job)}
+                    >
+                      View Details
+                    </button>
                   </div>
-                </div>
-
-                {/* Job Title */}
-                <h3
-                  className={styles.jobTitle}
-                  onClick={() => handleJobClick(job)}
-                >
-                  {job.title}
-                  {isViewed && <FaEye className={styles.viewedIcon} />}
-                </h3>
-
-                {/* Upload Time */}
-                <div className={styles.uploadTime}>
-                  <FaCalendarAlt className={styles.timeIcon} />
-                  <span>Posted {getTimeAgo(job.createdAt)}</span>
-                </div>
-
-                {/* Budget */}
-                <div className={styles.budgetSection}>
-                  <FaMoneyBillWave className={styles.budgetIcon} />
-                  <span className={styles.budgetAmount}>
-                    ${job.budget.toLocaleString()}
-                  </span>
-                  <span className={styles.budgetLabel}>Budget</span>
-                </div>
-
-                {/* Description */}
-                <div className={styles.descriptionSection}>
-                  <p className={styles.jobDescription}>
-                    {truncateDescription(job.description, 20)}
-                  </p>
-                </div>
-
-                {/* Skills */}
-                <div className={styles.skillsSection}>
-                  <div className={styles.skillsHeader}>
-                    <FaTags className={styles.skillsIcon} />
-                    <span>Required Skills</span>
-                  </div>
-                  <div className={styles.skills}>
-                    {job.skills.slice(0, 5).map((skill, index) => (
-                      <span key={index} className={styles.skillTag}>
-                        {skill}
-                      </span>
-                    ))}
-                    {job.skills.length > 5 && (
-                      <span className={styles.moreSkills}>
-                        +{job.skills.length - 5}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Job Meta Information */}
-                <div className={styles.jobMeta}>
-                  <div className={styles.metaItem}>
-                    <FaBriefcase />
-                    <span>{job.category.replace("-", " ")}</span>
-                  </div>
-                  <div className={styles.metaItem}>
-                    <FaUser />
-                    <span>{job.experienceLevel}</span>
-                  </div>
-                </div>
-
-                {/* Card Footer */}
-                <div className={styles.cardFooter}>
-                  <div className={styles.proposalsInfo}>
-                    <span>{job._count.proposals} proposals</span>
-                  </div>
-                  <button
-                    className={styles.applyButton}
-                    onClick={() => handleJobClick(job)}
-                  >
-                    View Details
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Pagination */}
         {pagination.totalPages > 1 && (
@@ -523,40 +613,37 @@ export default function FreelancerHub() {
             </button>
           </div>
         )}
-      </motion.section>
 
-      {/* Empty State */}
-      {jobs.length === 0 && !loading && (
-        <motion.div
-          className={styles.emptyState}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div className={styles.emptyIllustration}>
-            <FaBriefcase size={64} />
-          </div>
-          <h3>No projects match your criteria</h3>
-          <p>
-            Try adjusting your filters or search terms to find more
-            opportunities
-          </p>
-          <button
-            className={styles.resetFilters}
-            onClick={() =>
-              setFilters({
-                search: "",
-                category: "all",
-                minBudget: "",
-                maxBudget: "",
-                experienceLevel: "all",
-                sortBy: "createdAt",
-              })
-            }
+        {/* Empty State */}
+        {jobs.length === 0 && !loading && (
+          <motion.div
+            className={styles.emptyState}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
-            Reset All Filters
-          </button>
-        </motion.div>
-      )}
+            <div className={styles.emptyIllustration}>
+              <FaBriefcase />
+            </div>
+            <h3>No projects found</h3>
+            <p>Try adjusting your search criteria or filters</p>
+            <button
+              className={styles.resetButton}
+              onClick={() =>
+                setFilters({
+                  search: "",
+                  category: "all",
+                  minBudget: "",
+                  maxBudget: "",
+                  experienceLevel: "all",
+                  sortBy: "createdAt",
+                })
+              }
+            >
+              Clear Filters
+            </button>
+          </motion.div>
+        )}
+      </motion.section>
     </div>
   );
 }

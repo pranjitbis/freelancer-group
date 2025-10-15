@@ -89,7 +89,7 @@ model UserProfile {
 model JobPost {
   id              Int      @id @default(autoincrement())
   title           String
-  description     String
+  description String   @db.Text
   category        String
   skills          String
   budget          Float

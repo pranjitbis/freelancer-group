@@ -17,7 +17,7 @@ import {
   FaPenFancy,
   FaVideo,
   FaDatabase,
-  FaUserTie
+  FaUserTie,
 } from "react-icons/fa";
 
 export default function PostJob() {
@@ -48,19 +48,39 @@ export default function PostJob() {
 
   const categories = [
     { value: "web-development", label: "Web Development", icon: <FaCode /> },
-    { value: "mobile-development", label: "Mobile Development", icon: <FaCode /> },
+    {
+      value: "mobile-development",
+      label: "Mobile Development",
+      icon: <FaCode />,
+    },
     { value: "graphic-design", label: "Graphic Design", icon: <FaPalette /> },
-    { value: "digital-marketing", label: "Digital Marketing", icon: <FaChartLine /> },
-    { value: "writing-translation", label: "Writing & Translation", icon: <FaPenFancy /> },
+    {
+      value: "digital-marketing",
+      label: "Digital Marketing",
+      icon: <FaChartLine />,
+    },
+    {
+      value: "writing-translation",
+      label: "Writing & Translation",
+      icon: <FaPenFancy />,
+    },
     { value: "video-animation", label: "Video & Animation", icon: <FaVideo /> },
     { value: "data-science", label: "Data Science", icon: <FaDatabase /> },
-    { value: "business", label: "Business Consulting", icon: <FaUserTie /> }
+    { value: "business", label: "Business Consulting", icon: <FaUserTie /> },
   ];
 
   const experienceLevels = [
-    { value: "entry", label: "Entry Level", description: "0-2 years experience" },
-    { value: "intermediate", label: "Intermediate", description: "2-5 years experience" },
-    { value: "expert", label: "Expert", description: "5+ years experience" }
+    {
+      value: "entry",
+      label: "Entry Level",
+      description: "0-2 years experience",
+    },
+    {
+      value: "intermediate",
+      label: "Intermediate",
+      description: "2-5 years experience",
+    },
+    { value: "expert", label: "Expert", description: "5+ years experience" },
   ];
 
   const handleInputChange = (e) => {
@@ -151,11 +171,11 @@ export default function PostJob() {
   };
 
   const nextStep = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 3));
+    setCurrentStep((prev) => Math.min(prev + 1, 3));
   };
 
   const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
   const containerVariants = {
@@ -163,9 +183,9 @@ export default function PostJob() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -175,15 +195,15 @@ export default function PostJob() {
       y: 0,
       transition: {
         type: "spring",
-        stiffness: 100
-      }
-    }
+        stiffness: 100,
+      },
+    },
   };
 
   const stepVariants = {
     enter: { opacity: 0, x: 50 },
     center: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: -50 }
+    exit: { opacity: 0, x: -50 },
   };
 
   if (!user) {
@@ -218,7 +238,10 @@ export default function PostJob() {
           </motion.div>
           <div className={styles.headerText}>
             <h1>Post a New Job</h1>
-            <p>Find the perfect talent for your project and bring your ideas to life</p>
+            <p>
+              Find the perfect talent for your project and bring your ideas to
+              life
+            </p>
           </div>
         </div>
       </motion.div>
@@ -228,13 +251,17 @@ export default function PostJob() {
         <div className={styles.progressSteps}>
           {[1, 2, 3].map((step) => (
             <div key={step} className={styles.step}>
-              <div className={`${styles.stepCircle} ${currentStep >= step ? styles.active : ''}`}>
+              <div
+                className={`${styles.stepCircle} ${
+                  currentStep >= step ? styles.active : ""
+                }`}
+              >
                 {step}
               </div>
               <span className={styles.stepLabel}>
-                {step === 1 && 'Basic Info'}
-                {step === 2 && 'Details'}
-                {step === 3 && 'Review'}
+                {step === 1 && "Basic Info"}
+                {step === 2 && "Details"}
+                {step === 3 && "Review"}
               </span>
             </div>
           ))}
@@ -242,7 +269,7 @@ export default function PostJob() {
         <div className={styles.progressBar}>
           <motion.div
             className={styles.progressFill}
-            initial={{ width: '0%' }}
+            initial={{ width: "0%" }}
             animate={{ width: `${((currentStep - 1) / 2) * 100}%` }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
           />
@@ -272,7 +299,9 @@ export default function PostJob() {
                   value={formData.title}
                   onChange={handleInputChange}
                   placeholder="e.g., Need a React Developer for E-commerce Website"
-                  className={`${styles.input} ${errors.title ? styles.error : ""}`}
+                  className={`${styles.input} ${
+                    errors.title ? styles.error : ""
+                  }`}
                 />
                 <AnimatePresence>
                   {errors.title && (
@@ -298,11 +327,19 @@ export default function PostJob() {
                   value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Describe the project in detail, including requirements, deliverables, timeline expectations, and any specific instructions..."
-                  className={`${styles.textarea} ${errors.description ? styles.error : ""}`}
-                  rows="6"
+                  className={`${styles.textarea} ${
+                    errors.description ? styles.error : ""
+                  }`}
+                  rows="8"
                 />
                 <div className={styles.charCount}>
-                  {formData.description.length}/2000 characters
+                  {formData.description.length} characters
+                  {formData.description.length > 5000 && (
+                    <span className={styles.charWarning}>
+                      (Detailed description - freelancers appreciate thorough
+                      project details!)
+                    </span>
+                  )}
                 </div>
                 <AnimatePresence>
                   {errors.description && (
@@ -318,7 +355,10 @@ export default function PostJob() {
                 </AnimatePresence>
               </motion.div>
 
-              <motion.div className={styles.formActions} variants={itemVariants}>
+              <motion.div
+                className={styles.formActions}
+                variants={itemVariants}
+              >
                 <motion.button
                   type="button"
                   onClick={nextStep}
@@ -343,7 +383,10 @@ export default function PostJob() {
               className={styles.formStep}
             >
               <div className={styles.formRow}>
-                <motion.div className={styles.formGroup} variants={itemVariants}>
+                <motion.div
+                  className={styles.formGroup}
+                  variants={itemVariants}
+                >
                   <label className={styles.label}>
                     <FaCode className={styles.labelIcon} />
                     Category *
@@ -355,7 +398,12 @@ export default function PostJob() {
                         className={`${styles.categoryCard} ${
                           formData.category === cat.value ? styles.selected : ""
                         }`}
-                        onClick={() => setFormData(prev => ({ ...prev, category: cat.value }))}
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            category: cat.value,
+                          }))
+                        }
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
@@ -380,7 +428,10 @@ export default function PostJob() {
               </div>
 
               <div className={styles.formRow}>
-                <motion.div className={styles.formGroup} variants={itemVariants}>
+                <motion.div
+                  className={styles.formGroup}
+                  variants={itemVariants}
+                >
                   <label className={styles.label}>
                     <FaUserTie className={styles.labelIcon} />
                     Experience Level
@@ -390,9 +441,16 @@ export default function PostJob() {
                       <motion.div
                         key={level.value}
                         className={`${styles.experienceCard} ${
-                          formData.experienceLevel === level.value ? styles.selected : ""
+                          formData.experienceLevel === level.value
+                            ? styles.selected
+                            : ""
                         }`}
-                        onClick={() => setFormData(prev => ({ ...prev, experienceLevel: level.value }))}
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            experienceLevel: level.value,
+                          }))
+                        }
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
@@ -404,7 +462,10 @@ export default function PostJob() {
                 </motion.div>
               </div>
 
-              <motion.div className={styles.formActions} variants={itemVariants}>
+              <motion.div
+                className={styles.formActions}
+                variants={itemVariants}
+              >
                 <motion.button
                   type="button"
                   onClick={prevStep}
@@ -438,7 +499,10 @@ export default function PostJob() {
               className={styles.formStep}
             >
               <div className={styles.formRow}>
-                <motion.div className={styles.formGroup} variants={itemVariants}>
+                <motion.div
+                  className={styles.formGroup}
+                  variants={itemVariants}
+                >
                   <label className={styles.label}>
                     <FaDollarSign className={styles.labelIcon} />
                     Budget ($) *
@@ -454,7 +518,9 @@ export default function PostJob() {
                         placeholder="500"
                         min="50"
                         step="50"
-                        className={`${styles.input} ${errors.budget ? styles.error : ""}`}
+                        className={`${styles.input} ${
+                          errors.budget ? styles.error : ""
+                        }`}
                       />
                     </div>
                     <div className={styles.budgetSuggestions}>
@@ -464,7 +530,9 @@ export default function PostJob() {
                           key={amount}
                           type="button"
                           className={styles.budgetChip}
-                          onClick={() => setFormData(prev => ({ ...prev, budget: amount }))}
+                          onClick={() =>
+                            setFormData((prev) => ({ ...prev, budget: amount }))
+                          }
                         >
                           ${amount}
                         </button>
@@ -485,7 +553,10 @@ export default function PostJob() {
                   </AnimatePresence>
                 </motion.div>
 
-                <motion.div className={styles.formGroup} variants={itemVariants}>
+                <motion.div
+                  className={styles.formGroup}
+                  variants={itemVariants}
+                >
                   <label className={styles.label}>
                     <FaCalendar className={styles.labelIcon} />
                     Deadline *
@@ -497,7 +568,9 @@ export default function PostJob() {
                       name="deadline"
                       value={formData.deadline}
                       onChange={handleInputChange}
-                      className={`${styles.input} ${errors.deadline ? styles.error : ""}`}
+                      className={`${styles.input} ${
+                        errors.deadline ? styles.error : ""
+                      }`}
                     />
                   </div>
                   <AnimatePresence>
@@ -584,7 +657,59 @@ export default function PostJob() {
                 </div>
               </motion.div>
 
-              <motion.div className={styles.formActions} variants={itemVariants}>
+              {/* Job Preview Section */}
+              <motion.div className={styles.jobPreview} variants={itemVariants}>
+                <h3>Job Preview</h3>
+                <div className={styles.previewContent}>
+                  <div className={styles.previewSection}>
+                    <strong>Title:</strong>
+                    <p>{formData.title || "No title provided"}</p>
+                  </div>
+                  <div className={styles.previewSection}>
+                    <strong>Description:</strong>
+                    <p className={styles.previewDescription}>
+                      {formData.description || "No description provided"}
+                    </p>
+                    <div className={styles.descriptionStats}>
+                      <span>{formData.description.length} characters</span>
+                      <span>
+                        {
+                          formData.description
+                            .split(/\s+/)
+                            .filter((word) => word.length > 0).length
+                        }{" "}
+                        words
+                      </span>
+                    </div>
+                  </div>
+                  <div className={styles.previewSection}>
+                    <strong>Category:</strong>
+                    <p>
+                      {categories.find((cat) => cat.value === formData.category)
+                        ?.label || "Not selected"}
+                    </p>
+                  </div>
+                  <div className={styles.previewSection}>
+                    <strong>Skills:</strong>
+                    <div className={styles.previewSkills}>
+                      {formData.skills.length > 0 ? (
+                        formData.skills.map((skill) => (
+                          <span key={skill} className={styles.previewSkill}>
+                            {skill}
+                          </span>
+                        ))
+                      ) : (
+                        <span>No skills added</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className={styles.formActions}
+                variants={itemVariants}
+              >
                 <motion.button
                   type="button"
                   onClick={prevStep}

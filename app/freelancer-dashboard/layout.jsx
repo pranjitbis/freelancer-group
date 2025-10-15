@@ -13,7 +13,6 @@ import {
   FiLogOut,
   FiMenu,
   FiX,
-  FiHome,
 } from "react-icons/fi";
 import { MdDashboard } from "react-icons/md";
 import { useRouter, usePathname } from "next/navigation";
@@ -26,6 +25,8 @@ export default function DashboardLayout({ children }) {
   const [isMobile, setIsMobile] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [breadcrumbs, setBreadcrumbs] = useState([]);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -43,6 +44,112 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     fetchCurrentUser();
   }, []);
+
+  const menuItems = [
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      color: "#f65ce2ff",
+      icon: <MdDashboard />,
+      path: "/freelancer-dashboard",
+      bgColor: "#f0f9ff"
+    },
+    {
+      id: "messages",
+      label: "Messages",
+      icon: <FiMessageSquare />,
+      color: "#8B5CF6",
+      path: "/freelancer-dashboard/messages",
+      bgColor: "#faf5ff"
+    },
+    {
+      id: "plan",
+      label: "Plan",
+      icon: <IoPricetags />,
+      color: "#af7a07ff",
+      path: "/freelancer-dashboard/plan",
+      bgColor: "#fffbeb"
+    },
+    {
+      id: "profile",
+      label: "Profile",
+      icon: <FiUser />,
+      color: "#10B981",
+      path: "/freelancer-dashboard/profile",
+      bgColor: "#f0fdf4"
+    },
+    {
+      id: "wallet",
+      label: "Wallet",
+      icon: <FiDollarSign />,
+      color: "#06B6D4",
+      path: "/freelancer-dashboard/wallet",
+      bgColor: "#ecfeff"
+    },
+    {
+      id: "project-management",
+      label: "Project Management",
+      icon: <FiBarChart />,
+      color: "#8B5CF6",
+      path: "/freelancer-dashboard/project-management",
+      bgColor: "#faf5ff"
+    },
+  ];
+
+  // Update active tab, background color and breadcrumbs based on current route
+  useEffect(() => {
+    const routeMap = {
+      "/freelancer-dashboard": {
+        tab: "dashboard",
+        color: "#f0f9ff",
+        breadcrumbs: ["Dashboard"]
+      },
+      "/freelancer-dashboard/messages": {
+        tab: "messages", 
+        color: "#faf5ff",
+        breadcrumbs: ["Dashboard", "Messages"]
+      },
+      "/freelancer-dashboard/plan": {
+        tab: "plan",
+        color: "#fffbeb",
+        breadcrumbs: ["Dashboard", "Plan"]
+      },
+      "/freelancer-dashboard/profile": {
+        tab: "profile",
+        color: "#f0fdf4",
+        breadcrumbs: ["Dashboard", "Profile"]
+      },
+      "/freelancer-dashboard/wallet": {
+        tab: "wallet",
+        color: "#ecfeff",
+        breadcrumbs: ["Dashboard", "Wallet"]
+      },
+      "/freelancer-dashboard/project-management": {
+        tab: "project-management",
+        color: "#faf5ff",
+        breadcrumbs: ["Dashboard", "Project Management"]
+      },
+      "/freelancer-dashboard/settings": {
+        tab: "settings",
+        color: "#f8fafc",
+        breadcrumbs: ["Dashboard", "Settings"]
+      }
+    };
+
+    const currentRoute = Object.keys(routeMap).find((route) =>
+      pathname.startsWith(route)
+    );
+    
+    if (currentRoute) {
+      setActiveTab(routeMap[currentRoute].tab);
+      setBackgroundColor(routeMap[currentRoute].color);
+      setBreadcrumbs(routeMap[currentRoute].breadcrumbs);
+    } else {
+      // Default values
+      setBackgroundColor("#ffffff");
+      setBreadcrumbs(["Dashboard"]);
+    }
+  }, [pathname]);
 
   const fetchCurrentUser = async () => {
     try {
@@ -65,93 +172,6 @@ export default function DashboardLayout({ children }) {
     }
   };
 
-  // Update active tab based on current route
-  useEffect(() => {
-    const routeMap = {
-      "/freelancer-dashboard": "dashboard",
-      "/freelancer-dashboard/messages": "messages",
-      "/freelancer-dashboard/profile": "profile",
-      "/freelancer-dashboard/payments": "payments",
-      "/freelancer-dashboard/projects": "projects",
-      "/freelancer-dashboard/wallet": "wallet",
-      "/freelancer-dashboard/analytics": "analytics",
-      "/freelancer-dashboard/plan": "plan",
-    };
-
-    const currentTab = Object.keys(routeMap).find((route) =>
-      pathname.startsWith(route)
-    );
-    if (currentTab) {
-      setActiveTab(routeMap[currentTab]);
-    }
-  }, [pathname]);
-
-  const menuItems = [
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      color: "#f65ce2ff",
-      icon: <MdDashboard />,
-      path: "/freelancer-dashboard/",
-    },
-    {
-      id: "messages",
-      label: "Messages",
-      icon: <FiMessageSquare />,
-      color: "#8B5CF6",
-      path: "/freelancer-dashboard/messages",
-    },
-    {
-      id: "plan",
-      label: "Plan",
-      icon: <IoPricetags />,
-      color: "#af7a07ff",
-      path: "/freelancer-dashboard/plan",
-    },
-    {
-      id: "profile",
-      label: "Profile",
-      icon: <FiUser />,
-      color: "#10B981",
-      path: "/freelancer-dashboard/profile",
-    },
-    {
-      id: "payments",
-      label: "Payments",
-      icon: <FiCreditCard />,
-      color: "#F59E0B",
-      path: "/freelancer-dashboard/payments",
-    },
-    {
-      id: "projects",
-      label: "Projects",
-      icon: <FiBriefcase />,
-      color: "#EF4444",
-      path: "/freelancer-dashboard/projects",
-    },
-    {
-      id: "wallet",
-      label: "Wallet",
-      icon: <FiDollarSign />,
-      color: "#06B6D4",
-      path: "/freelancer-dashboard/wallet",
-    },
-    {
-      id: "analytics",
-      label: "Analytics",
-      icon: <FiBarChart />,
-      color: "#8B5CF6",
-      path: "/freelancer-dashboard/analytics",
-    },
-    {
-      id: "Project Management",
-      label: "Project Management",
-      icon: <FiBarChart />,
-      color: "#8B5CF6",
-      path: "/freelancer-dashboard/project-management",
-    },
-  ];
-
   const sidebarVariants = {
     open: { x: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
     closed: {
@@ -171,6 +191,7 @@ export default function DashboardLayout({ children }) {
 
   const handleNavigation = (item) => {
     setActiveTab(item.id);
+    setBackgroundColor(item.bgColor);
     setIsMobileMenuOpen(false);
     router.push(item.path);
   };
@@ -202,6 +223,36 @@ export default function DashboardLayout({ children }) {
       .slice(0, 2);
   };
 
+  // Function to get active dots based on current path
+  const getActiveDots = () => {
+    const activeItem = menuItems.find(item => item.path === pathname || pathname.startsWith(item.path));
+    if (activeItem) {
+      return (
+        <div className={styles.activeDots}>
+          {menuItems.map((item, index) => (
+            <motion.div
+              key={item.id}
+              className={`${styles.dot} ${
+                item.path === pathname || pathname.startsWith(item.path) 
+                  ? styles.activeDot 
+                  : styles.inactiveDot
+              }`}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: index * 0.1 }}
+              style={{
+                backgroundColor: item.path === pathname || pathname.startsWith(item.path) 
+                  ? item.color 
+                  : "#e5e7eb"
+              }}
+            />
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -216,13 +267,17 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div className={styles.dashboard}>
+    <div 
+      className={styles.dashboard}
+      style={{ backgroundColor }}
+    >
       {/* Mobile Header */}
       <motion.header
         className={styles.mobileHeader}
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
+        style={{ backgroundColor }}
       >
         <button
           className={styles.menuToggle}
@@ -230,7 +285,13 @@ export default function DashboardLayout({ children }) {
         >
           {isMobileMenuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
         </button>
-        <h1>Freelancer Pro</h1>
+        <div className={styles.mobileHeaderContent}>
+          <h1>Freelancer Pro</h1>
+          {/* Active dots for mobile */}
+          <div className={styles.mobileDots}>
+            {getActiveDots()}
+          </div>
+        </div>
         <div className={styles.avatarSmall}>
           {getUserInitials(currentUser?.name)}
         </div>
@@ -264,6 +325,11 @@ export default function DashboardLayout({ children }) {
                 </div>
               </div>
 
+              {/* Active dots for desktop sidebar */}
+              <div className={styles.sidebarDots}>
+                {getActiveDots()}
+              </div>
+
               <nav className={styles.nav}>
                 {menuItems.map((item, index) => (
                   <motion.button
@@ -279,6 +345,7 @@ export default function DashboardLayout({ children }) {
                     style={{
                       borderLeftColor:
                         activeTab === item.id ? item.color : "transparent",
+                      backgroundColor: activeTab === item.id ? `${item.color}15` : "transparent",
                     }}
                   >
                     <span
@@ -288,10 +355,15 @@ export default function DashboardLayout({ children }) {
                       {item.icon}
                     </span>
                     <span className={styles.navLabel}>{item.label}</span>
+                    
+                    {/* Active indicator dot */}
                     <motion.div
-                      className={styles.activeIndicator}
+                      className={styles.activeDotIndicator}
                       initial={{ scale: 0 }}
-                      animate={{ scale: activeTab === item.id ? 1 : 0 }}
+                      animate={{ 
+                        scale: (item.path === pathname || pathname.startsWith(item.path)) ? 1 : 0,
+                        backgroundColor: item.color
+                      }}
                       transition={{
                         type: "spring",
                         stiffness: 500,
@@ -347,7 +419,24 @@ export default function DashboardLayout({ children }) {
         </AnimatePresence>
 
         {/* Main Content */}
-        <main className={styles.main}>{children}</main>
+        <main 
+          className={styles.main}
+          style={{ backgroundColor }}
+        >
+          {/* Breadcrumbs */}
+          <div className={styles.breadcrumbs}>
+            {breadcrumbs.map((crumb, index) => (
+              <span key={index} className={styles.breadcrumbItem}>
+                {crumb}
+                {index < breadcrumbs.length - 1 && (
+                  <span className={styles.breadcrumbSeparator}>/</span>
+                )}
+              </span>
+            ))}
+          </div>
+          
+          {children}
+        </main>
       </div>
     </div>
   );

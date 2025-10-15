@@ -1,3 +1,4 @@
+// app/api/users/plan/route.js
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
@@ -32,7 +33,7 @@ export async function GET(request) {
       const newPlan = await prisma.userPlan.create({
         data: {
           planType: "free",
-          connects: 10,
+          connects: 10, // FIXED: 10 connects for free plan
           usedConnects: 0,
           userId: parseInt(userId),
         },
@@ -70,9 +71,10 @@ export async function POST(request) {
       );
     }
 
+    // FIXED: Correct plan configuration
     const planConfig = {
       free: { connects: 10, price: 0 },
-      premium: { connects: 100, price: 19 },
+      premium: { connects: 15, price: 999 }, // 15 connects for ₹999
     };
 
     const config = planConfig[planType];
@@ -87,13 +89,13 @@ export async function POST(request) {
       where: { userId: parseInt(userId) },
       update: {
         planType,
-        connects: config.connects,
+        connects: config.connects, // FIXED: Use config.connects
         usedConnects: 0, // Reset used connects when changing plan
         expiresAt,
       },
       create: {
         planType,
-        connects: config.connects,
+        connects: config.connects, // FIXED: Use config.connects
         usedConnects: 0,
         expiresAt,
         userId: parseInt(userId),
@@ -104,7 +106,7 @@ export async function POST(request) {
     await prisma.connectTransaction.create({
       data: {
         type: "plan_change",
-        amount: config.connects,
+        amount: config.connects, // FIXED: Use config.connects
         description: `Upgraded to ${planType} plan with ${config.connects} connects`,
         userId: parseInt(userId),
       },

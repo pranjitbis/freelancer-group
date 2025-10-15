@@ -20,6 +20,7 @@ export async function GET(request, { params }) {
         user: {
           select: {
             id: true,
+            createdAt: true,
             name: true,
             email: true,
             avatar: true,
@@ -27,6 +28,11 @@ export async function GET(request, { params }) {
               select: {
                 avatar: true,
                 bio: true,
+              },
+            },
+            reviewsReceived: {
+              select: {
+                rating: true,
               },
             },
           },
@@ -48,8 +54,6 @@ export async function GET(request, { params }) {
                 },
               },
             },
-            // Remove conversation include if it's causing issues
-            // conversation: true,
           },
           orderBy: { createdAt: "desc" },
         },
@@ -112,9 +116,28 @@ export async function GET(request, { params }) {
       skills = [];
     }
 
+    // Calculate average rating for client
+    const reviews = job.user.reviewsReceived || [];
+    const avgRating = reviews.length > 0
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      : 0;
+
     const jobWithParsedSkills = {
       ...job,
       skills,
+      description: job.description,
+      user: {
+        ...job.user,
+        profile: job.user.profile || {},
+        avgRating: Math.round(avgRating * 10) / 10,
+        reviewCount: reviews.length,
+        // Ensure createdAt is properly formatted
+        createdAt: job.user.createdAt.toISOString(),
+      },
+      // Ensure job dates are properly formatted
+      createdAt: job.createdAt.toISOString(),
+      updatedAt: job.updatedAt.toISOString(),
+      deadline: job.deadline.toISOString(),
     };
 
     return NextResponse.json({ job: jobWithParsedSkills });
@@ -243,6 +266,7 @@ export async function PUT(request, { params }) {
           select: {
             name: true,
             email: true,
+            createdAt: true,
           },
         },
       },
@@ -266,6 +290,14 @@ export async function PUT(request, { params }) {
       job: {
         ...updatedJob,
         skills: parsedSkills,
+        description: updatedJob.description,
+        createdAt: updatedJob.createdAt.toISOString(),
+        updatedAt: updatedJob.updatedAt.toISOString(),
+        deadline: updatedJob.deadline.toISOString(),
+        user: {
+          ...updatedJob.user,
+          createdAt: updatedJob.user.createdAt.toISOString(),
+        },
       },
     });
   } catch (error) {
