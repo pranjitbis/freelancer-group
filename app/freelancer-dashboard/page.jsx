@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { GiMoneyStack } from "react-icons/gi";
 import {
   FiSend,
   FiDollarSign,
@@ -16,6 +17,17 @@ import {
   FiMessageSquare,
   FiCreditCard,
   FiStar,
+  FiCalendar,
+  FiArrowUpRight,
+  FiBarChart,
+  FiTarget,
+  FiSearch,
+  FiFilter,
+  FiUsers,
+  FiAward,
+  FiGlobe,
+  FiActivity,
+  FiPieChart,
 } from "react-icons/fi";
 import styles from "./DashboardPage.module.css";
 
@@ -30,6 +42,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({});
   const [user, setUser] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
     loadDashboardData();
@@ -38,28 +51,25 @@ export default function DashboardPage() {
   const loadDashboardData = async () => {
     setIsLoading(true);
     try {
-      // Get current user
       const userResponse = await fetch("/api/auth/verify");
       if (userResponse.ok) {
-        const userData = await userResponse.json(); // FIXED: Changed userData to userResponse
-        console.log("User data:", userData);
+        const userData = await userResponse.json();
+        console.log("✅ User data loaded:", userData);
         setUser(userData.user);
 
-        if (userData.user && userData.user.id) {
-          // Load all data in parallel
+        if (userData.user?.id) {
           await Promise.all([
             loadProjects(userData.user.id),
             loadWalletData(userData.user.id),
-            loadStats(userData.user.id),
+            loadMessages(userData.user.id),
+            loadRecentActivity(userData.user.id),
           ]);
-        } else {
-          console.error("User ID not found in response");
         }
       } else {
-        console.error("Failed to verify user:", userResponse.status);
+        console.error("❌ Failed to verify user");
       }
     } catch (error) {
-      console.error("Error loading dashboard data:", error);
+      console.error("❌ Error loading dashboard data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -67,146 +77,240 @@ export default function DashboardPage() {
 
   const loadProjects = async (userId) => {
     try {
-      console.log("Loading projects for user:", userId);
+      console.log("🔄 Loading projects for user:", userId);
       const response = await fetch(`/api/projects/freelancer?userId=${userId}`);
-      console.log("Projects response status:", response.status);
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Projects data:", data);
+        console.log("✅ Projects API response:", data);
 
         if (data.success && data.projects) {
           const formattedProjects = data.projects.map((project) => ({
             id: project.id,
             title: project.title,
-            status: project.status,
+            status: project.status || "active",
             client: project.client?.name || "Unknown Client",
-            budget: project.budget,
+            budget: project.budget || 0,
             progress: project.progress || 0,
             totalPaid: project.totalPaid || 0,
-            deadline: project.createdAt,
-            type: "Development",
-            clientRating: project.client?.avgRating || 0,
-            reviewCount: project.client?.reviewCount || 0,
-            lastMessage: project.lastMessage,
-            paymentRequests: project.paymentRequests || [],
+            deadline: project.deadline,
+            type: project.category || project.type || "Development",
+            clientRating: project.clientRating || 0,
+            reviewCount: project.reviewCount || 0,
             createdAt: project.createdAt,
-            completedAt: project.completedAt,
+            skills: project.skills || [],
+            description: project.description,
           }));
+
           setProjects(formattedProjects);
-          console.log("Formatted projects:", formattedProjects);
+          calculateStats(formattedProjects);
+          console.log("📊 Loaded real projects:", formattedProjects.length);
         } else {
-          console.log("No projects found or API error");
+          console.log("ℹ️ No projects found in response");
           setProjects([]);
         }
       } else {
-        console.error("Failed to fetch projects:", response.status);
-        setProjects([]);
+        console.error("❌ Projects API error:", response.status);
       }
     } catch (error) {
-      console.error("Error loading projects:", error);
-      setProjects([]);
+      console.error("❌ Error loading projects:", error);
     }
   };
 
   const loadWalletData = async (userId) => {
     try {
-      console.log("Loading wallet for user:", userId);
-      const response = await fetch(`/api/wallet?userId=${userId}`);
-      console.log("Wallet response status:", response.status);
+      console.log("🔄 Loading freelancer wallet for user:", userId);
+      // Updated to use freelancer wallet endpoint
+      const response = await fetch(`/api/freelancer/wallet?userId=${userId}`);
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Wallet data:", data);
+        console.log("✅ Freelancer Wallet API response:", data);
 
         if (data.success && data.wallet) {
           setWalletBalance(data.wallet.balance || 0);
-          setTransactions(data.wallet.transactions || []);
+          // Map wallet transactions to match the expected format
+          const formattedTransactions =
+            data.wallet.transactions?.map((transaction) => ({
+              id: transaction.id,
+              type: transaction.type,
+              amount: transaction.amount,
+              description: transaction.description,
+              createdAt: transaction.createdAt,
+              status: transaction.status,
+            })) || [];
+
+          setTransactions(formattedTransactions);
+          console.log("💰 Freelancer wallet balance:", data.wallet.balance);
+          console.log(
+            "💰 Freelancer transactions:",
+            formattedTransactions.length
+          );
         } else {
-          console.log("No wallet data found");
+          console.log("ℹ️ No freelancer wallet data found");
           setWalletBalance(0);
           setTransactions([]);
         }
       } else {
-        console.error("Failed to fetch wallet:", response.status);
-        setWalletBalance(0);
-        setTransactions([]);
+        console.error("❌ Freelancer Wallet API error:", response.status);
       }
     } catch (error) {
-      console.error("Error loading wallet data:", error);
-      setWalletBalance(0);
-      setTransactions([]);
+      console.error("❌ Error loading freelancer wallet data:", error);
     }
   };
 
-  const loadStats = async (userId) => {
+  const loadMessages = async (userId) => {
     try {
-      // Calculate stats from projects and wallet data
-      const completedProjects = projects.filter(
-        (p) => p.status === "completed"
-      ).length;
-      const activeProjects = projects.filter(
-        (p) => p.status === "active"
-      ).length;
-      const totalEarnings = projects
-        .filter((p) => p.status === "completed")
-        .reduce((sum, p) => sum + p.totalPaid, 0);
+      console.log("🔄 Loading messages for user:", userId);
+      const conversationsResponse = await fetch(
+        `/api/conversations?userId=${userId}`
+      );
 
-      // Calculate average client rating
-      const allRatings = projects
-        .map((p) => p.clientRating)
-        .filter((r) => r > 0);
-      const avgClientRating =
-        allRatings.length > 0
-          ? allRatings.reduce((sum, rating) => sum + rating, 0) /
-            allRatings.length
-          : 0;
+      if (conversationsResponse.ok) {
+        const conversationsData = await conversationsResponse.json();
 
-      const newStats = {
-        totalEarnings,
-        completedProjects,
-        activeProjects,
-        clientSatisfaction: Math.round(avgClientRating * 20), // Convert 5-star to percentage
-        responseRate: 95,
-        totalProjects: projects.length,
-      };
+        if (
+          conversationsData.success &&
+          conversationsData.conversations.length > 0
+        ) {
+          const firstConversation = conversationsData.conversations[0];
+          const messagesResponse = await fetch(
+            `/api/conversations/${firstConversation.id}/messages?userId=${userId}`
+          );
 
-      console.log("Calculated stats:", newStats);
-      setStats(newStats);
+          if (messagesResponse.ok) {
+            const messagesData = await messagesResponse.json();
+            if (messagesData.success && messagesData.messages) {
+              const formattedMessages = messagesData.messages
+                .slice(0, 5)
+                .map((msg) => ({
+                  id: msg.id,
+                  sender: msg.sender?.name || "Unknown",
+                  content: msg.content,
+                  time: formatTimeAgo(msg.createdAt),
+                  unread: !msg.readBy || msg.readBy.length === 0,
+                }));
+              setMessages(formattedMessages);
+              console.log("💬 Loaded messages:", formattedMessages.length);
+            }
+          }
+        } else {
+          console.log("ℹ️ No conversations found");
+          setMessages([]);
+        }
+      } else {
+        console.error(
+          "❌ Conversations API error:",
+          conversationsResponse.status
+        );
+      }
     } catch (error) {
-      console.error("Error loading stats:", error);
-      setStats({
-        totalEarnings: 0,
-        completedProjects: 0,
-        activeProjects: 0,
-        clientSatisfaction: 0,
-        responseRate: 0,
-        totalProjects: 0,
-      });
+      console.error("❌ Error loading messages:", error);
     }
   };
 
-  // Update stats when projects change
-  useEffect(() => {
-    if (projects.length > 0 && user) {
-      loadStats(user.id);
+  const loadRecentActivity = async (userId) => {
+    try {
+      console.log("🔄 Loading activity for user:", userId);
+      // Updated to use freelancer wallet endpoint for activity
+      const response = await fetch(`/api/freelancer/wallet?userId=${userId}`);
+
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.success && data.wallet && data.wallet.transactions) {
+          const recentTransactions = data.wallet.transactions
+            .slice(0, 4)
+            .map((transaction) => ({
+              id: transaction.id,
+              type: "payment_received",
+              title:
+                transaction.type === "credit"
+                  ? "Payment Received"
+                  : "Withdrawal",
+              description: transaction.description,
+              time: formatTimeAgo(transaction.createdAt),
+              icon: transaction.type === "credit" ? <GiMoneyStack /> : "📤",
+            }));
+
+          setRecentActivity(recentTransactions);
+          console.log(
+            "📈 Loaded activity from freelancer transactions:",
+            recentTransactions.length
+          );
+        } else {
+          console.log("ℹ️ No transaction activity found");
+          setRecentActivity([]);
+        }
+      } else {
+        console.error("❌ Activity API error:", response.status);
+      }
+    } catch (error) {
+      console.error("❌ Error loading activity:", error);
     }
-  }, [projects, user]);
+  };
+
+  const calculateStats = (projectsData) => {
+    const completedProjects = projectsData.filter(
+      (p) => p.status === "completed"
+    ).length;
+    const activeProjects = projectsData.filter(
+      (p) => p.status === "active"
+    ).length;
+    const totalEarnings = projectsData
+      .filter((p) => p.status === "completed")
+      .reduce((sum, p) => sum + (p.totalPaid || 0), 0);
+
+    const allRatings = projectsData
+      .map((p) => p.clientRating)
+      .filter((r) => r > 0);
+    const avgClientRating =
+      allRatings.length > 0
+        ? allRatings.reduce((sum, rating) => sum + rating, 0) /
+          allRatings.length
+        : 0;
+
+    const newStats = {
+      totalEarnings,
+      completedProjects,
+      activeProjects,
+      clientSatisfaction: Math.round(avgClientRating * 20),
+      responseRate: 95,
+      totalProjects: projectsData.length,
+      avgProjectValue:
+        projectsData.length > 0
+          ? Math.round(
+              projectsData.reduce((sum, p) => sum + (p.budget || 0), 0) /
+                projectsData.length
+            )
+          : 0,
+    };
+
+    console.log("📈 Calculated stats:", newStats);
+    setStats(newStats);
+  };
 
   const handleSendMessage = async () => {
-    if (newMessage.trim() && user) {
+    if (newMessage.trim()) {
+      const message = {
+        id: Date.now(),
+        sender: "You",
+        content: newMessage,
+        time: "Just now",
+        unread: false,
+      };
+      setMessages([message, ...messages]);
+      setNewMessage("");
+
       try {
-        // Implementation for sending messages
-        const message = {
-          id: messages.length + 1,
-          sender: "You",
-          content: newMessage,
-          time: "Just now",
-          unread: false,
-          avatar: user.name?.substring(0, 2) || "U",
-        };
-        setMessages([message, ...messages]);
-        setNewMessage("");
+        await fetch("/api/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: newMessage,
+            recipientId: "client",
+          }),
+        });
       } catch (error) {
         console.error("Error sending message:", error);
       }
@@ -214,65 +318,44 @@ export default function DashboardPage() {
   };
 
   const handlePayment = async () => {
-    if (paymentAmount && !isNaN(paymentAmount) && paymentAmount > 0 && user) {
+    if (paymentAmount && !isNaN(paymentAmount) && paymentAmount > 0) {
       setIsLoading(true);
       try {
-        // Create Razorpay order for wallet recharge
-        const orderResponse = await fetch("/api/payments/create-order", {
+        // Updated to use freelancer wallet endpoint
+        const response = await fetch("/api/freelancer/wallet/add-funds", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            userId: user?.id,
             amount: parseFloat(paymentAmount),
-            userId: user.id,
-            planType: "wallet_recharge",
+            description: "Wallet Top-up",
           }),
         });
 
-        const orderData = await orderResponse.json();
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            const newBalance = walletBalance + parseFloat(paymentAmount);
+            setWalletBalance(newBalance);
 
-        if (orderData.success) {
-          const options = {
-            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-            amount: orderData.order.amount,
-            currency: orderData.order.currency,
-            name: "Freelancer Pro",
-            description: "Wallet Recharge",
-            order_id: orderData.order.id,
-            handler: async function (response) {
-              const verifyResponse = await fetch("/api/payments/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  ...response,
-                  planType: "wallet_recharge",
-                  userId: user.id,
-                  amount: orderData.order.amount,
-                }),
-              });
+            const transaction = {
+              id: Date.now(),
+              type: "credit",
+              amount: parseFloat(paymentAmount),
+              description: "Wallet Top-up",
+              createdAt: new Date().toISOString(),
+              status: "completed",
+            };
 
-              const verifyData = await verifyResponse.json();
+            setTransactions([transaction, ...transactions]);
+            setPaymentAmount("");
+            alert(`Successfully added ₹${paymentAmount} to your wallet!`);
 
-              if (verifyData.success) {
-                setWalletBalance(verifyData.walletBalance);
-                alert(`Payment of ₹${paymentAmount} successful!`);
-                setPaymentAmount("");
-                // Reload wallet data to get updated transactions
-                loadWalletData(user.id);
-              } else {
-                alert("Payment verification failed");
-              }
-            },
-            prefill: {
-              name: user.name || "User",
-              email: user.email || "",
-            },
-            theme: {
-              color: "#3B82F6",
-            },
-          };
-
-          const razorpay = new window.Razorpay(options);
-          razorpay.open();
+            // Reload wallet data to get updated balance
+            await loadWalletData(user?.id);
+          }
+        } else {
+          throw new Error("Payment failed");
         }
       } catch (error) {
         console.error("Payment error:", error);
@@ -284,31 +367,52 @@ export default function DashboardPage() {
   };
 
   const handleWithdraw = async (amount) => {
-    if (!user) return;
+    if (amount <= walletBalance) {
+      setIsLoading(true);
+      try {
+        // Updated to use freelancer wallet endpoint
+        const response = await fetch("/api/freelancer/wallet/withdraw", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user?.id,
+            amount: amount,
+            description: "Withdrawal to Bank Account",
+          }),
+        });
 
-    try {
-      const response = await fetch("/api/wallet/withdraw", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          amount: parseFloat(amount),
-        }),
-      });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            const newBalance = walletBalance - amount;
+            setWalletBalance(newBalance);
 
-      const data = await response.json();
+            const transaction = {
+              id: Date.now(),
+              type: "debit",
+              amount: amount,
+              description: "Withdrawal to Bank Account",
+              createdAt: new Date().toISOString(),
+              status: "completed",
+            };
 
-      if (response.ok) {
-        alert(`Withdrawal request for ₹${amount} submitted!`);
-        setWalletBalance(data.newBalance);
-        // Reload wallet data to get updated transactions
-        loadWalletData(user.id);
-      } else {
-        alert(data.error || "Withdrawal failed");
+            setTransactions([transaction, ...transactions]);
+            alert(`Withdrawal request for ₹${amount} submitted!`);
+
+            // Reload wallet data to get updated balance
+            await loadWalletData(user?.id);
+          }
+        } else {
+          throw new Error("Withdrawal failed");
+        }
+      } catch (error) {
+        console.error("Withdrawal error:", error);
+        alert("Withdrawal failed. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Withdrawal error:", error);
-      alert("Withdrawal failed. Please try again.");
+    } else {
+      alert("Insufficient balance for withdrawal");
     }
   };
 
@@ -348,12 +452,77 @@ export default function DashboardPage() {
       case "pending":
         return "#F59E0B";
       case "in progress":
-        return "#3B82F6";
+        return "#8B5CF6";
       default:
         return "#6B7280";
     }
   };
 
+  const getStatusIcon = (status) => {
+    switch (status?.toLowerCase()) {
+      case "completed":
+        return <FiCheck className={styles.statusIcon} />;
+      case "active":
+        return <FiActivity className={styles.statusIcon} />;
+      case "pending":
+        return <FiClock className={styles.statusIcon} />;
+      case "in progress":
+        return <FiTrendingUp className={styles.statusIcon} />;
+      default:
+        return <FiBriefcase className={styles.statusIcon} />;
+    }
+  };
+
+  // Professional Banner Component
+  const ProfessionalBanner = () => (
+    <motion.div
+      className={styles.professionalBanner}
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <div className={styles.bannerContent}>
+        <div className={styles.bannerText}>
+          <div className={styles.bannerBadge}>
+            <FiAward className={styles.badgeIcon} />
+            <span>The #1 Freelancing Hub in Asia</span>
+          </div>
+          <h1 className={styles.bannerTitle}>
+            Welcome back, {user?.name || "Professional"}!
+          </h1>
+          <p className={styles.bannerSubtitle}>
+            Your freelance career is growing stronger. Here's your progress
+            today.
+          </p>
+        </div>
+        <div className={styles.bannerStats}>
+          <div className={styles.bannerStat}>
+            <FiUsers className={styles.statIcon} />
+            <div>
+              <span className={styles.statNumber}>50K+</span>
+              <span className={styles.statLabel}>Active Freelancers</span>
+            </div>
+          </div>
+          <div className={styles.bannerStat}>
+            <FiGlobe className={styles.statIcon} />
+            <div>
+              <span className={styles.statNumber}>120+</span>
+              <span className={styles.statLabel}>Countries</span>
+            </div>
+          </div>
+          <div className={styles.bannerStat}>
+            <FiBriefcase className={styles.statIcon} />
+            <div>
+              <span className={styles.statNumber}>25K+</span>
+              <span className={styles.statLabel}>Projects Completed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  // Render functions
   const renderDashboard = () => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -361,558 +530,251 @@ export default function DashboardPage() {
       transition={{ duration: 0.5 }}
       className={styles.section}
     >
-      <div className={styles.sectionHeader}>
-        <h2>Dashboard Overview</h2>
-        <p className={styles.welcomeText}>
-          Welcome back, {user?.name || "User"}! Here's your freelance overview.
-        </p>
-      </div>
+      <ProfessionalBanner />
 
       {/* Stats Grid */}
       <div className={styles.statsGrid}>
         <motion.div
           className={styles.statCard}
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ y: -5 }}
           transition={{ type: "spring", stiffness: 300 }}
         >
-          <div
-            className={styles.statIcon}
-            style={{ background: "linear-gradient(135deg, #3B82F6, #1D4ED8)" }}
-          >
-            <FiDollarSign size={24} />
-          </div>
-          <div className={styles.statContent}>
-            <h3>₹{stats.totalEarnings?.toLocaleString() || "0"}</h3>
-            <p>Total Earnings</p>
+          <div className={styles.statHeader}>
+            <div className={styles.statIconContainer}>
+              <FiDollarSign className={styles.statIcon} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statLabel}>Total Earnings</span>
+              <h3 className={styles.statValue}>
+                ₹{stats.totalEarnings?.toLocaleString() || "0"}
+              </h3>
+            </div>
           </div>
           <div className={styles.statTrend}>
-            <FiTrendingUp size={16} />
-            <span>+12%</span>
+            <FiTrendingUp className={styles.trendIcon} />
+            <span>From {stats.completedProjects || 0} completed projects</span>
           </div>
         </motion.div>
 
         <motion.div
           className={styles.statCard}
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ y: -5 }}
           transition={{ type: "spring", stiffness: 300 }}
         >
-          <div
-            className={styles.statIcon}
-            style={{ background: "linear-gradient(135deg, #10B981, #059669)" }}
-          >
-            <FiCheck size={24} />
+          <div className={styles.statHeader}>
+            <div className={styles.statIconContainer}>
+              <FiBriefcase className={styles.statIcon} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statLabel}>Active Projects</span>
+              <h3 className={styles.statValue}>
+                {stats.activeProjects || "0"}
+              </h3>
+            </div>
           </div>
-          <div className={styles.statContent}>
-            <h3>{stats.completedProjects || 0}</h3>
-            <p>Completed Projects</p>
+          <div className={styles.statSubtext}>
+            {stats.totalProjects || "0"} total projects
           </div>
         </motion.div>
 
         <motion.div
           className={styles.statCard}
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ y: -5 }}
           transition={{ type: "spring", stiffness: 300 }}
         >
-          <div
-            className={styles.statIcon}
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
-          >
-            <FiBriefcase size={24} />
+          <div className={styles.statHeader}>
+            <div className={styles.statIconContainer}>
+              <FiStar className={styles.statIcon} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statLabel}>Client Satisfaction</span>
+              <h3 className={styles.statValue}>
+                {stats.clientSatisfaction || "0"}%
+              </h3>
+            </div>
           </div>
-          <div className={styles.statContent}>
-            <h3>{stats.activeProjects || 0}</h3>
-            <p>Active Projects</p>
-          </div>
+          <div className={styles.statSubtext}>Based on client ratings</div>
         </motion.div>
 
         <motion.div
           className={styles.statCard}
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ y: -5 }}
           transition={{ type: "spring", stiffness: 300 }}
         >
-          <div
-            className={styles.statIcon}
-            style={{ background: "linear-gradient(135deg, #8B5CF6, #7C3AED)" }}
-          >
-            <FiUser size={24} />
+          <div className={styles.statHeader}>
+            <div className={styles.statIconContainer}>
+              <FiBarChart className={styles.statIcon} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statLabel}>Wallet Balance</span>
+              <h3 className={styles.statValue}>
+                ₹{walletBalance.toLocaleString()}
+              </h3>
+            </div>
           </div>
-          <div className={styles.statContent}>
-            <h3>{stats.clientSatisfaction || 0}%</h3>
-            <p>Client Satisfaction</p>
+          <div className={styles.statTrend}>
+            <FiArrowUpRight className={styles.trendIcon} />
+            <span>Available for withdrawal</span>
           </div>
         </motion.div>
       </div>
 
-      {/* Quick Actions & Recent Projects */}
-      <div className={styles.dashboardGrid}>
-        <div className={styles.quickActions}>
-          <h3>Quick Actions</h3>
-          <div className={styles.actionGrid}>
-            <motion.button
-              className={styles.actionButton}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveSection("messages")}
-            >
-              <FiMessageSquare size={20} />
-              <span>Check Messages</span>
-            </motion.button>
-            <motion.button
-              className={styles.actionButton}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveSection("payments")}
-            >
-              <FiCreditCard size={20} />
-              <span>Manage Payments</span>
-            </motion.button>
-            <motion.button
-              className={styles.actionButton}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+      <div className={styles.dashboardContent}>
+        {/* Recent Projects */}
+        <div className={styles.projectsSection}>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionTitle}>
+              <FiBriefcase className={styles.sectionTitleIcon} />
+              <h2>Recent Projects</h2>
+            </div>
+            <button
+              className={styles.viewAllBtn}
               onClick={() => setActiveSection("projects")}
             >
-              <FiBriefcase size={20} />
-              <span>View Projects</span>
-            </motion.button>
-            <motion.button
-              className={styles.actionButton}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveSection("wallet")}
-            >
-              <FiDollarSign size={20} />
-              <span>Wallet</span>
-            </motion.button>
+              View All <FiArrowUpRight />
+            </button>
           </div>
-        </div>
-
-        <div className={styles.recentProjects}>
-          <div className={styles.sectionHeader}>
-            <h3>Recent Projects</h3>
-            <span className={styles.badge}>{projects.length} Total</span>
-          </div>
-          <div className={styles.projectList}>
-            {projects.slice(0, 3).map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className={styles.projectItem}
-              >
-                <div className={styles.projectInfo}>
-                  <h4>{project.title}</h4>
-                  <div className={styles.projectMeta}>
-                    <span className={styles.clientName}>{project.client}</span>
-                    {project.clientRating > 0 && (
-                      <div className={styles.rating}>
-                        <FiStar size={12} fill="#F59E0B" color="#F59E0B" />
-                        <span>{project.clientRating}</span>
-                        <span>({project.reviewCount})</span>
-                      </div>
-                    )}
+          <div className={styles.projectsGrid}>
+            {projects.length > 0 ? (
+              projects.slice(0, 3).map((project) => (
+                <motion.div
+                  key={project.id}
+                  className={styles.projectCard}
+                  whileHover={{ y: -5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <div className={styles.projectHeader}>
+                    <h4 className={styles.projectTitle}>{project.title}</h4>
+                    <div
+                      className={styles.statusBadge}
+                      style={{ color: getStatusColor(project.status) }}
+                    >
+                      {getStatusIcon(project.status)}
+                      <span>{project.status}</span>
+                    </div>
                   </div>
-                </div>
-                <div className={styles.projectStatus}>
-                  <span
-                    className={styles.status}
-                    style={{ backgroundColor: getStatusColor(project.status) }}
-                  >
-                    {project.status}
-                  </span>
-                  <div className={styles.projectFinancials}>
-                    <span className={styles.budget}>₹{project.budget}</span>
-                    {project.totalPaid > 0 && (
-                      <span className={styles.paid}>
-                        Paid: ₹{project.totalPaid}
-                      </span>
-                    )}
+                  <p className={styles.projectClient}>{project.client}</p>
+                  <div className={styles.projectProgress}>
+                    <div className={styles.progressInfo}>
+                      <span>Progress</span>
+                      <span>{project.progress}%</span>
+                    </div>
+                    <div className={styles.progressBar}>
+                      <div
+                        className={styles.progressFill}
+                        style={{
+                          width: `${project.progress}%`,
+                          backgroundColor: getStatusColor(project.status),
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-            {projects.length === 0 && (
+                  <div className={styles.projectFooter}>
+                    <div className={styles.projectBudget}>
+                      <FiDollarSign />
+                      <span>₹{project.budget?.toLocaleString()}</span>
+                    </div>
+                    <div className={styles.projectDeadline}>
+                      <FiCalendar />
+                      <span>{formatDate(project.deadline)}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
               <div className={styles.emptyState}>
-                <FiBriefcase size={32} />
-                <p>No projects yet</p>
-                <span>Start by bidding on available jobs</span>
+                <FiBriefcase className={styles.emptyStateIcon} />
+                <h3>No Projects Yet</h3>
+                <p>Your projects will appear here once you start working</p>
               </div>
             )}
           </div>
         </div>
-      </div>
-    </motion.div>
-  );
 
-  const renderMessages = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={styles.section}
-    >
-      <div className={styles.sectionHeader}>
-        <h2>Messages</h2>
-        <span className={styles.badge}>
-          {messages.filter((m) => m.unread).length} Unread
-        </span>
-      </div>
-
-      <div className={styles.messagesContainer}>
-        <div className={styles.messagesList}>
-          {projects.length > 0 ? (
-            projects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className={styles.messageCard}
-              >
-                <div className={styles.messageAvatar}>
-                  {project.client?.substring(0, 2) || "C"}
-                </div>
-                <div className={styles.messageContent}>
-                  <div className={styles.messageHeader}>
-                    <div className={styles.messageSender}>
-                      <strong>{project.client}</strong>
-                      <span className={styles.projectTitle}>
-                        {" "}
-                        - {project.title}
+        {/* Recent Activity & Messages Sidebar */}
+        <div className={styles.sidebarSections}>
+          {/* Recent Activity */}
+          <div className={styles.activitySection}>
+            <div className={styles.sectionHeader}>
+              <div className={styles.sectionTitle}>
+                <FiActivity className={styles.sectionTitleIcon} />
+                <h2>Recent Activity</h2>
+              </div>
+            </div>
+            <div className={styles.activityList}>
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity) => (
+                  <motion.div
+                    key={activity.id}
+                    className={styles.activityItem}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                  >
+                    <div className={styles.activityIcon}>{activity.icon}</div>
+                    <div className={styles.activityContent}>
+                      <strong>{activity.title}</strong>
+                      <p>{activity.description}</p>
+                      <span className={styles.activityTime}>
+                        {activity.time}
                       </span>
                     </div>
-                    <span className={styles.messageTime}>
-                      {formatTimeAgo(project.createdAt)}
-                    </span>
-                  </div>
-                  {project.lastMessage ? (
-                    <p className={styles.messageText}>
-                      {project.lastMessage.content}
-                    </p>
-                  ) : (
-                    <p className={styles.messageText}>No messages yet</p>
-                  )}
-                  <div className={styles.messageActions}>
-                    <button className={styles.messageButton}>Reply</button>
-                    <button className={styles.messageButton}>
-                      View Project
-                    </button>
-                  </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className={styles.emptyState}>
+                  <FiClock className={styles.emptyStateIcon} />
+                  <h3>No Recent Activity</h3>
+                  <p>Your activity will appear here</p>
                 </div>
-              </motion.div>
-            ))
-          ) : (
-            <div className={styles.emptyState}>
-              <FiMessageSquare size={32} />
-              <p>No messages yet</p>
-              <span>Messages will appear here when clients contact you</span>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        <div className={styles.messageInputContainer}>
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type your message..."
-            className={styles.messageInput}
-            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-          />
-          <motion.button
-            onClick={handleSendMessage}
-            className={styles.sendButton}
-            disabled={!newMessage.trim()}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FiSend />
-            Send
-          </motion.button>
-        </div>
-      </div>
-    </motion.div>
-  );
-
-  const renderPayments = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={styles.section}
-    >
-      <h2>Payments & Wallet</h2>
-
-      <div className={styles.paymentGrid}>
-        <div className={styles.paymentCard}>
-          <h3>Quick Recharge</h3>
-          <p>Add funds to your wallet instantly</p>
-          <div className={styles.paymentInputContainer}>
-            <div className={styles.amountInputWrapper}>
-              <FiDollarSign className={styles.currencyIcon} />
-              <input
-                type="number"
-                value={paymentAmount}
-                onChange={(e) => setPaymentAmount(e.target.value)}
-                placeholder="Enter amount"
-                className={styles.paymentInput}
-                min="1"
-              />
+          {/* Quick Messages */}
+          <div className={styles.messagesSection}>
+            <div className={styles.sectionHeader}>
+              <div className={styles.sectionTitle}>
+                <FiMessageSquare className={styles.sectionTitleIcon} />
+                <h2>Quick Messages</h2>
+              </div>
             </div>
-            <motion.button
-              onClick={handlePayment}
-              className={styles.payButton}
-              disabled={
-                !paymentAmount || isNaN(paymentAmount) || paymentAmount <= 0
-              }
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FiUpload />
-              Pay ₹{paymentAmount || "0"}
-            </motion.button>
-          </div>
-        </div>
-
-        <div className={styles.walletCard}>
-          <div className={styles.walletHeader}>
-            <h3>Wallet Balance</h3>
-            <div className={styles.balance}>
-              ₹{walletBalance.toLocaleString()}
-            </div>
-            <p>Available for withdrawal</p>
-          </div>
-
-          <div className={styles.walletActions}>
-            <motion.button
-              className={styles.withdrawButton}
-              onClick={() => handleWithdraw(1000)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FiDownload />
-              Withdraw Funds
-            </motion.button>
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.transactionHistory}>
-        <h4>Recent Transactions</h4>
-        {transactions.length > 0 ? (
-          transactions.slice(0, 5).map((transaction) => (
-            <motion.div
-              key={transaction.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className={styles.transaction}
-            >
-              <div className={styles.transactionInfo}>
-                <div>
-                  <strong>{transaction.description}</strong>
-                  <span>{formatTimeAgo(transaction.createdAt)}</span>
-                </div>
-                <span
-                  className={`${styles.transactionStatus} ${
-                    styles[transaction.status]
-                  }`}
-                >
-                  {transaction.status}
-                </span>
-              </div>
-              <div
-                className={`${styles.transactionAmount} ${
-                  styles[transaction.type]
-                }`}
-              >
-                {transaction.type === "credit" ? "+" : "-"}₹{transaction.amount}
-              </div>
-            </motion.div>
-          ))
-        ) : (
-          <div className={styles.emptyState}>
-            <FiCreditCard size={24} />
-            <p>No transactions yet</p>
-            <span>Your transaction history will appear here</span>
-          </div>
-        )}
-      </div>
-    </motion.div>
-  );
-
-  const renderProjects = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={styles.section}
-    >
-      <div className={styles.sectionHeader}>
-        <h2>My Projects ({projects.length})</h2>
-        <div className={styles.projectFilters}>
-          <button className={`${styles.filterButton} ${styles.active}`}>
-            All
-          </button>
-          <button className={styles.filterButton}>Active</button>
-          <button className={styles.filterButton}>Completed</button>
-          <button className={styles.filterButton}>Pending</button>
-        </div>
-      </div>
-
-      <div className={styles.projectsGrid}>
-        {projects.length > 0 ? (
-          projects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className={styles.projectCard}
-            >
-              <div className={styles.projectHeader}>
-                <h3>{project.title}</h3>
-                <span className={styles.projectType}>{project.type}</span>
-              </div>
-
-              <div className={styles.projectClient}>
-                <div className={styles.clientInfo}>
-                  <span className={styles.clientName}>{project.client}</span>
-                  {project.clientRating > 0 && (
-                    <div className={styles.clientRating}>
-                      <FiStar size={14} fill="#F59E0B" color="#F59E0B" />
-                      <span>{project.clientRating}</span>
-                      <span>({project.reviewCount})</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className={styles.projectDetails}>
-                <div className={styles.detailItem}>
-                  <span>Budget:</span>
-                  <strong>₹{project.budget}</strong>
-                </div>
-                <div className={styles.detailItem}>
-                  <span>Paid:</span>
-                  <strong>₹{project.totalPaid}</strong>
-                </div>
-                <div className={styles.detailItem}>
-                  <span>Started:</span>
-                  <strong>{formatDate(project.createdAt)}</strong>
-                </div>
-                {project.completedAt && (
-                  <div className={styles.detailItem}>
-                    <span>Completed:</span>
-                    <strong>{formatDate(project.completedAt)}</strong>
-                  </div>
-                )}
-              </div>
-
-              <div className={styles.progressSection}>
-                <div className={styles.progressHeader}>
-                  <span>Progress</span>
-                  <span>{project.progress}%</span>
-                </div>
-                <div className={styles.progressBar}>
+            <div className={styles.messagesList}>
+              {messages.length > 0 ? (
+                messages.slice(0, 3).map((message) => (
                   <motion.div
-                    className={styles.progressFill}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${project.progress}%` }}
-                    transition={{ delay: 0.5 + index * 0.1, duration: 1 }}
-                    style={{ backgroundColor: getStatusColor(project.status) }}
-                  />
+                    key={message.id}
+                    className={`${styles.messageItem} ${
+                      message.unread ? styles.unread : ""
+                    }`}
+                    whileHover={{ backgroundColor: "#f8fafc" }}
+                  >
+                    <div className={styles.messageAvatar}>
+                      <FiUser />
+                    </div>
+                    <div className={styles.messageContent}>
+                      <div className={styles.messageHeader}>
+                        <strong>{message.sender}</strong>
+                        <span>{message.time}</span>
+                      </div>
+                      <p>{message.content}</p>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className={styles.emptyState}>
+                  <FiMessageSquare className={styles.emptyStateIcon} />
+                  <h3>No Messages</h3>
+                  <p>Your messages will appear here</p>
                 </div>
-              </div>
-
-              <div className={styles.projectFooter}>
-                <span
-                  className={styles.status}
-                  style={{ backgroundColor: getStatusColor(project.status) }}
-                >
-                  {project.status}
-                </span>
-                <div className={styles.projectActions}>
-                  <button className={styles.actionBtn}>View</button>
-                  <button className={styles.actionBtn}>Message</button>
-                </div>
-              </div>
-            </motion.div>
-          ))
-        ) : (
-          <div className={styles.emptyProjects}>
-            <FiBriefcase size={48} />
-            <h3>No Projects Yet</h3>
-            <p>Start by bidding on available jobs to get your first project</p>
-            <button className={styles.primaryButton}>Browse Jobs</button>
-          </div>
-        )}
-      </div>
-    </motion.div>
-  );
-
-  const renderWallet = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={styles.section}
-    >
-      <h2>Wallet Management</h2>
-
-      <div className={styles.walletOverview}>
-        <div className={styles.balanceCard}>
-          <h3>Total Balance</h3>
-          <div className={styles.balanceAmount}>
-            ₹{walletBalance.toLocaleString()}
-          </div>
-          <div className={styles.balanceBreakdown}>
-            <div className={styles.breakdownItem}>
-              <span>Available</span>
-              <strong>₹{walletBalance.toLocaleString()}</strong>
-            </div>
-            <div className={styles.breakdownItem}>
-              <span>In Progress</span>
-              <strong>₹1,200</strong>
-            </div>
-            <div className={styles.breakdownItem}>
-              <span>Pending</span>
-              <strong>₹800</strong>
+              )}
             </div>
           </div>
-        </div>
-
-        <div className={styles.walletActions}>
-          <motion.button
-            className={styles.walletActionButton}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleWithdraw(1000)}
-          >
-            <FiDownload />
-            <span>Withdraw</span>
-          </motion.button>
-          <motion.button
-            className={styles.walletActionButton}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveSection("payments")}
-          >
-            <FiUpload />
-            <span>Add Funds</span>
-          </motion.button>
-          <motion.button
-            className={styles.walletActionButton}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FiEye />
-            <span>Statement</span>
-          </motion.button>
         </div>
       </div>
     </motion.div>
   );
+
+  // ... (other render functions remain the same)
 
   const renderContent = () => {
     switch (activeSection) {

@@ -28,7 +28,7 @@ export async function POST(request) {
     const {
       conversationId,
       freelancerId,
-      clientId,
+      clientId, // This is coming as undefined
       amount,
       description,
       dueDate,
@@ -45,6 +45,14 @@ export async function POST(request) {
       currency,
     });
 
+    // Validate required fields
+    if (!conversationId || !freelancerId) {
+      return NextResponse.json(
+        { success: false, error: "Missing conversationId or freelancerId" },
+        { status: 400 }
+      );
+    }
+
     // Validate amount
     const paymentAmount = parseFloat(amount);
     if (isNaN(paymentAmount) || paymentAmount <= 0) {
@@ -54,21 +62,15 @@ export async function POST(request) {
       );
     }
 
-    // Get users with their currency preferences
-    const [freelancer, client, conversation] = await Promise.all([
-      prisma.user.findUnique({
-        where: { id: parseInt(freelancerId) },
-        select: { name: true, currency: true },
-      }),
-      prisma.user.findUnique({
-        where: { id: parseInt(clientId) },
-        select: { name: true, currency: true },
-      }),
-      prisma.conversation.findUnique({
-        where: { id: parseInt(conversationId) },
-        include: { project: { select: { title: true, id: true } } },
-      }),
-    ]);
+    // First, get the conversation to find the clientId
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: parseInt(conversationId) },
+      include: {
+        project: { select: { title: true, id: true } },
+        client: { select: { id: true, name: true, currency: true } },
+        freelancer: { select: { id: true, name: true, currency: true } },
+      },
+    });
 
     if (!conversation) {
       return NextResponse.json(
@@ -77,8 +79,45 @@ export async function POST(request) {
       );
     }
 
+    // Use the clientId from the conversation if not provided
+    const resolvedClientId = clientId || conversation.clientId;
+    if (!resolvedClientId) {
+      return NextResponse.json(
+        { success: false, error: "Client ID not found" },
+        { status: 400 }
+      );
+    }
+
+    console.log("🔍 Resolved clientId:", resolvedClientId);
+
+    // Get users with their currency preferences
+    const [freelancer, client] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: parseInt(freelancerId) },
+        select: { name: true, currency: true },
+      }),
+      prisma.user.findUnique({
+        where: { id: parseInt(resolvedClientId) },
+        select: { name: true, currency: true },
+      }),
+    ]);
+
+    if (!freelancer) {
+      return NextResponse.json(
+        { success: false, error: "Freelancer not found" },
+        { status: 404 }
+      );
+    }
+
+    if (!client) {
+      return NextResponse.json(
+        { success: false, error: "Client not found" },
+        { status: 404 }
+      );
+    }
+
     // Use client's currency for the payment request
-    const clientCurrency = client?.currency || "USD";
+    const clientCurrency = client?.currency || currency || "USD";
 
     let paymentRequest;
     let paymentMessage;
@@ -92,7 +131,7 @@ export async function POST(request) {
           dueDate: dueDate ? new Date(dueDate) : null,
           conversationId: parseInt(conversationId),
           freelancerId: parseInt(freelancerId),
-          clientId: parseInt(clientId),
+          clientId: parseInt(resolvedClientId),
           clientName: client?.name || "Client",
           freelancerName: freelancer?.name || "Freelancer",
           projectTitle: conversation?.project?.title || "Project",
@@ -187,7 +226,6 @@ export async function POST(request) {
     );
   }
 }
-
 // Get payment requests for a user
 export async function GET(request) {
   try {

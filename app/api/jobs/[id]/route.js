@@ -5,92 +5,61 @@ const prisma = new PrismaClient();
 
 export async function GET(request, { params }) {
   try {
-    // Await params in Next.js 14
+    // Get the job ID from params - await params in Next.js 15
     const { id } = await params;
     const jobId = parseInt(id);
 
+    console.log("🔍 Fetching job with ID:", jobId, "from params:", id);
+
     // Validate jobId
-    if (isNaN(jobId)) {
-      return NextResponse.json({ error: "Invalid job ID" }, { status: 400 });
+    if (isNaN(jobId) || jobId <= 0) {
+      console.log("❌ Invalid job ID:", id);
+      return NextResponse.json(
+        { 
+          success: false,
+          error: "Invalid job ID" 
+        }, 
+        { status: 400 }
+      );
     }
 
+    // Fetch job with related data
     const job = await prisma.jobPost.findUnique({
-      where: { id: jobId },
+      where: { 
+        id: jobId,
+        status: "active" // Only fetch active jobs
+      },
       include: {
         user: {
           select: {
             id: true,
-            createdAt: true,
             name: true,
             email: true,
+            createdAt: true,
             avatar: true,
             profile: {
               select: {
                 avatar: true,
                 bio: true,
+                title: true,
+                location: true,
               },
             },
             reviewsReceived: {
               select: {
                 rating: true,
+                comment: true,
+                createdAt: true,
               },
             },
           },
         },
         proposals: {
-          include: {
-            freelancer: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                avatar: true,
-                profile: {
-                  select: {
-                    avatar: true,
-                    bio: true,
-                    skills: true,
-                  },
-                },
-              },
-            },
+          select: {
+            id: true,
+            status: true,
+            createdAt: true,
           },
-          orderBy: { createdAt: "desc" },
-        },
-        messages: {
-          include: {
-            sender: {
-              select: {
-                id: true,
-                name: true,
-                avatar: true,
-                profile: {
-                  select: {
-                    avatar: true,
-                  },
-                },
-              },
-            },
-            replies: {
-              include: {
-                sender: {
-                  select: {
-                    id: true,
-                    name: true,
-                    avatar: true,
-                    profile: {
-                      select: {
-                        avatar: true,
-                      },
-                    },
-                  },
-                },
-              },
-              orderBy: { createdAt: "asc" },
-            },
-          },
-          where: { parentId: null },
-          orderBy: { createdAt: "desc" },
         },
         _count: {
           select: {
@@ -102,58 +71,111 @@ export async function GET(request, { params }) {
     });
 
     if (!job) {
-      return NextResponse.json({ error: "Job not found" }, { status: 404 });
+      console.log("❌ Job not found with ID:", jobId);
+      return NextResponse.json(
+        { 
+          success: false,
+          error: "Job not found or has been removed" 
+        }, 
+        { status: 404 }
+      );
     }
+
+    console.log("✅ Job found:", job.title);
 
     // Parse skills from JSON string safely
     let skills = [];
     try {
-      if (job.skills) {
+      if (job.skills && typeof job.skills === 'string') {
         skills = JSON.parse(job.skills);
+        // Ensure skills is an array
+        if (!Array.isArray(skills)) {
+          skills = [];
+        }
       }
     } catch (error) {
-      console.error("Error parsing skills:", error);
+      console.error("❌ Error parsing skills:", error);
       skills = [];
     }
 
-    // Calculate average rating for client
-    const reviews = job.user.reviewsReceived || [];
+    // Calculate average rating and review count for client
+    const reviews = job.user?.reviewsReceived || [];
     const avgRating = reviews.length > 0
       ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
       : 0;
 
-    const jobWithParsedSkills = {
-      ...job,
-      skills,
-      description: job.description,
-      user: {
-        ...job.user,
-        profile: job.user.profile || {},
-        avgRating: Math.round(avgRating * 10) / 10,
-        reviewCount: reviews.length,
-        // Ensure createdAt is properly formatted
-        createdAt: job.user.createdAt.toISOString(),
-      },
-      // Ensure job dates are properly formatted
+    // Format the response data
+    const formattedJob = {
+      id: job.id,
+      title: job.title,
+      description: job.description || "No description provided",
+      category: job.category,
+      skills: skills,
+      budget: job.budget,
+      deadline: job.deadline?.toISOString() || null,
+      experienceLevel: job.experienceLevel,
+      status: job.status,
       createdAt: job.createdAt.toISOString(),
       updatedAt: job.updatedAt.toISOString(),
-      deadline: job.deadline.toISOString(),
+      user: job.user ? {
+        id: job.user.id,
+        name: job.user.name,
+        email: job.user.email,
+        avatar: job.user.avatar,
+        createdAt: job.user.createdAt.toISOString(),
+        profile: {
+          avatar: job.user.profile?.avatar || null,
+          bio: job.user.profile?.bio || null,
+          title: job.user.profile?.title || null,
+          location: job.user.profile?.location || null,
+        },
+        avgRating: Math.round(avgRating * 10) / 10,
+        reviewCount: reviews.length,
+      } : null,
+      _count: {
+        proposals: job._count?.proposals || 0,
+        messages: job._count?.messages || 0,
+      },
+      proposalCount: job.proposals?.length || 0,
     };
 
-    return NextResponse.json({ job: jobWithParsedSkills });
+    console.log("✅ Job data formatted successfully");
+
+    return NextResponse.json({
+      success: true,
+      job: formattedJob
+    });
+
   } catch (error) {
-    console.error("Get job error:", error);
+    console.error("❌ Get job error:", error);
 
     // Handle specific Prisma errors
-    if (error.code === "P2022") {
+    if (error.code === 'P2025') {
       return NextResponse.json(
-        { error: "Database schema mismatch. Please run database migrations." },
-        { status: 500 }
+        { 
+          success: false,
+          error: "Job not found" 
+        }, 
+        { status: 404 }
+      );
+    }
+
+    if (error.code === 'P2023') {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: "Invalid job ID format" 
+        }, 
+        { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: "Failed to fetch job", details: error.message },
+      { 
+        success: false,
+        error: "Failed to fetch job details",
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      }, 
       { status: 500 }
     );
   }
@@ -165,9 +187,12 @@ export async function PUT(request, { params }) {
     const jobId = parseInt(id);
 
     // Validate jobId
-    if (isNaN(jobId)) {
+    if (isNaN(jobId) || jobId <= 0) {
       return NextResponse.json(
-        { success: false, error: "Invalid job ID" },
+        { 
+          success: false, 
+          error: "Invalid job ID" 
+        }, 
         { status: 400 }
       );
     }
@@ -251,8 +276,8 @@ export async function PUT(request, { params }) {
     const updatedJob = await prisma.jobPost.update({
       where: { id: jobId },
       data: {
-        title,
-        description,
+        title: title.trim(),
+        description: description.trim(),
         category,
         skills: JSON.stringify(skills || []),
         budget: budgetValue,
@@ -319,9 +344,12 @@ export async function DELETE(request, { params }) {
     const jobId = parseInt(id);
 
     // Validate jobId
-    if (isNaN(jobId)) {
+    if (isNaN(jobId) || jobId <= 0) {
       return NextResponse.json(
-        { success: false, error: "Invalid job ID" },
+        { 
+          success: false, 
+          error: "Invalid job ID" 
+        }, 
         { status: 400 }
       );
     }
@@ -343,7 +371,7 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    // Delete the job
+    // Delete the job (this will cascade delete related proposals and messages)
     await prisma.jobPost.delete({
       where: { id: jobId },
     });
@@ -356,6 +384,17 @@ export async function DELETE(request, { params }) {
     });
   } catch (error) {
     console.error("❌ Delete job error:", error);
+    
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Job not found",
+        },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
       {
         success: false,
@@ -365,4 +404,16 @@ export async function DELETE(request, { params }) {
       { status: 500 }
     );
   }
+}
+
+// Handle OPTIONS for CORS
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

@@ -1,72 +1,125 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import styles from "./JobDetail.module.css";
+import { useRouter, useSearchParams } from "next/navigation";
+import styles from "./SubmitProposal.module.css";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaArrowLeft,
+  FaPaperPlane,
   FaMoneyBillWave,
   FaClock,
   FaUser,
   FaBriefcase,
   FaStar,
-  FaRegHeart,
-  FaHeart,
-  FaShare,
-  FaEye,
   FaCheckCircle,
-  FaPaperPlane,
-  FaHashtag,
-  FaLinkedin,
-  FaTwitter,
-  FaFacebook,
-  FaRocket,
-  FaShieldAlt,
-  FaChartBar,
-  FaAward,
+  FaExclamationTriangle,
   FaDollarSign,
-  FaCalendarAlt,
-  FaTasks,
-  FaMapMarkerAlt,
-  FaGlobe,
-  FaFileAlt,
+  FaRupeeSign,
 } from "react-icons/fa";
-import { IoTime, IoBusiness } from "react-icons/io5";
-import { MdWork, MdDescription, MdBusinessCenter } from "react-icons/md";
 
-export default function JobDetailPage() {
+export default function SubmitProposalPage() {
   const [job, setJob] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [formData, setFormData] = useState({
+    coverLetter: "",
+    bidAmount: "",
+    timeline: "",
+    timeframe: "", // Add timeframe field
+    attachments: "",
+  });
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [isSaved, setIsSaved] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [exchangeRate, setExchangeRate] = useState(83);
+  const [success, setSuccess] = useState("");
   const [currency, setCurrency] = useState("usd");
-  const params = useParams();
-  const router = useRouter();
+  const [exchangeRate, setExchangeRate] = useState(83);
 
-  const currencyOptions = [
-    { value: "usd", label: "USD", icon: FaDollarSign },
-    { value: "inr", label: "INR", icon: FaMoneyBillWave },
-  ];
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const jobId = searchParams.get("jobId");
 
   useEffect(() => {
-    if (params.jobId) {
-      fetchJob();
-      checkSavedStatus();
+    if (jobId) {
+      fetchCurrentUser();
+      fetchJobDetails();
       fetchExchangeRate();
+    } else {
+      setError("No job ID provided");
+      setLoading(false);
     }
-  }, [params.jobId]);
+  }, [jobId]);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch("/api/auth/verify");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.user) {
+          setCurrentUser(data.user);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
 
   const fetchExchangeRate = async () => {
+    setExchangeRate(83);
+  };
+
+  const extractJobId = (jobIdParam) => {
+    if (!jobIdParam) return null;
+    if (!isNaN(jobIdParam)) return parseInt(jobIdParam);
+
+    const match = jobIdParam.toString().match(/(\d+)$/);
+    if (match) return parseInt(match[1]);
+
+    const numbers = jobIdParam.toString().match(/\d+/g);
+    if (numbers && numbers.length > 0) return parseInt(numbers[0]);
+
+    return null;
+  };
+
+  const fetchJobDetails = async () => {
     try {
-      setExchangeRate(83);
-    } catch (error) {
-      setExchangeRate(83);
+      setLoading(true);
+      setError("");
+
+      const actualJobId = extractJobId(jobId);
+      if (!actualJobId) {
+        setError("Invalid job ID format");
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(`/api/jobs/${actualJobId}`);
+
+      if (!response.ok) {
+        setError("Failed to fetch job details");
+        setLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.job) {
+        setJob(data.job);
+        setFormData((prev) => ({
+          ...prev,
+          bidAmount: data.job.budget || "",
+        }));
+      } else {
+        setError(data.error || "Failed to load job details");
+      }
+    } catch (err) {
+      setError("Failed to load job details. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const formatUSD = (amount) => {
+    if (!amount) return "$0";
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
@@ -76,6 +129,7 @@ export default function JobDetailPage() {
   };
 
   const formatINR = (amount) => {
+    if (!amount) return "₹0";
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
@@ -84,145 +138,142 @@ export default function JobDetailPage() {
     }).format(amount);
   };
 
-  const extractJobId = (formattedJobId) => {
-    const match = formattedJobId.match(/-(\d+)$/);
-    return match ? parseInt(match[1]) : parseInt(formattedJobId);
-  };
-
-  const fetchJob = async () => {
-    try {
-      setLoading(true);
-      const actualJobId = extractJobId(params.jobId);
-
-      const response = await fetch(`/api/jobs/${actualJobId}`);
-      const data = await response.json();
-
-      if (response.ok) {
-        setJob(data.job);
-      } else {
-        setError(data.error || "Failed to fetch job");
-      }
-    } catch (err) {
-      setError("Failed to load job details");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const checkSavedStatus = () => {
-    const savedJobs = JSON.parse(localStorage.getItem("savedJobs") || "[]");
-    const actualJobId = extractJobId(params.jobId);
-    setIsSaved(savedJobs.includes(actualJobId));
-  };
-
-  const toggleSaveJob = () => {
-    const savedJobs = JSON.parse(localStorage.getItem("savedJobs") || "[]");
-    const actualJobId = extractJobId(params.jobId);
-
-    let newSavedJobs;
-    if (isSaved) {
-      newSavedJobs = savedJobs.filter((id) => id !== actualJobId);
-    } else {
-      newSavedJobs = [...savedJobs, actualJobId];
-    }
-
-    localStorage.setItem("savedJobs", JSON.stringify(newSavedJobs));
-    setIsSaved(!isSaved);
-  };
-
-  const formatJobId = (id) => {
-    return `JOB-${id.toString().padStart(6, "0")}`;
-  };
-
-  const formatJoinDate = (dateString) => {
-    if (!dateString) return "Recently joined";
-    try {
-      const date = new Date(dateString);
-      return new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "long",
-      }).format(date);
-    } catch (error) {
-      return "Recently joined";
-    }
-  };
-
   const convertToINR = (usdAmount) => {
     return Math.round(usdAmount * exchangeRate);
   };
 
   const formatBudget = (budget) => {
+    if (!budget) return { display: "Budget not specified", tooltip: "" };
     const inrAmount = convertToINR(budget);
-    const usdFormatted = formatUSD(budget);
-    const inrFormatted = formatINR(inrAmount);
 
-    switch (currency) {
-      case "usd":
-        return { display: usdFormatted, tooltip: inrFormatted };
-      case "inr":
-        return { display: inrFormatted, tooltip: usdFormatted };
-      default:
-        return { display: usdFormatted, secondary: inrFormatted };
+    if (currency === "usd") {
+      return {
+        display: formatUSD(budget),
+        tooltip: formatINR(inrAmount),
+      };
+    } else {
+      return {
+        display: formatINR(inrAmount),
+        tooltip: formatUSD(budget),
+      };
     }
   };
 
-  const getTimeAgo = (date) => {
-    if (!date) return "Recently";
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleBidAmountChange = (e) => {
+    const value = e.target.value;
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setFormData((prev) => ({
+        ...prev,
+        bidAmount: value,
+      }));
+    }
+  };
+
+  // Calculate timeframe in days from timeline date
+  const calculateTimeframe = (timelineDate) => {
+    if (!timelineDate) return 0;
+    
+    const today = new Date();
+    const targetDate = new Date(timelineDate);
+    const diffTime = targetDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return Math.max(1, diffDays); // Minimum 1 day
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!job) {
+      setError("Job information is not available");
+      return;
+    }
+
+    if (!currentUser) {
+      setError("Please log in to submit a proposal");
+      return;
+    }
+
+    if (!formData.coverLetter.trim()) {
+      setError("Cover letter is required");
+      return;
+    }
+
+    if (!formData.bidAmount || parseFloat(formData.bidAmount) <= 0) {
+      setError("Please enter a valid bid amount");
+      return;
+    }
+
+    if (!formData.timeline) {
+      setError("Please provide an estimated timeline");
+      return;
+    }
+
     try {
-      const now = new Date();
-      const posted = new Date(date);
-      const diff = now - posted;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      setSubmitting(true);
+      setError("");
 
-      if (days === 0) return "Today";
-      if (days === 1) return "1 day ago";
-      if (days < 7) return `${days} days ago`;
-      if (days < 30)
-        return `${Math.floor(days / 7)} week${
-          Math.floor(days / 7) > 1 ? "s" : ""
-        } ago`;
-      return `${Math.floor(days / 30)} month${
-        Math.floor(days / 30) > 1 ? "s" : ""
-      } ago`;
-    } catch (error) {
-      return "Recently";
+      // Calculate timeframe from timeline date
+      const timeframe = calculateTimeframe(formData.timeline);
+
+      let bidAmountUSD = parseFloat(formData.bidAmount);
+      if (currency === "inr") {
+        bidAmountUSD = parseFloat(formData.bidAmount) / exchangeRate;
+      }
+
+      const proposalData = {
+        jobId: job.id,
+        freelancerId: currentUser.id, // Add freelancerId
+        coverLetter: formData.coverLetter.trim(),
+        bidAmount: bidAmountUSD,
+        timeframe: timeframe, // Add timeframe in days
+        timeline: formData.timeline.trim(), // Keep original timeline for reference
+        attachments: formData.attachments.trim(),
+        status: "submitted",
+      };
+
+      console.log("📤 Submitting proposal:", proposalData);
+
+      const response = await fetch("/api/proposals", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(proposalData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to submit proposal");
+      }
+
+      if (data.success) {
+        setSuccess("Proposal submitted successfully! Redirecting...");
+        setTimeout(() => {
+          router.push("/freelancer-dashboard/proposals");
+        }, 2000);
+      }
+    } catch (err) {
+      setError(err.message || "Failed to submit proposal. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const getUrgencyLevel = (deadline) => {
-    if (!deadline) return { level: "low", label: "Flexible", color: "#14a800" };
-    try {
-      const now = new Date();
-      const deadlineDate = new Date(deadline);
-      const diffDays = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
-
-      if (diffDays <= 1)
-        return { level: "critical", label: "Urgent", color: "#ff5630" };
-      if (diffDays <= 3)
-        return { level: "high", label: "Soon", color: "#ff7452" };
-      if (diffDays <= 7)
-        return { level: "medium", label: "This week", color: "#ffab00" };
-      return { level: "low", label: "Flexible", color: "#14a800" };
-    } catch (error) {
-      return { level: "low", label: "Flexible", color: "#14a800" };
-    }
-  };
-
-  const shareJob = (platform) => {
-    const url = window.location.href;
-    const title = job?.title;
-    const shareUrls = {
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-        url
-      )}`,
-      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-        title
-      )}&url=${encodeURIComponent(url)}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-        url
-      )}`,
-    };
-    window.open(shareUrls[platform], "_blank", "width=600,height=400");
+  // Format date for min attribute (tomorrow)
+  const getMinDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
   };
 
   if (loading) {
@@ -233,18 +284,12 @@ export default function JobDetailPage() {
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         />
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          Loading job details...
-        </motion.p>
+        <p>Loading job details...</p>
       </div>
     );
   }
 
-  if (error || !job) {
+  if (error && !job) {
     return (
       <div className={styles.errorContainer}>
         <motion.div
@@ -252,9 +297,9 @@ export default function JobDetailPage() {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
         >
-          <div className={styles.errorIcon}>⚠️</div>
-          <h2>Job Not Found</h2>
-          <p>{error || "The job you're looking for doesn't exist."}</p>
+          <FaExclamationTriangle className={styles.errorIcon} />
+          <h2>Unable to Load Job</h2>
+          <p>{error}</p>
           <motion.button
             onClick={() => router.push("/freelancer-hub")}
             className={styles.backButton}
@@ -268,10 +313,9 @@ export default function JobDetailPage() {
     );
   }
 
-  const urgency = getUrgencyLevel(job.deadline);
-  const isFeatured = job.budget > 1000;
-  const isVerifiedClient = job.user.avgRating > 4.0;
-  const budget = formatBudget(job.budget);
+  const budget = job
+    ? formatBudget(job.budget)
+    : { display: "N/A", tooltip: "" };
 
   return (
     <div className={styles.container}>
@@ -283,381 +327,293 @@ export default function JobDetailPage() {
       >
         <div className={styles.navContent}>
           <motion.button
-            onClick={() => router.push("/freelancer-hub")}
+            onClick={() => router.back()}
             className={styles.backButton}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <FaArrowLeft /> Back to Jobs
+            <FaArrowLeft /> Back
           </motion.button>
 
-          <div className={styles.navActions}>
-            <div className={styles.currencyToggle}>
-              {currencyOptions.map((option) => {
-                const IconComponent = option.icon;
-                return (
-                  <button
-                    key={option.value}
-                    className={`${styles.currencyButton} ${
-                      currency === option.value ? styles.active : ""
-                    }`}
-                    onClick={() => setCurrency(option.value)}
-                  >
-                    <IconComponent className={styles.currencyIcon} />
-                    <span>{option.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+          <div className={styles.navCenter}>
+            <h1>Submit Proposal</h1>
+            <p>Apply for this job opportunity</p>
+          </div>
 
-            <motion.button
-              onClick={() => setShowShareModal(true)}
-              className={styles.shareButton}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+          <div className={styles.currencyToggle}>
+            <button
+              className={`${styles.currencyButton} ${
+                currency === "usd" ? styles.active : ""
+              }`}
+              onClick={() => setCurrency("usd")}
             >
-              <FaShare />
-            </motion.button>
-
-            <motion.button
-              onClick={toggleSaveJob}
-              className={`${styles.saveButton} ${isSaved ? styles.saved : ""}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              <FaDollarSign />
+              <span>USD</span>
+            </button>
+            <button
+              className={`${styles.currencyButton} ${
+                currency === "inr" ? styles.active : ""
+              }`}
+              onClick={() => setCurrency("inr")}
             >
-              {isSaved ? <FaHeart /> : <FaRegHeart />}
-            </motion.button>
+              <FaRupeeSign />
+              <span>INR</span>
+            </button>
           </div>
         </div>
       </motion.nav>
 
+      {/* Main Content - Two Columns */}
       <div className={styles.content}>
         {/* Left Column - Job Details */}
-        <div className={styles.mainContent}>
-          {/* Job Header */}
+        {job && (
           <motion.div
-            className={styles.jobHeaderCard}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            className={styles.jobSection}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className={styles.headerTop}>
-              <div className={styles.titleSection}>
-                <h1>{job.title}</h1>
+            <div className={styles.sectionCard}>
+              <h2 className={styles.sectionTitle}>Job Details</h2>
+
+              <div className={styles.jobHeader}>
+                <h3 className={styles.jobTitle}>{job.title}</h3>
                 <div className={styles.jobMeta}>
-                  <span className={styles.postedTime}>
-                    <FaClock /> Posted {getTimeAgo(job.createdAt)}
+                  <span className={styles.metaItem}>
+                    <FaClock /> Posted recently
                   </span>
-                  <span className={styles.proposalsCount}>
-                    <FaEye /> {job._count?.proposals || 0} proposals
+                  <span className={styles.metaItem}>
+                    <FaUser /> {job._count?.proposals || 0} proposals
                   </span>
-                  {isFeatured && (
-                    <span className={styles.featuredBadge}>
-                      <FaRocket /> Featured
-                    </span>
+                </div>
+              </div>
+
+              {/* Budget Display */}
+              <div className={styles.budgetCard}>
+                <div className={styles.budgetHeader}>
+                  <FaMoneyBillWave className={styles.budgetIcon} />
+                  <span>Client Budget</span>
+                </div>
+                <div className={styles.budgetAmount} title={budget.tooltip}>
+                  {budget.display}
+                </div>
+              </div>
+
+              {/* Skills */}
+              {job.skills && (
+                <div className={styles.skillsSection}>
+                  <h4>Required Skills</h4>
+                  <div className={styles.skillsList}>
+                    {typeof job.skills === 'string' 
+                      ? job.skills.split(',').map((skill, index) => (
+                          <span key={index} className={styles.skillTag}>
+                            {skill.trim()}
+                          </span>
+                        ))
+                      : job.skills.map((skill, index) => (
+                          <span key={index} className={styles.skillTag}>
+                            {skill}
+                          </span>
+                        ))
+                    }
+                  </div>
+                </div>
+              )}
+
+              {/* Description */}
+              <div className={styles.descriptionSection}>
+                <h4>Job Description</h4>
+                <div className={styles.description}>
+                  {job.description ? (
+                    job.description
+                      .split("\n")
+                      .map((paragraph, index) => <p key={index}>{paragraph}</p>)
+                  ) : (
+                    <p>No description provided.</p>
                   )}
                 </div>
               </div>
-              <div className={styles.budgetSection}>
-                <div className={styles.budgetDisplay} title={budget.tooltip}>
-                  <span className={styles.budgetAmount}>{budget.display}</span>
-                  {budget.secondary && (
-                    <span className={styles.budgetSecondary}>
-                      {budget.secondary}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </motion.div>
 
-          {/* Job Details Sections */}
-          <div className={styles.detailsGrid}>
-            {/* Description */}
-            <motion.div
-              className={styles.detailCard}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <div className={styles.cardHeader}>
-                <MdDescription className={styles.cardIcon} />
-                <h3>Job Description</h3>
-              </div>
-              <div className={styles.cardContent}>
-                {job.description &&
-                  job.description
-                    .split("\n")
-                    .map((paragraph, index) => <p key={index}>{paragraph}</p>)}
-              </div>
-            </motion.div>
-
-            {/* Skills */}
-            <motion.div
-              className={styles.detailCard}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <div className={styles.cardHeader}>
-                <FaAward className={styles.cardIcon} />
-                <h3>Skills & Expertise</h3>
-              </div>
-              <div className={styles.skillsContainer}>
-                {job.skills &&
-                  job.skills.map((skill, index) => (
-                    <span key={index} className={styles.skillTag}>
-                      {skill}
-                    </span>
-                  ))}
-              </div>
-            </motion.div>
-
-            {/* Project Details */}
-            <motion.div
-              className={styles.detailCard}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <div className={styles.cardHeader}>
-                <MdBusinessCenter className={styles.cardIcon} />
-                <h3>Project Details</h3>
-              </div>
-              <div className={styles.detailsGridSmall}>
-                <div className={styles.detailItem}>
-                  <FaClock className={styles.detailIcon} />
-                  <div>
-                    <label>Deadline</label>
-                    <span>
-                      {job.deadline
-                        ? new Date(job.deadline).toLocaleDateString()
-                        : "Flexible"}
-                    </span>
-                  </div>
-                </div>
-                <div className={styles.detailItem}>
-                  <IoTime className={styles.detailIcon} />
-                  <div>
-                    <label>Urgency</label>
-                    <span style={{ color: urgency.color }}>
-                      {urgency.label}
-                    </span>
-                  </div>
-                </div>
-                <div className={styles.detailItem}>
-                  <FaTasks className={styles.detailIcon} />
-                  <div>
-                    <label>Experience Level</label>
-                    <span>{job.experienceLevel || "Intermediate"}</span>
-                  </div>
-                </div>
-                <div className={styles.detailItem}>
-                  <FaBriefcase className={styles.detailIcon} />
-                  <div>
-                    <label>Category</label>
-                    <span>{job.category?.replace("-", " ") || "General"}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Client Information */}
-            <motion.div
-              className={styles.detailCard}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <div className={styles.cardHeader}>
-                <IoBusiness className={styles.cardIcon} />
-                <h3>About the Client</h3>
-              </div>
-              <div className={styles.clientProfile}>
-                <div className={styles.clientHeader}>
-                  <div className={styles.clientAvatar}>
-                    {job.user.profile?.avatar ? (
-                      <img src={job.user.profile.avatar} alt={job.user.name} />
-                    ) : (
-                      <div className={styles.avatarPlaceholder}>
-                        <FaUser />
-                      </div>
-                    )}
-                    {isVerifiedClient && (
-                      <div
-                        className={styles.verifiedBadge}
-                        title="Verified Client"
-                      >
-                        <FaCheckCircle />
-                      </div>
-                    )}
-                  </div>
+              {/* Client Info */}
+              {job.user && (
+                <div className={styles.clientSection}>
+                  <h4>About the Client</h4>
                   <div className={styles.clientInfo}>
-                    <h4>{job.user.name}</h4>
-                    <div className={styles.clientStats}>
-                      <div className={styles.rating}>
-                        <FaStar />
-                        <span>{job.user.avgRating || "New"}</span>
-                        <span>({job.user.reviewCount || 0} reviews)</span>
+                    <div className={styles.clientHeader}>
+                      <div className={styles.clientAvatar}>
+                        {job.user.avatar ? (
+                          <img
+                            src={job.user.avatar}
+                            alt={job.user.name}
+                          />
+                        ) : (
+                          <div className={styles.avatarPlaceholder}>
+                            <FaUser />
+                          </div>
+                        )}
                       </div>
-                      <div className={styles.memberSince}>
-                        <FaCalendarAlt />
-                        <span>
-                          Member since {formatJoinDate(job.user.createdAt)}
-                        </span>
+                      <div className={styles.clientDetails}>
+                        <h5>{job.user.name}</h5>
+                        <div className={styles.rating}>
+                          <FaStar className={styles.starIcon} />
+                          <span>{job.user.avgRating || "New"}</span>
+                          <span>({job.user.reviewCount || 0} reviews)</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                {job.user.profile?.bio && (
-                  <div className={styles.clientBio}>
-                    <p>{job.user.profile.bio}</p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Right Column - Action Panel */}
-        <div className={styles.sidebar}>
-          <motion.div
-            className={styles.actionPanel}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <motion.button
-              onClick={() => router.push(`/proposals/submit?jobId=${job.id}`)}
-              className={styles.submitProposalBtn}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <FaPaperPlane />
-              Submit Proposal
-            </motion.button>
-
-            <div
-              className={styles.urgencyAlert}
-              style={{ borderColor: urgency.color }}
-            >
-              <FaClock style={{ color: urgency.color }} />
-              <div>
-                <strong>{urgency.label} Deadline</strong>
-                <span>
-                  Apply before{" "}
-                  {job.deadline
-                    ? new Date(job.deadline).toLocaleDateString()
-                    : "Open"}
-                </span>
-              </div>
+              )}
             </div>
-
-            <div className={styles.panelSection}>
-              <h4>
-                <FaChartBar /> Job Overview
-              </h4>
-              <div className={styles.statsGrid}>
-                <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Job ID</span>
-                  <span className={styles.statValue}>
-                    {formatJobId(job.id)}
-                  </span>
-                </div>
-                <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Proposals</span>
-                  <span className={styles.statValue}>
-                    {job._count?.proposals || 0}
-                  </span>
-                </div>
-                <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Budget</span>
-                  <span className={styles.statValue}>{budget.display}</span>
-                </div>
-                <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Client Location</span>
-                  <span className={styles.statValue}>Worldwide</span>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.panelSection}>
-              <h4>
-                <FaShieldAlt /> Safety Tips
-              </h4>
-              <ul className={styles.safetyTips}>
-                <li>Never pay to apply for a job</li>
-                <li>Communicate through the platform</li>
-                <li>Use secure payment methods</li>
-                <li>Report suspicious activity</li>
-              </ul>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Share Modal */}
-      <AnimatePresence>
-        {showShareModal && (
-          <motion.div
-            className={styles.modalOverlay}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowShareModal(false)}
-          >
-            <motion.div
-              className={styles.modal}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3>Share This Job</h3>
-              <div className={styles.shareOptions}>
-                {[
-                  {
-                    platform: "linkedin",
-                    icon: FaLinkedin,
-                    label: "LinkedIn",
-                    color: "#0077b5",
-                  },
-                  {
-                    platform: "twitter",
-                    icon: FaTwitter,
-                    label: "Twitter",
-                    color: "#1da1f2",
-                  },
-                  {
-                    platform: "facebook",
-                    icon: FaFacebook,
-                    label: "Facebook",
-                    color: "#1877f2",
-                  },
-                ].map((social) => (
-                  <motion.button
-                    key={social.platform}
-                    onClick={() => shareJob(social.platform)}
-                    className={styles.shareOption}
-                    style={{ backgroundColor: social.color }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <social.icon />
-                    {social.label}
-                  </motion.button>
-                ))}
-              </div>
-              <button
-                onClick={() => setShowShareModal(false)}
-                className={styles.closeModal}
-              >
-                Close
-              </button>
-            </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+
+        {/* Right Column - Proposal Form */}
+        <motion.div
+          className={styles.formSection}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <div className={styles.sectionCard}>
+            <h2 className={styles.sectionTitle}>Submit Proposal</h2>
+
+            <form onSubmit={handleSubmit} className={styles.form}>
+              {/* Error/Success Messages */}
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    className={styles.errorMessage}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    <FaExclamationTriangle />
+                    <span>{error}</span>
+                  </motion.div>
+                )}
+
+                {success && (
+                  <motion.div
+                    className={styles.successMessage}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    <FaCheckCircle />
+                    <span>{success}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Cover Letter */}
+              <div className={styles.formGroup}>
+                <label htmlFor="coverLetter">
+                  Cover Letter <span className={styles.required}>*</span>
+                </label>
+                <textarea
+                  id="coverLetter"
+                  name="coverLetter"
+                  value={formData.coverLetter}
+                  onChange={handleInputChange}
+                  placeholder="Explain why you're the best fit for this job. Describe your relevant experience and approach..."
+                  rows={6}
+                  className={styles.textarea}
+                  required
+                  maxLength={2000}
+                />
+                <div className={styles.charCount}>
+                  {formData.coverLetter.length}/2000 characters
+                </div>
+              </div>
+
+              {/* Bid Amount */}
+              <div className={styles.formGroup}>
+                <label htmlFor="bidAmount">
+                  Your Bid Amount <span className={styles.required}>*</span>
+                </label>
+                <div className={styles.bidInputWrapper}>
+                  <div className={styles.currencySymbol}>
+                    {currency === "usd" ? <FaDollarSign /> : <FaRupeeSign />}
+                  </div>
+                  <input
+                    type="text"
+                    id="bidAmount"
+                    name="bidAmount"
+                    value={formData.bidAmount}
+                    onChange={handleBidAmountChange}
+                    placeholder="0.00"
+                    className={styles.bidInput}
+                    required
+                  />
+                </div>
+                <div className={styles.budgetNote}>
+                  Client budget: {budget.display}
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div className={styles.formGroup}>
+                <label htmlFor="timeline">
+                  Estimated Completion Date <span className={styles.required}>*</span>
+                </label>
+                <input
+                  type="date"
+                  id="timeline"
+                  name="timeline"
+                  value={formData.timeline}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                  min={getMinDate()}
+                  required
+                />
+                <div className={styles.timelineNote}>
+                  {formData.timeline && (
+                    <span>
+                      Estimated timeframe: {calculateTimeframe(formData.timeline)} days
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Attachments */}
+              <div className={styles.formGroup}>
+                <label htmlFor="attachments">Work Samples (Optional)</label>
+                <input
+                  type="text"
+                  id="attachments"
+                  name="attachments"
+                  value={formData.attachments}
+                  onChange={handleInputChange}
+                  placeholder="Links to portfolio, GitHub, previous work..."
+                  className={styles.input}
+                />
+              </div>
+
+              {/* Submit Button */}
+              <motion.button
+                type="submit"
+                className={styles.submitButton}
+                disabled={submitting || !job || !currentUser}
+                whileHover={{ scale: submitting ? 1 : 1.02 }}
+                whileTap={{ scale: submitting ? 1 : 0.98 }}
+              >
+                {submitting ? (
+                  <>
+                    <div className={styles.buttonSpinner}></div>
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <FaPaperPlane />
+                    Submit Proposal
+                  </>
+                )}
+              </motion.button>
+            </form>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }

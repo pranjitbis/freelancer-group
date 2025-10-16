@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   FaCheck,
   FaTimes,
@@ -13,7 +12,6 @@ import {
   FaSync,
   FaHistory,
   FaCalendar,
-  FaFire,
   FaRupeeSign,
   FaGlobe,
   FaStar,
@@ -27,7 +25,6 @@ import {
   FaMedal,
   FaBusinessTime,
   FaCreditCard,
-  FaExchangeAlt,
   FaExclamationTriangle,
 } from "react-icons/fa";
 import styles from "./Plans.module.css";
@@ -41,68 +38,45 @@ export default function PlansPage() {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [currency, setCurrency] = useState("INR");
-  const [hoveredPlan, setHoveredPlan] = useState(null);
   const [showNoConnectsError, setShowNoConnectsError] = useState(false);
   const router = useRouter();
 
-  // Professional color scheme with elegant borders
+  // Professional color scheme - no gradients
   const colors = {
-    primary: "#2563eb", // Royal Blue
-    primaryDark: "#1d4ed8",
-    secondary: "#7c3aed", // Purple
-    accent: "#059669", // Emerald
-    premium: "#d97706", // Amber
+    primary: "#2563eb",
+    primaryLight: "#eff6ff",
+    secondary: "#7c3aed",
+    accent: "#059669",
+    accentLight: "#ecfdf5",
+    premium: "#d97706",
+    premiumLight: "#fffbeb",
     dark: "#1e293b",
     light: "#f8fafc",
     border: "#e2e8f0",
-    borderHover: "#cbd5e1",
-    gradient: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
-    premiumGradient: "linear-gradient(135deg, #d97706 0%, #92400e 100%)",
     success: "#059669",
     warning: "#d97706",
     error: "#dc2626",
+    gray: "#6b7280",
   };
 
-  // Fixed currency conversion rates (₹999 = $11.33 exactly)
   const exchangeRates = {
     INR: 1,
-    USD: 0.01133, // 999 * 0.01133 = 11.33 exactly
+    USD: 0.01133,
   };
 
-  // Enhanced plans data with updated premium pricing
   const basePlans = [
     {
       id: "free",
-      name: "Starter Plan",
+      name: "Starter",
       price: 0,
-      connects: 10,
+      connects: 5,
       features: [
-        {
-          text: "10 connects per month",
-          icon: FaRocket,
-          color: colors.primary,
-        },
-        {
-          text: "1 connect per proposal",
-          icon: FaPaperPlane,
-          color: colors.primary,
-        },
-        {
-          text: "Basic profile visibility",
-          icon: FaUsers,
-          color: colors.primary,
-        },
-        {
-          text: "Standard email support",
-          icon: FaShieldAlt,
-          color: colors.primary,
-        },
-        {
-          text: "Access to basic job posts",
-          icon: FaBusinessTime,
-          color: colors.primary,
-        },
-        { text: "Email notifications", icon: FaCheck, color: colors.success },
+        "5 connects per month",
+        "1 connect per proposal",
+        "Basic profile visibility",
+        "Standard email support",
+        "Access to basic job posts",
+        "Email notifications",
       ],
       limitations: [
         "No featured proposals",
@@ -114,70 +88,40 @@ export default function PlansPage() {
       bestFor: "Beginners exploring the platform",
       icon: FaSeedling,
       color: colors.primary,
-      borderColor: colors.primary,
-      badgeColor: colors.primary,
+      bgColor: colors.primaryLight,
     },
     {
       id: "premium",
-      name: "Professional Plan",
-      price: 999, // ₹999
-      connects: 15, // 15 connects
+      name: "Professional",
+      price: 999,
+      connects: 20,
       features: [
-        { text: "15 connects per month", icon: FaBolt, color: colors.premium },
-        {
-          text: "1 connect per proposal",
-          icon: FaPaperPlane,
-          color: colors.premium,
-        },
-        {
-          text: "Enhanced profile visibility",
-          icon: FaChartLine,
-          color: colors.premium,
-        },
-        {
-          text: "Priority 24/7 support",
-          icon: FaShieldAlt,
-          color: colors.premium,
-        },
-        { text: "Access to all job posts", icon: FaGem, color: colors.premium },
-        { text: "Featured proposals", icon: FaStar, color: colors.premium },
-        {
-          text: "Advanced analytics dashboard",
-          icon: FaChartLine,
-          color: colors.premium,
-        },
-        { text: "Higher search ranking", icon: FaAward, color: colors.premium },
-        { text: "Premium profile badge", icon: FaMedal, color: colors.premium },
-        {
-          text: "Early access to features",
-          icon: FaRocket,
-          color: colors.premium,
-        },
-        {
-          text: "Credit card payments supported",
-          icon: FaCreditCard,
-          color: colors.premium,
-        },
+        "20 connects per month",
+        "1 connect per proposal",
+        "Enhanced profile visibility",
+        "Priority 24/7 support",
+        "Access to all job posts",
+        "Featured proposals",
+        "Advanced analytics dashboard",
+        "Higher search ranking",
+        "Premium profile badge",
+        "Early access to features",
+        "Credit card payments supported",
       ],
       limitations: [],
       popular: true,
       bestFor: "Serious professionals seeking growth",
       icon: FaCrown,
       color: colors.premium,
-      borderColor: colors.premium,
-      badgeColor: colors.premium,
+      bgColor: colors.premiumLight,
     },
   ];
 
-  // Calculate display prices based on currency
   const plans = basePlans.map((plan) => {
     let displayPrice = plan.price;
-
     if (currency === "USD" && plan.price > 0) {
-      // For USD, calculate exactly ₹999 = $11.33
       displayPrice = Math.round(plan.price * exchangeRates.USD * 100) / 100;
     }
-
     return {
       ...plan,
       displayPrice,
@@ -190,7 +134,6 @@ export default function PlansPage() {
   }, []);
 
   useEffect(() => {
-    // Check if user has 0 connects and show error
     if (userPlan && userPlan.connects - userPlan.usedConnects <= 0) {
       setShowNoConnectsError(true);
     } else {
@@ -227,17 +170,6 @@ export default function PlansPage() {
       if (response.ok) {
         const data = await response.json();
         setUserPlan(data.plan);
-      } else {
-        await fetch("/api/users/plan", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, planType: "free" }),
-        });
-        const newResponse = await fetch(`/api/users/plan?userId=${userId}`);
-        if (newResponse.ok) {
-          const newData = await newResponse.json();
-          setUserPlan(newData.plan);
-        }
       }
     } catch (error) {
       console.error("Error fetching user plan:", error);
@@ -256,46 +188,9 @@ export default function PlansPage() {
       }
     } catch (error) {
       console.error("Error fetching connect history:", error);
-      const mockHistory = [
-        {
-          id: 1,
-          type: "usage",
-          amount: -1,
-          description: "Submitted proposal for E-commerce Website",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          type: "purchase",
-          amount: 50,
-          description: "Added extra connects pack",
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-        },
-      ];
-      setConnectHistory(mockHistory);
     } finally {
       setHistoryLoading(false);
     }
-  };
-
-  const handleCurrencyChange = (newCurrency) => {
-    setCurrency(newCurrency);
-  };
-
-  const toggleCurrency = () => {
-    setCurrency(currency === "INR" ? "USD" : "INR");
-  };
-
-  const formatPrice = (price, currency) => {
-    if (currency === "INR") {
-      return `₹${price}`;
-    } else {
-      return `$${price}`;
-    }
-  };
-
-  const getCurrencySymbol = () => {
-    return currency === "INR" ? <FaRupeeSign /> : <FaDollarSign />;
   };
 
   const handleSelectPlan = async (plan) => {
@@ -323,7 +218,7 @@ export default function PlansPage() {
 
         if (response.ok) {
           setUserPlan(result.plan);
-          alert("Plan updated to Free successfully!");
+          alert("Plan updated to Starter successfully!");
           router.refresh();
         } else {
           alert(result.error || "Failed to update plan");
@@ -340,13 +235,11 @@ export default function PlansPage() {
 
       try {
         const razorpayCurrency = currency === "INR" ? "INR" : "USD";
-
-        // FIXED: Send the actual amount without converting to paisa/cents
         let razorpayAmount;
         if (currency === "INR") {
-          razorpayAmount = plan.price; // Send ₹999 as 999
+          razorpayAmount = plan.price;
         } else {
-          razorpayAmount = plan.displayPrice; // Send $11.33 as 11.33
+          razorpayAmount = plan.displayPrice;
         }
 
         const response = await fetch("/api/payments/create-order", {
@@ -399,7 +292,7 @@ export default function PlansPage() {
                 setUserPlan((prev) => ({
                   ...prev,
                   planType: "premium",
-                  connects: 15,
+                  connects: 20,
                   usedConnects: 0,
                 }));
                 setShowNoConnectsError(false);
@@ -427,7 +320,6 @@ export default function PlansPage() {
           },
         };
 
-        // Add payment method configuration for international cards
         if (razorpayCurrency === "USD") {
           options.method = {
             netbanking: false,
@@ -463,95 +355,15 @@ export default function PlansPage() {
   };
 
   const getAvailableConnects = () => {
-    if (!userPlan) return 10;
+    if (!userPlan) return 5;
     return userPlan.connects - userPlan.usedConnects;
-  };
-
-  const getHistoryIcon = (type) => {
-    switch (type) {
-      case "usage":
-        return <FaPaperPlane />;
-      case "purchase":
-        return <FaDollarSign />;
-      case "reset":
-        return <FaSync />;
-      case "plan_change":
-        return <FaRocket />;
-      default:
-        return <FaHistory />;
-    }
-  };
-
-  const getHistoryColor = (type) => {
-    switch (type) {
-      case "usage":
-        return colors.error;
-      case "purchase":
-        return colors.success;
-      case "reset":
-        return colors.primary;
-      case "plan_change":
-        return colors.warning;
-      default:
-        return "#6b7280";
-    }
-  };
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const cardHoverVariants = {
-    rest: {
-      scale: 1,
-      y: 0,
-      borderColor: colors.border,
-    },
-    hover: {
-      scale: 1.02,
-      y: -5,
-      borderColor: colors.borderHover,
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut",
-      },
-    },
   };
 
   if (authLoading) {
     return (
       <div className={styles.loadingContainer}>
-        <motion.div
-          className={styles.spinner}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        ></motion.div>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          Checking authentication...
-        </motion.p>
+        <div className={styles.spinner}></div>
+        <p>Checking authentication...</p>
       </div>
     );
   }
@@ -561,567 +373,322 @@ export default function PlansPage() {
   }
 
   return (
-    <motion.div
-      className={styles.container}
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      {/* Navigation Bar */}
-      <motion.nav className={styles.navbar} variants={itemVariants}>
-        <div className={styles.navContent}>
-          <motion.button
+    <div className={styles.container}>
+      {/* Header */}
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          <button
             onClick={() => router.back()}
             className={styles.backButton}
-            whileHover={{ scale: 1.02, backgroundColor: colors.primary }}
-            whileTap={{ scale: 0.98 }}
           >
-            <FaArrowLeft /> Back to Dashboard
-          </motion.button>
-
-          <div className={styles.navControls}>
-            <motion.button
-              onClick={toggleCurrency}
-              className={styles.currencyToggleBtn}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title={`Switch to ${currency === "INR" ? "USD" : "INR"}`}
-            >
-              <FaExchangeAlt className={styles.exchangeIcon} />
-              <span>
-                Switch to {currency === "INR" ? "USD ($)" : "INR (₹)"}
-              </span>
-            </motion.button>
-
-            <motion.div
-              className={styles.currencySelector}
-              whileHover={{ scale: 1.05 }}
-            >
+            <FaArrowLeft />
+            Back to Dashboard
+          </button>
+          
+          <div className={styles.headerControls}>
+            <div className={styles.currencySelector}>
               <FaGlobe className={styles.globeIcon} />
               <select
                 value={currency}
-                onChange={(e) => handleCurrencyChange(e.target.value)}
+                onChange={(e) => setCurrency(e.target.value)}
                 className={styles.currencySelect}
               >
                 <option value="INR">INR (₹)</option>
                 <option value="USD">USD ($)</option>
               </select>
-            </motion.div>
-          </div>
-        </div>
-      </motion.nav>
-
-      <div className={styles.content}>
-        {/* Page Header */}
-        <motion.section className={styles.pageHeader} variants={itemVariants}>
-          <div className={styles.headerContent}>
-            <h1>Choose Your Plan</h1>
-            <p>Select the perfect plan that matches your freelance journey</p>
-            <div className={styles.paymentInfo}>
-              <FaCreditCard className={styles.creditCardIcon} />
-              <span>Credit cards accepted for both INR and USD payments</span>
             </div>
           </div>
-        </motion.section>
+        </div>
+      </header>
 
-        {/* No Connects Error Banner */}
-        <AnimatePresence>
-          {showNoConnectsError && (
-            <motion.div
-              className={styles.errorBanner}
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className={styles.errorContent}>
-                <FaExclamationTriangle className={styles.errorIcon} />
-                <div className={styles.errorText}>
-                  <h4>You're out of connects! 🚨</h4>
-                  <p>
-                    You have 0 connects remaining. Upgrade your plan to continue
-                    submitting proposals.
+      <main className={styles.main}>
+        {/* Hero Section */}
+        <section className={styles.heroSection}>
+          <div className={styles.heroContent}>
+            <h1 className={styles.heroTitle}>Choose Your Plan</h1>
+            <p className={styles.heroSubtitle}>
+              Select the perfect plan that matches your freelance journey and accelerate your success
+            </p>
+          </div>
+        </section>
+
+        {/* Current Plan Status */}
+        <section className={styles.currentPlanSection}>
+          <div className={styles.currentPlanCard}>
+            <div className={styles.planStatusHeader}>
+              <div className={styles.planInfo}>
+                <div 
+                  className={styles.planIcon}
+                  style={{ 
+                    backgroundColor: userPlan?.planType === "premium" ? colors.premiumLight : colors.primaryLight,
+                    color: userPlan?.planType === "premium" ? colors.premium : colors.primary
+                  }}
+                >
+                  {userPlan?.planType === "premium" ? <FaCrown /> : <FaSeedling />}
+                </div>
+                <div className={styles.planDetails}>
+                  <h2 className={styles.planName}>
+                    {userPlan?.planType?.charAt(0).toUpperCase() + userPlan?.planType?.slice(1)} Plan
+                  </h2>
+                  <p className={styles.planDescription}>
+                    {getAvailableConnects() === 0
+                      ? "No connects remaining. Upgrade to continue submitting proposals."
+                      : userPlan?.planType === "premium"
+                      ? "Premium features unlocked"
+                      : "Upgrade to unlock premium features"}
                   </p>
                 </div>
-                <motion.button
+              </div>
+              
+              <div className={styles.planStats}>
+                <div className={styles.connectsCount}>
+                  <span className={styles.availableConnects}>
+                    {getAvailableConnects()}
+                  </span>
+                  <span className={styles.connectsLabel}>Available Connects</span>
+                </div>
+                
+                <div className={styles.progressSection}>
+                  <div className={styles.progressBar}>
+                    <div 
+                      className={styles.progressFill}
+                      style={{ 
+                        width: `${getConnectUsagePercentage()}%`,
+                        backgroundColor: userPlan?.planType === "premium" ? colors.premium : colors.primary
+                      }}
+                    ></div>
+                  </div>
+                  <div className={styles.progressText}>
+                    {userPlan?.usedConnects || 0} of {userPlan?.connects || 5} used ({getConnectUsagePercentage()}%)
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className={styles.planActions}>
+              <div className={styles.resetInfo}>
+                <FaCalendar className={styles.calendarIcon} />
+                <span>Resets in {getDaysUntilReset()} days</span>
+              </div>
+              
+              {(userPlan?.planType === "free" || getAvailableConnects() === 0) && (
+                <button
+                  className={styles.upgradeButton}
                   onClick={() =>
                     document
                       .getElementById("plans-section")
                       .scrollIntoView({ behavior: "smooth" })
                   }
-                  className={styles.rechargeButton}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                 >
-                  <FaCrown /> Recharge Now
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Current Plan & Connects */}
-        <section className={styles.currentPlanSection}>
-          <motion.div
-            className={styles.currentPlanCard}
-            variants={itemVariants}
-            whileHover={{
-              borderColor: colors.borderHover,
-              boxShadow: "0 8px 25px -8px rgba(0, 0, 0, 0.15)",
-            }}
-          >
-            <div className={styles.planHeader}>
-              <div className={styles.planInfo}>
-                <div className={styles.planTitle}>
-                  <motion.div
-                    className={`${styles.planIconWrapper} ${
-                      userPlan?.planType === "premium"
-                        ? styles.premium
-                        : styles.free
-                    } ${getAvailableConnects() === 0 ? styles.noConnects : ""}`}
-                    animate={{
-                      scale: [1, 1.05, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      repeatType: "reverse",
-                    }}
-                  >
-                    {userPlan?.planType === "premium" ? (
-                      <FaCrown />
-                    ) : (
-                      <FaSeedling />
-                    )}
-                    {getAvailableConnects() === 0 && (
-                      <div className={styles.zeroConnectsBadge}>0</div>
-                    )}
-                  </motion.div>
-                  <div>
-                    <h2>
-                      {userPlan?.planType?.charAt(0).toUpperCase() +
-                        userPlan?.planType?.slice(1)}{" "}
-                      Plan
-                    </h2>
-                    <p>
-                      {getAvailableConnects() === 0
-                        ? "No connects remaining! Please recharge 🔄"
-                        : userPlan?.planType === "premium"
-                        ? "Premium features unlocked 🎉"
-                        : "Upgrade to unlock premium features"}
-                    </p>
-                  </div>
-                </div>
-                <div className={styles.planStats}>
-                  <div className={styles.connectsOverview}>
-                    <div className={styles.connectsCount}>
-                      <motion.span
-                        className={`${styles.availableConnects} ${
-                          getAvailableConnects() === 0
-                            ? styles.zeroConnects
-                            : ""
-                        }`}
-                        key={getAvailableConnects()}
-                        initial={{ scale: 1.2 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        {getAvailableConnects()}
-                      </motion.span>
-                      <span className={styles.connectsLabel}>
-                        Connects Available
-                      </span>
-                    </div>
-                    <div className={styles.connectsProgress}>
-                      <div className={styles.progressBar}>
-                        <motion.div
-                          className={`${styles.progressFill} ${
-                            getAvailableConnects() === 0
-                              ? styles.zeroProgress
-                              : ""
-                          }`}
-                          initial={{ width: 0 }}
-                          animate={{ width: `${getConnectUsagePercentage()}%` }}
-                          transition={{ duration: 1, ease: "easeOut" }}
-                          style={{
-                            background:
-                              userPlan?.planType === "premium"
-                                ? colors.premiumGradient
-                                : colors.gradient,
-                          }}
-                        ></motion.div>
-                      </div>
-                      <div className={styles.connectsText}>
-                        {userPlan?.usedConnects || 0} of{" "}
-                        {userPlan?.connects || 10} used (
-                        {getConnectUsagePercentage()}%)
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.planActions}>
-                <div className={styles.resetInfo}>
-                  <FaCalendar className={styles.calendarIcon} />
-                  <span>Resets in {getDaysUntilReset()} days</span>
-                </div>
-                {(userPlan?.planType === "free" ||
-                  getAvailableConnects() === 0) && (
-                  <motion.button
-                    className={styles.upgradeButton}
-                    onClick={() =>
-                      document
-                        .getElementById("plans-section")
-                        .scrollIntoView({ behavior: "smooth" })
-                    }
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow: `0 4px 15px ${colors.premium}40`,
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <FaCrown />{" "}
-                    {getAvailableConnects() === 0
-                      ? "Recharge Now"
-                      : "Upgrade to Pro"}
-                  </motion.button>
-                )}
-              </div>
+                  <FaCrown />
+                  {getAvailableConnects() === 0 ? "Recharge Now" : "Upgrade Plan"}
+                </button>
+              )}
             </div>
-
-            <div className={styles.planFeatures}>
-              <h4>Current Plan Features:</h4>
-              <div className={styles.featuresGrid}>
-                {plans
-                  .find((plan) => plan.id === (userPlan?.planType || "free"))
-                  ?.features.slice(0, 4)
-                  .map((feature, index) => (
-                    <motion.div
-                      key={index}
-                      className={styles.featureItem}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                    >
-                      <feature.icon
-                        className={styles.featureCheck}
-                        style={{ color: feature.color }}
-                      />
-                      <span>{feature.text}</span>
-                    </motion.div>
-                  ))}
-              </div>
-            </div>
-          </motion.div>
+          </div>
         </section>
 
-        {/* Available Plans */}
+        {/* Plans Comparison */}
         <section id="plans-section" className={styles.plansSection}>
-          <motion.div className={styles.plansGrid} variants={containerVariants}>
-            {plans.map((plan, index) => (
-              <motion.div
+          <div className={styles.plansGrid}>
+            {plans.map((plan) => (
+              <div
                 key={plan.id}
                 className={`${styles.planCard} ${
                   plan.popular ? styles.popular : ""
-                } ${userPlan?.planType === plan.id ? styles.currentPlan : ""}`}
-                variants={itemVariants}
-                custom={index}
-                initial="rest"
-                whileHover="hover"
-                animate="rest"
-                variants={cardHoverVariants}
-                onHoverStart={() => setHoveredPlan(plan.id)}
-                onHoverEnd={() => setHoveredPlan(null)}
-                style={{
-                  borderColor: plan.borderColor,
-                  borderWidth: "2px",
-                  borderStyle: "solid",
-                }}
+                }`}
               >
                 {plan.popular && (
-                  <motion.div
+                  <div 
                     className={styles.popularBadge}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.3, delay: 0.5 }}
-                    style={{ backgroundColor: plan.badgeColor }}
+                    style={{ backgroundColor: plan.color }}
                   >
-                    <FaCrown /> Most Popular
-                  </motion.div>
-                )}
-
-                {userPlan?.planType === plan.id && (
-                  <motion.div
-                    className={styles.currentBadge}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <FaCheck /> Current Plan
-                  </motion.div>
+                    <FaStar />
+                    Most Popular
+                  </div>
                 )}
 
                 <div className={styles.planHeader}>
-                  <motion.div
+                  <div 
                     className={styles.planIcon}
-                    style={{ color: plan.color }}
-                    animate={{
-                      rotate: hoveredPlan === plan.id ? [0, -5, 5, 0] : 0,
-                      scale: hoveredPlan === plan.id ? 1.1 : 1,
+                    style={{ 
+                      backgroundColor: plan.bgColor,
+                      color: plan.color
                     }}
-                    transition={{ duration: 0.3 }}
                   >
                     <plan.icon />
-                  </motion.div>
+                  </div>
+                  
                   <h3 className={styles.planName}>{plan.name}</h3>
-                  <div className={styles.connectsHighlight}>
-                    <motion.span
+                  
+                  <div className={styles.connectsDisplay}>
+                    <span 
                       className={styles.connectsCount}
-                      animate={{
-                        scale: hoveredPlan === plan.id ? [1, 1.1, 1] : 1,
-                      }}
-                      transition={{ duration: 0.3 }}
-                      style={{
-                        background:
-                          plan.id === "premium"
-                            ? colors.premiumGradient
-                            : colors.gradient,
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                      }}
+                      style={{ color: plan.color }}
                     >
                       {plan.connects}
-                    </motion.span>
-                    <span className={styles.connectsLabel}>
-                      Connects / Month
                     </span>
+                    <span className={styles.connectsLabel}>Connects / Month</span>
                   </div>
-                  <div className={styles.planPrice}>
+                  
+                  <div className={styles.priceSection}>
                     {plan.price === 0 ? (
-                      <motion.span
-                        className={styles.free}
-                        animate={{ scale: [1, 1.05, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        Free Forever
-                      </motion.span>
+                      <div className={styles.freePrice}>
+                        <span className={styles.priceAmount}>Free</span>
+                        <span className={styles.pricePeriod}>Forever</span>
+                      </div>
                     ) : (
-                      <>
-                        <span className={styles.currencySymbol}>
-                          {getCurrencySymbol()}
-                        </span>
-                        <span className={styles.amount}>
-                          {plan.displayPrice}
-                        </span>
-                        <span className={styles.period}>/month</span>
-                       
-                      </>
+                      <div className={styles.paidPrice}>
+                        <div className={styles.priceLine}>
+                          <span className={styles.currencySymbol}>
+                            {currency === "INR" ? <FaRupeeSign /> : <FaDollarSign />}
+                          </span>
+                          <span className={styles.priceAmount}>
+                            {plan.displayPrice}
+                          </span>
+                        </div>
+                        <span className={styles.pricePeriod}>per month</span>
+                      </div>
                     )}
                   </div>
                 </div>
 
-                <div className={styles.bestFor}>
-                  <FaFire className={styles.fireIcon} />
-                  <span>{plan.bestFor}</span>
+                <div className={styles.planDescription}>
+                  <p>{plan.bestFor}</p>
                 </div>
 
-                <div className={styles.features}>
-                  <h4>What's included:</h4>
-                  <ul>
-                    {plan.features.map((feature, idx) => (
-                      <motion.li
-                        key={idx}
-                        className={styles.featureItem}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3, delay: idx * 0.05 }}
-                      >
-                        <feature.icon
-                          className={styles.featureIcon}
-                          style={{ color: feature.color }}
-                        />
-                        <span>{feature.text}</span>
-                      </motion.li>
+                <div className={styles.featuresSection}>
+                  <h4 className={styles.featuresTitle}>Features</h4>
+                  <ul className={styles.featuresList}>
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className={styles.featureItem}>
+                        <FaCheck className={styles.featureIcon} style={{ color: colors.success }} />
+                        <span>{feature}</span>
+                      </li>
                     ))}
                   </ul>
                 </div>
 
                 {plan.limitations.length > 0 && (
-                  <div className={styles.limitations}>
-                    <h4>Limitations:</h4>
-                    <ul>
-                      {plan.limitations.map((limitation, idx) => (
-                        <motion.li
-                          key={idx}
-                          className={styles.limitationItem}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3, delay: idx * 0.05 }}
-                        >
-                          <FaTimes className={styles.limitationIcon} />
-                          {limitation}
-                        </motion.li>
+                  <div className={styles.limitationsSection}>
+                    <h4 className={styles.limitationsTitle}>Limitations</h4>
+                    <ul className={styles.limitationsList}>
+                      {plan.limitations.map((limitation, index) => (
+                        <li key={index} className={styles.limitationItem}>
+                          <FaTimes className={styles.limitationIcon} style={{ color: colors.error }} />
+                          <span>{limitation}</span>
+                        </li>
                       ))}
                     </ul>
                   </div>
                 )}
 
-                <motion.button
-                  onClick={() => handleSelectPlan(plan)}
-                  disabled={loading || userPlan?.planType === plan.id}
-                  className={`${styles.selectButton} ${
-                    plan.popular ? styles.popularButton : ""
-                  } ${
-                    userPlan?.planType === plan.id ? styles.currentButton : ""
-                  }`}
-                  whileHover={
-                    !loading && userPlan?.planType !== plan.id
-                      ? {
-                          scale: 1.05,
-                          boxShadow: plan.popular
-                            ? `0 8px 25px ${colors.premium}40`
-                            : `0 8px 25px ${colors.primary}40`,
-                        }
-                      : {}
-                  }
-                  whileTap={
-                    !loading && userPlan?.planType !== plan.id
-                      ? { scale: 0.95 }
-                      : {}
-                  }
-                  style={{
-                    background:
-                      plan.popular && userPlan?.planType !== plan.id
-                        ? colors.premiumGradient
-                        : userPlan?.planType === plan.id
-                        ? "#64748b"
-                        : colors.gradient,
-                  }}
-                >
-                  {loading && selectedPlan?.id === plan.id ? (
-                    <motion.span
-                      animate={{ opacity: [1, 0.5, 1] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    >
-                      <FaSync className={styles.spinningIcon} /> Processing...
-                    </motion.span>
-                  ) : userPlan?.planType === plan.id ? (
-                    <>
-                      <FaCheck /> Current Plan
-                    </>
-                  ) : plan.price === 0 ? (
-                    "Continue with Starter"
-                  ) : (
-                    <>
-                      <FaCrown />
-                      Upgrade to Professional
-                    </>
-                  )}
-                </motion.button>
-              </motion.div>
+                <div className={styles.planAction}>
+                  <button
+                    onClick={() => handleSelectPlan(plan)}
+                    disabled={loading || userPlan?.planType === plan.id}
+                    className={`${styles.selectButton} ${
+                      plan.popular ? styles.popularButton : ""
+                    } ${
+                      userPlan?.planType === plan.id ? styles.currentButton : ""
+                    }`}
+                    style={{
+                      backgroundColor: userPlan?.planType === plan.id 
+                        ? colors.gray 
+                        : plan.popular 
+                        ? plan.color 
+                        : colors.primary
+                    }}
+                  >
+                    {loading && selectedPlan?.id === plan.id ? (
+                      <span className={styles.buttonLoading}>
+                        <FaSync className={styles.spinningIcon} />
+                        Processing...
+                      </span>
+                    ) : userPlan?.planType === plan.id ? (
+                      <span className={styles.buttonCurrent}>
+                        <FaCheck />
+                        Current Plan
+                      </span>
+                    ) : plan.price === 0 ? (
+                      "Continue with Starter"
+                    ) : (
+                      <span className={styles.buttonUpgrade}>
+                        <FaCrown />
+                        Upgrade to Professional
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </section>
 
         {/* Connect History */}
         <section className={styles.historySection}>
-          <motion.div
-            className={styles.historyCard}
-            variants={itemVariants}
-            whileHover={{
-              borderColor: colors.borderHover,
-              boxShadow: "0 8px 25px -8px rgba(0, 0, 0, 0.1)",
-            }}
-          >
+          <div className={styles.historyCard}>
             <div className={styles.historyHeader}>
-              <h3>
-                <FaHistory /> Connect History
+              <h3 className={styles.historyTitle}>
+                <FaHistory />
+                Connect History
               </h3>
-              <p>Track your connect usage and activities</p>
+              <p className={styles.historySubtitle}>
+                Track your connect usage and proposal activities
+              </p>
             </div>
 
             {historyLoading ? (
               <div className={styles.loadingHistory}>
-                <motion.div
-                  className={styles.spinner}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                ></motion.div>
+                <div className={styles.spinner}></div>
                 <p>Loading history...</p>
               </div>
             ) : connectHistory.length === 0 ? (
-              <motion.div
-                className={styles.emptyHistory}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
+              <div className={styles.emptyHistory}>
                 <FaHistory className={styles.emptyIcon} />
                 <h4>No connect history yet</h4>
                 <p>
-                  Your connect usage will appear here once you start submitting
-                  proposals
+                  Your connect usage will appear here once you start submitting proposals
                 </p>
-              </motion.div>
+              </div>
             ) : (
               <div className={styles.historyList}>
-                <AnimatePresence>
-                  {connectHistory.map((item, index) => (
-                    <motion.div
-                      key={item.id}
-                      className={styles.historyItem}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                      layout
-                    >
-                      <motion.div
-                        className={styles.historyIcon}
-                        style={{ backgroundColor: getHistoryColor(item.type) }}
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                      >
-                        {getHistoryIcon(item.type)}
-                      </motion.div>
-                      <div className={styles.historyContent}>
-                        <div className={styles.historyDescription}>
-                          {item.description}
-                        </div>
-                        <div className={styles.historyMeta}>
-                          <span className={styles.historyDate}>
-                            {new Date(item.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}
-                          </span>
-                        </div>
+                {connectHistory.map((item, index) => (
+                  <div key={item.id} className={styles.historyItem}>
+                    <div className={styles.historyIcon}>
+                      <FaPaperPlane />
+                    </div>
+                    <div className={styles.historyContent}>
+                      <div className={styles.historyDescription}>
+                        {item.description}
                       </div>
-                      <motion.div
-                        className={`${styles.connectChange} ${
-                          item.amount > 0 ? styles.positive : styles.negative
-                        }`}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.3, delay: index * 0.1 }}
-                      >
-                        {item.amount > 0 ? "+" : ""}
-                        {item.amount}
-                      </motion.div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+                      <div className={styles.historyMeta}>
+                        <span className={styles.historyDate}>
+                          {new Date(item.createdAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      className={`${styles.connectChange} ${
+                        item.amount > 0 ? styles.positive : styles.negative
+                      }`}
+                    >
+                      {item.amount > 0 ? "+" : ""}
+                      {item.amount}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
-          </motion.div>
+          </div>
         </section>
-      </div>
-    </motion.div>
+      </main>
+    </div>
   );
 }

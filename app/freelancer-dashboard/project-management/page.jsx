@@ -22,6 +22,10 @@ import {
   FaEye,
   FaMoneyBillWave,
   FaRupeeSign,
+  FaEllipsisV,
+  FaChartLine,
+  FaCreditCard,
+  FaPaperPlane,
 } from "react-icons/fa";
 import styles from "./ProjectManagement.module.css";
 
@@ -440,124 +444,161 @@ export default function ProjectManagement() {
     return (
       <div className={styles.loadingContainer}>
         <FaSpinner className={styles.spinner} />
-        <p>Loading...</p>
+        <p>Loading project management...</p>
       </div>
     );
   }
 
   return (
     <div className={styles.container}>
-      {/* Header */}
-      <header className={styles.header}>
+      {/* Header Section */}
+      <div className={styles.headerSection}>
         <div className={styles.headerContent}>
-          <div className={styles.headerMain}>
-            <h1>Project Management</h1>
-            <p>Manage your projects and track payment requests</p>
+          <div className={styles.headerText}>
+            <h1 className={styles.pageTitle}>Project Management</h1>
+            <p className={styles.pageSubtitle}>
+              Manage your projects, track progress, and handle payments
+            </p>
           </div>
 
-          {/* Currency Selector */}
-          <div className={styles.currencySelector}>
-            <label>Currency: </label>
-            <select
-              value={currency}
-              onChange={(e) => updateCurrencyPreference(e.target.value)}
-              className={styles.currencySelect}
-            >
-              <option value="USD">USD ($)</option>
-              <option value="INR">INR (₹)</option>
-            </select>
-          </div>
-
-          <div className={styles.stats}>
-            <div className={styles.stat}>
-              <span className={styles.statNumber}>{projectStats.total}</span>
-              <span className={styles.statLabel}>Total Projects</span>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.statNumber}>{paymentStats.total}</span>
-              <span className={styles.statLabel}>Payment Requests</span>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.statNumber}>
-                {formatCurrency(projectStats.totalEarned, currency)}
-              </span>
-              <span className={styles.statLabel}>Total Earned</span>
+          <div className={styles.headerControls}>
+            <div className={styles.currencySelector}>
+              <label className={styles.currencyLabel}>Display Currency:</label>
+              <select
+                value={currency}
+                onChange={(e) => updateCurrencyPreference(e.target.value)}
+                className={styles.currencySelect}
+              >
+                <option value="USD">USD ($)</option>
+                <option value="INR">INR (₹)</option>
+              </select>
             </div>
           </div>
         </div>
-      </header>
 
-      {/* Tabs */}
-      <div className={styles.tabsContainer}>
-        <div className={styles.tabs}>
+        {/* Stats Overview */}
+        <div className={styles.statsOverview}>
+          <div className={styles.statCard}>
+            <div className={styles.statIcon}>
+              <FaBriefcase />
+            </div>
+            <div className={styles.statContent}>
+              <div className={styles.statNumber}>{projectStats.total}</div>
+              <div className={styles.statLabel}>Total Projects</div>
+            </div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statIcon}>
+              <FaMoneyBillWave />
+            </div>
+            <div className={styles.statContent}>
+              <div className={styles.statNumber}>{paymentStats.total}</div>
+              <div className={styles.statLabel}>Payment Requests</div>
+            </div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statIcon}>
+              <FaChartLine />
+            </div>
+            <div className={styles.statContent}>
+              <div className={styles.statNumber}>
+                {formatCurrency(projectStats.totalEarned, currency)}
+              </div>
+              <div className={styles.statLabel}>Total Earned</div>
+            </div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statIcon}>
+              <FaCheckCircle />
+            </div>
+            <div className={styles.statContent}>
+              <div className={styles.statNumber}>{projectStats.completed}</div>
+              <div className={styles.statLabel}>Completed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className={styles.navigationSection}>
+        <div className={styles.tabsContainer}>
           <button
             className={`${styles.tab} ${
-              activeTab === "projects" ? styles.activeTab : ""
+              activeTab === "projects" ? styles.tabActive : ""
             }`}
             onClick={() => setActiveTab("projects")}
           >
-            <FaBriefcase />
-            Projects ({projectStats.total})
+            <FaBriefcase className={styles.tabIcon} />
+            <span className={styles.tabText}>Projects</span>
+            <span className={styles.tabBadge}>{projectStats.total}</span>
           </button>
+
           <button
             className={`${styles.tab} ${
-              activeTab === "payments" ? styles.activeTab : ""
+              activeTab === "payments" ? styles.tabActive : ""
             }`}
             onClick={() => setActiveTab("payments")}
           >
-            <FaMoneyBillWave />
-            Payment History ({paymentStats.total})
+            <FaCreditCard className={styles.tabIcon} />
+            <span className={styles.tabText}>Payment History</span>
+            <span className={styles.tabBadge}>{paymentStats.total}</span>
           </button>
         </div>
       </div>
 
       {/* Filters and Search */}
       <div className={styles.filtersSection}>
-        <div className={styles.searchBox}>
-          <FaSearch className={styles.searchIcon} />
-          <input
-            type="text"
-            placeholder={`Search ${
-              activeTab === "projects" ? "projects" : "payment requests"
-            }...`}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={styles.searchInput}
-          />
-        </div>
-        <div className={styles.filterGroup}>
-          <FaFilter className={styles.filterIcon} />
-          <select
-            value={activeTab === "projects" ? projectFilter : paymentFilter}
-            onChange={(e) =>
-              activeTab === "projects"
-                ? setProjectFilter(e.target.value)
-                : setPaymentFilter(e.target.value)
-            }
-            className={styles.filterSelect}
-          >
-            <option value="all">
-              All {activeTab === "projects" ? "Projects" : "Status"}
-            </option>
-            {activeTab === "projects" ? (
-              <>
-                <option value="active">Active</option>
-                <option value="completed">Completed</option>
-              </>
-            ) : (
-              <>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="completed">Completed</option>
-                <option value="rejected">Rejected</option>
-              </>
-            )}
-          </select>
+        <div className={styles.searchContainer}>
+          <div className={styles.searchBox}>
+            <FaSearch className={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder={`Search ${
+                activeTab === "projects" ? "projects" : "payment requests"
+              }...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
+
+          <div className={styles.filterContainer}>
+            <FaFilter className={styles.filterIcon} />
+            <select
+              value={activeTab === "projects" ? projectFilter : paymentFilter}
+              onChange={(e) =>
+                activeTab === "projects"
+                  ? setProjectFilter(e.target.value)
+                  : setPaymentFilter(e.target.value)
+              }
+              className={styles.filterSelect}
+            >
+              <option value="all">
+                All {activeTab === "projects" ? "Projects" : "Status"}
+              </option>
+              {activeTab === "projects" ? (
+                <>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                </>
+              ) : (
+                <>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="completed">Completed</option>
+                  <option value="rejected">Rejected</option>
+                </>
+              )}
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className={styles.content}>
+      {/* Main Content */}
+      <div className={styles.mainContent}>
         <AnimatePresence mode="wait">
           {activeTab === "projects" ? (
             <motion.div
@@ -565,14 +606,14 @@ export default function ProjectManagement() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className={styles.tabContent}
+              className={styles.contentSection}
             >
               {/* Projects Grid */}
               {filteredProjects.length === 0 ? (
                 <div className={styles.emptyState}>
                   <FaBriefcase className={styles.emptyIcon} />
-                  <h3>No projects found</h3>
-                  <p>
+                  <h3 className={styles.emptyTitle}>No projects found</h3>
+                  <p className={styles.emptyDescription}>
                     {searchTerm || projectFilter !== "all"
                       ? "Try adjusting your search or filters"
                       : "You don't have any projects yet"}
@@ -604,47 +645,53 @@ export default function ProjectManagement() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className={styles.tabContent}
+              className={styles.contentSection}
             >
               {/* Payment Requests Table */}
               {filteredPaymentRequests.length === 0 ? (
                 <div className={styles.emptyState}>
-                  <FaMoneyBillWave className={styles.emptyIcon} />
-                  <h3>No payment requests found</h3>
-                  <p>
+                  <FaCreditCard className={styles.emptyIcon} />
+                  <h3 className={styles.emptyTitle}>
+                    No payment requests found
+                  </h3>
+                  <p className={styles.emptyDescription}>
                     {searchTerm || paymentFilter !== "all"
                       ? "Try adjusting your search or filters"
                       : "You haven't created any payment requests yet"}
                   </p>
                 </div>
               ) : (
-                <div className={styles.paymentTableContainer}>
-                  <table className={styles.paymentTable}>
-                    <thead>
-                      <tr>
-                        <th>Project</th>
-                        <th>Client</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Request Date</th>
-                        <th>Due Date</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredPaymentRequests.map((request, index) => (
-                        <PaymentRequestRow
-                          key={request.id}
-                          request={request}
-                          index={index}
-                          getStatusBadge={getStatusBadge}
-                          router={router}
-                          currency={currency}
-                          formatCurrency={formatCurrency}
-                        />
-                      ))}
-                    </tbody>
-                  </table>
+                <div className={styles.tableContainer}>
+                  <div className={styles.tableWrapper}>
+                    <table className={styles.dataTable}>
+                      <thead className={styles.tableHeader}>
+                        <tr>
+                          <th className={styles.tableHeaderCell}>Project</th>
+                          <th className={styles.tableHeaderCell}>Client</th>
+                          <th className={styles.tableHeaderCell}>Amount</th>
+                          <th className={styles.tableHeaderCell}>Status</th>
+                          <th className={styles.tableHeaderCell}>
+                            Request Date
+                          </th>
+                          <th className={styles.tableHeaderCell}>Due Date</th>
+                          <th className={styles.tableHeaderCell}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className={styles.tableBody}>
+                        {filteredPaymentRequests.map((request, index) => (
+                          <PaymentRequestRow
+                            key={request.id}
+                            request={request}
+                            index={index}
+                            getStatusBadge={getStatusBadge}
+                            router={router}
+                            currency={currency}
+                            formatCurrency={formatCurrency}
+                          />
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </motion.div>
@@ -685,20 +732,25 @@ const ProjectCard = ({
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: index * 0.1 }}
-    whileHover={{ y: -5 }}
+    whileHover={{ y: -4, transition: { duration: 0.2 } }}
   >
-    <div className={styles.projectHeader}>
-      <h3>{project.title}</h3>
-      {getStatusBadge(project.status, "project")}
+    <div className={styles.cardHeader}>
+      <div className={styles.projectTitleSection}>
+        <h3 className={styles.projectTitle}>{project.title}</h3>
+        {getStatusBadge(project.status, "project")}
+      </div>
+      <button className={styles.cardMenu}>
+        <FaEllipsisV />
+      </button>
     </div>
 
-    <div className={styles.projectDetails}>
+    <div className={styles.cardContent}>
       {/* Client Info */}
-      <div className={styles.clientInfo}>
-        <div className={styles.avatar}>
+      <div className={styles.clientSection}>
+        <div className={styles.clientAvatar}>
           {project.client?.name?.charAt(0).toUpperCase() || "C"}
         </div>
-        <div>
+        <div className={styles.clientInfo}>
           <div className={styles.clientName}>
             {project.client?.name || "Client"}
           </div>
@@ -714,19 +766,23 @@ const ProjectCard = ({
         </div>
       </div>
 
-      {/* Project Info */}
-      <div className={styles.projectInfo}>
-        <div className={styles.infoItem}>
-          <CurrencyIcon />
-          <span>Budget: {formatCurrency(project.budget, currency)}</span>
+      {/* Project Details */}
+      <div className={styles.projectDetails}>
+        <div className={styles.detailItem}>
+          <CurrencyIcon className={styles.detailIcon} />
+          <span className={styles.detailText}>
+            Budget: {formatCurrency(project.budget, currency)}
+          </span>
         </div>
-        <div className={styles.infoItem}>
-          <FaUser />
-          <span>Client: {project.client?.name || "Client"}</span>
+        <div className={styles.detailItem}>
+          <FaUser className={styles.detailIcon} />
+          <span className={styles.detailText}>
+            Client: {project.client?.name || "Client"}
+          </span>
         </div>
-        <div className={styles.infoItem}>
-          <FaCalendar />
-          <span>
+        <div className={styles.detailItem}>
+          <FaCalendar className={styles.detailIcon} />
+          <span className={styles.detailText}>
             Started: {new Date(project.createdAt).toLocaleDateString()}
           </span>
         </div>
@@ -735,8 +791,10 @@ const ProjectCard = ({
       {/* Progress Section */}
       <div className={styles.progressSection}>
         <div className={styles.progressHeader}>
-          <span>Project Progress</span>
-          <span>{project.progress || 0}%</span>
+          <span className={styles.progressLabel}>Project Progress</span>
+          <span className={styles.progressPercentage}>
+            {project.progress || 0}%
+          </span>
         </div>
         <div className={styles.progressBar}>
           <div
@@ -758,14 +816,16 @@ const ProjectCard = ({
       {/* Payment Requests */}
       {project.paymentRequests && project.paymentRequests.length > 0 && (
         <div className={styles.paymentRequests}>
-          <h4>Recent Payment Requests:</h4>
+          <h4 className={styles.paymentRequestsTitle}>
+            Recent Payment Requests
+          </h4>
           {project.paymentRequests.slice(0, 2).map((request) => (
-            <div key={request.id} className={styles.paymentRequest}>
+            <div key={request.id} className={styles.paymentRequestItem}>
               <div className={styles.paymentAmount}>
-                {formatCurrency(request.amount, request.currency || currency)} -
+                {formatCurrency(request.amount, request.currency || currency)}
                 <span
                   className={`${styles.paymentStatus} ${
-                    styles[request.status]
+                    styles[`status-${request.status}`]
                   }`}
                 >
                   {request.status}
@@ -785,29 +845,30 @@ const ProjectCard = ({
       )}
     </div>
 
-    <div className={styles.projectActions}>
+    <div className={styles.cardActions}>
       {project.status === "active" && (
         <>
           <motion.button
             onClick={() => onCreatePayment(project)}
-            className={styles.paymentButton}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className={styles.actionButtonPrimary}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <FaPlus /> Request Payment
+            <FaPlus className={styles.buttonIcon} />
+            Request Payment
           </motion.button>
 
           <motion.button
             onClick={() => onCompleteProject(project.id)}
             disabled={actionLoading === project.id}
-            className={styles.completeButton}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className={styles.actionButtonSecondary}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             {actionLoading === project.id ? (
               <FaSpinner className={styles.actionSpinner} />
             ) : (
-              <FaCheckCircle />
+              <FaCheckCircle className={styles.buttonIcon} />
             )}
             Mark Complete
           </motion.button>
@@ -818,9 +879,10 @@ const ProjectCard = ({
         onClick={() =>
           router.push(`/messages?conversation=${project.conversationId}`)
         }
-        className={styles.messageButton}
+        className={styles.actionButtonTertiary}
       >
-        <FaFileAlt /> View Messages
+        <FaPaperPlane className={styles.buttonIcon} />
+        View Messages
       </button>
     </div>
   </motion.div>
@@ -840,50 +902,62 @@ const PaymentRequestRow = ({
 
   return (
     <motion.tr
-      className={styles.paymentRow}
+      className={styles.tableRow}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: index * 0.05 }}
     >
-      <td>
-        <div className={styles.projectTitle}>
+      <td className={styles.tableCell}>
+        <div className={styles.projectTitleCell}>
           {request.projectTitle || "Project"}
         </div>
       </td>
-      <td>
+      <td className={styles.tableCell}>
         <div className={styles.clientCell}>
-          <div className={styles.avatarSmall}>
+          <div className={styles.clientAvatarSmall}>
             {request.clientName?.charAt(0)?.toUpperCase() || "C"}
           </div>
-          <span>{request.clientName || "Client"}</span>
+          <span className={styles.clientNameText}>
+            {request.clientName || "Client"}
+          </span>
         </div>
       </td>
-      <td>
+      <td className={styles.tableCell}>
         <div className={styles.amountCell}>
           <CurrencyIcon className={styles.currencyIcon} />
-          {formatCurrency(request.amount, requestCurrency)}
+          <span className={styles.amountText}>
+            {formatCurrency(request.amount, requestCurrency)}
+          </span>
         </div>
       </td>
-      <td>{getStatusBadge(request.status, "payment")}</td>
-      <td>{new Date(request.createdAt).toLocaleDateString()}</td>
-      <td>
-        {request.dueDate
-          ? new Date(request.dueDate).toLocaleDateString()
-          : "Not set"}
+      <td className={styles.tableCell}>
+        {getStatusBadge(request.status, "payment")}
       </td>
-      <td>
-        <div className={styles.paymentActions}>
+      <td className={styles.tableCell}>
+        <div className={styles.dateCell}>
+          {new Date(request.createdAt).toLocaleDateString()}
+        </div>
+      </td>
+      <td className={styles.tableCell}>
+        <div className={styles.dateCell}>
+          {request.dueDate
+            ? new Date(request.dueDate).toLocaleDateString()
+            : "Not set"}
+        </div>
+      </td>
+      <td className={styles.tableCell}>
+        <div className={styles.actionCells}>
           <button
             onClick={() =>
               router.push(`/messages?conversation=${request.conversationId}`)
             }
-            className={styles.viewButton}
+            className={styles.iconButton}
             title="View Conversation"
           >
             <FaEye />
           </button>
           <button
-            className={styles.downloadButton}
+            className={styles.iconButton}
             title="Download Invoice"
             onClick={() => alert("Invoice download feature coming soon!")}
           >
@@ -912,74 +986,106 @@ const PaymentRequestModal = ({
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+      <motion.div
+        className={styles.modalContainer}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={styles.modalHeader}>
-          <h2>Create Payment Request</h2>
-          <button className={styles.closeButton} onClick={onClose}>
+          <h2 className={styles.modalTitle}>Create Payment Request</h2>
+          <button className={styles.modalClose} onClick={onClose}>
             ×
           </button>
         </div>
 
         <div className={styles.modalBody}>
           {selectedProject && (
-            <div className={styles.projectSummary}>
-              <h4>Project: {selectedProject.title}</h4>
-              <p>Client: {selectedProject.client?.name || "Client"}</p>
-              <p>
-                Remaining Budget:{" "}
-                {formatCurrency(
-                  selectedProject.budget - (selectedProject.totalPaid || 0),
-                  currency
-                )}
-              </p>
-              <p>Currency: {currency}</p>
+            <div className={styles.projectInfo}>
+              <h4 className={styles.projectInfoTitle}>Project Details</h4>
+              <div className={styles.projectInfoGrid}>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>Project:</span>
+                  <span className={styles.infoValue}>
+                    {selectedProject.title}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>Client:</span>
+                  <span className={styles.infoValue}>
+                    {selectedProject.client?.name || "Client"}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>Remaining Budget:</span>
+                  <span className={styles.infoValue}>
+                    {formatCurrency(
+                      selectedProject.budget - (selectedProject.totalPaid || 0),
+                      currency
+                    )}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>Currency:</span>
+                  <span className={styles.infoValue}>{currency}</span>
+                </div>
+              </div>
             </div>
           )}
 
-          <div className={styles.formGroup}>
-            <label>Amount ({getCurrencySymbol(currency)})</label>
-            <div className={styles.amountInputContainer}>
-              <CurrencyIcon className={styles.currencyInputIcon} />
-              <input
-                type="number"
-                value={paymentData.amount}
+          <div className={styles.formSection}>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>
+                Amount ({getCurrencySymbol(currency)})
+              </label>
+              <div className={styles.amountInputWrapper}>
+                <CurrencyIcon className={styles.amountInputIcon} />
+                <input
+                  type="number"
+                  value={paymentData.amount}
+                  onChange={(e) =>
+                    setPaymentData({ ...paymentData, amount: e.target.value })
+                  }
+                  placeholder="0.00"
+                  min="1"
+                  step="0.01"
+                  className={styles.amountInput}
+                />
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Description</label>
+              <textarea
+                value={paymentData.description}
                 onChange={(e) =>
-                  setPaymentData({ ...paymentData, amount: e.target.value })
+                  setPaymentData({
+                    ...paymentData,
+                    description: e.target.value,
+                  })
                 }
-                placeholder="Enter amount"
-                min="1"
-                step="0.01"
-                className={styles.amountInput}
+                placeholder="Describe what this payment is for..."
+                rows="3"
+                className={styles.textarea}
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Due Date (Optional)</label>
+              <input
+                type="date"
+                value={paymentData.dueDate}
+                onChange={(e) =>
+                  setPaymentData({ ...paymentData, dueDate: e.target.value })
+                }
+                min={new Date().toISOString().split("T")[0]}
+                className={styles.dateInput}
               />
             </div>
           </div>
-
-          <div className={styles.formGroup}>
-            <label>Description</label>
-            <textarea
-              value={paymentData.description}
-              onChange={(e) =>
-                setPaymentData({ ...paymentData, description: e.target.value })
-              }
-              placeholder="Payment description"
-              rows="3"
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Due Date (Optional)</label>
-            <input
-              type="date"
-              value={paymentData.dueDate}
-              onChange={(e) =>
-                setPaymentData({ ...paymentData, dueDate: e.target.value })
-              }
-              min={new Date().toISOString().split("T")[0]}
-            />
-          </div>
         </div>
 
-        <div className={styles.modalActions}>
+        <div className={styles.modalFooter}>
           <button onClick={onClose} className={styles.cancelButton}>
             Cancel
           </button>
@@ -990,10 +1096,11 @@ const PaymentRequestModal = ({
               !paymentData.amount || parseFloat(paymentData.amount) <= 0
             }
           >
+            <FaPaperPlane className={styles.submitIcon} />
             Send Payment Request
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

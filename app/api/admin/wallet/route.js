@@ -1,104 +1,163 @@
-// app/api/admin/wallet/route.js
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// GET all wallet transactions for admin
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page")) || 1;
-    const limit = parseInt(searchParams.get("limit")) || 10;
-    const status = searchParams.get("status");
-    const type = searchParams.get("type");
+    const userId = searchParams.get("userId");
 
-    const skip = (page - 1) * limit;
+    if (!userId) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 }
+      );
+    }
 
-    // Build where clause
-    const where = {};
-    if (status && status !== "all") where.status = status;
-    if (type && type !== "all") where.type = type;
-
-    // Get wallet transactions with user info
-    const transactions = await prisma.walletTransaction.findMany({
-      where,
+    // Get user's freelancer wallet
+    let freelancerWallet = await prisma.freelancerWallet.findUnique({
+      where: { userId: parseInt(userId) },
       include: {
-        wallet: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-          },
+        transactions: {
+          orderBy: { createdAt: 'desc' },
+          take: 10,
         },
       },
-      orderBy: { createdAt: "desc" },
-      skip,
-      take: limit,
     });
 
-    // Get total count for pagination
-    const total = await prisma.walletTransaction.count({ where });
+    // If no freelancer wallet exists, check if user has transactions
+    if (!freelancerWallet) {
+      // Create freelancer wallet if it doesn't exist
+      freelancerWallet = await prisma.freelancerWallet.create({
+        data: {
+          userId: parseInt(userId),
+          balance: 0,
+        },
+        include: {
+          transactions: {
+            orderBy: { createdAt: 'desc' },
+            take: 10,
+          },
+        },
+      });
+    }
+
+    // Also get regular transactions from Transaction model
+    const userTransactions = await prisma.transaction.findMany({
+      where: { userId: parseInt(userId) },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+
+    // Combine transactions
+    const allTransactions = [
+      ...freelancerWallet.transactions.map(t => ({
+        id: `wallet-${t.id}`,
+        type: t.type.toLowerCase(),
+        amount: t.amount,
+        description: t.description,
+        status: t.status,
+        createdAt: t.createdAt,
+      })),
+      ...userTransactions.map(t => ({
+        id: `transaction-${t.id}`,
+        type: t.type.toLowerCase(),
+        amount: t.amount,
+        description: t.description || 'Transaction',
+        status: t.status,
+        createdAt: t.createdAt,
+      }))
+    ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+     .slice(0, 10);
 
     return NextResponse.json({
       success: true,
-      transactions,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
+      wallet: {
+        id: freelancerWallet.id,
+        balance: freelancerWallet.balance,
+        userId: freelancerWallet.userId,
+        transactions: allTransactions,
       },
     });
   } catch (error) {
-    console.error("Error fetching wallet transactions:", error);
+    console.error("Get wallet error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        success: false,
+        error: "Failed to fetch wallet data",
+      },
       { status: 500 }
     );
   }
 }
 
-// UPDATE transaction status
-export async function PUT(request) {
+export async function POST(request) {
   try {
-    const { transactionId, status, adminNotes } = await request.json();
+    const body = await request.json();
+    const { userId, amount, type = "deposit" } = body;
 
-    if (!transactionId || !status) {
+    if (!userId || !amount) {
       return NextResponse.json(
-        { error: "Transaction ID and status are required" },
+        { error: "User ID and amount are required" },
         { status: 400 }
       );
     }
 
-    const transaction = await prisma.walletTransaction.update({
-      where: { id: parseInt(transactionId) },
-      data: {
-        status,
-        ...(adminNotes && { adminNotes }),
-      },
-      include: {
-        wallet: {
-          include: {
-            user: true,
-          },
+    const parsedAmount = parseFloat(amount);
+    const parsedUserId = parseInt(userId);
+
+    // Get or create freelancer wallet
+    let wallet = await prisma.freelancerWallet.findUnique({
+      where: { userId: parsedUserId },
+    });
+
+    if (!wallet) {
+      wallet = await prisma.freelancerWallet.create({
+        data: {
+          userId: parsedUserId,
+          balance: 0,
         },
+      });
+    }
+
+    // Update balance based on transaction type
+    const newBalance = type === "deposit" 
+      ? wallet.balance + parsedAmount
+      : Math.max(0, wallet.balance - parsedAmount); // Prevent negative balance
+
+    // Update wallet
+    const updatedWallet = await prisma.freelancerWallet.update({
+      where: { userId: parsedUserId },
+      data: {
+        balance: newBalance,
+      },
+    });
+
+    // Create transaction record
+    const transaction = await prisma.walletTransaction.create({
+      data: {
+        walletId: wallet.id,
+        type: type.toUpperCase(),
+        amount: parsedAmount,
+        description: type === "deposit" ? "Wallet deposit" : "Withdrawal",
+        status: "completed",
       },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Transaction status updated successfully",
+      message: `${type === "deposit" ? "Deposit" : "Withdrawal"} successful`,
+      newBalance: updatedWallet.balance,
       transaction,
     });
   } catch (error) {
-    console.error("Error updating transaction:", error);
+    console.error("Wallet transaction error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        success: false,
+        error: "Failed to process transaction",
+      },
       { status: 500 }
     );
   }

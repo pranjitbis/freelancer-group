@@ -13,6 +13,7 @@ import {
   FaTimes,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { MdMessage } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ClientDashboardLayout({ children }) {
@@ -40,6 +41,12 @@ export default function ClientDashboardLayout({ children }) {
       label: "My Jobs",
       icon: <FaList />,
       path: "/client-dashboard/my-jobs",
+    },
+    {
+      id: "Message",
+      label: "Message",
+      icon: <MdMessage />,
+      path: "/client-dashboard/messages",
     },
     {
       id: "proposals",

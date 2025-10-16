@@ -112,6 +112,22 @@ export default function AdminLayout({ children }) {
                 <span>Transaction History</span>
               </Link>
             </li>
+            <li>
+              <Link
+                href="/wp-admin/wallet-management"
+                className={isActive("/wp-admin/wallet-management")}
+              >
+                <span>Wallet Management</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/wp-admin/proposals"
+                className={isActive("/wp-admin/proposals")}
+              >
+                <span>proposals</span>
+              </Link>
+            </li>
           </ul>
         </nav>
 

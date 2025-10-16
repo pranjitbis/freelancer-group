@@ -33,7 +33,7 @@ export async function GET(request) {
       const newPlan = await prisma.userPlan.create({
         data: {
           planType: "free",
-          connects: 10, // FIXED: 10 connects for free plan
+          connects: 5, // CHANGED: 5 connects for free plan
           usedConnects: 0,
           userId: parseInt(userId),
         },
@@ -71,10 +71,10 @@ export async function POST(request) {
       );
     }
 
-    // FIXED: Correct plan configuration
+    // UPDATED: Plan configuration with 5 for free and 20 for premium
     const planConfig = {
-      free: { connects: 10, price: 0 },
-      premium: { connects: 15, price: 999 }, // 15 connects for ₹999
+      free: { connects: 5, price: 0 }, // CHANGED: 5 connects for free
+      premium: { connects: 20, price: 999 }, // CHANGED: 20 connects for premium
     };
 
     const config = planConfig[planType];
@@ -89,13 +89,13 @@ export async function POST(request) {
       where: { userId: parseInt(userId) },
       update: {
         planType,
-        connects: config.connects, // FIXED: Use config.connects
+        connects: config.connects, // Use config.connects
         usedConnects: 0, // Reset used connects when changing plan
         expiresAt,
       },
       create: {
         planType,
-        connects: config.connects, // FIXED: Use config.connects
+        connects: config.connects, // Use config.connects
         usedConnects: 0,
         expiresAt,
         userId: parseInt(userId),
@@ -106,7 +106,7 @@ export async function POST(request) {
     await prisma.connectTransaction.create({
       data: {
         type: "plan_change",
-        amount: config.connects, // FIXED: Use config.connects
+        amount: config.connects, // Use config.connects
         description: `Upgraded to ${planType} plan with ${config.connects} connects`,
         userId: parseInt(userId),
       },

@@ -5,34 +5,33 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FiMessageSquare,
   FiUser,
-  FiCreditCard,
   FiBriefcase,
   FiDollarSign,
-  FiBarChart,
   FiSettings,
   FiLogOut,
   FiMenu,
   FiX,
 } from "react-icons/fi";
-import { MdDashboard } from "react-icons/md";
+import { MdDashboard, MdWork } from "react-icons/md";
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import styles from "./DashboardLayout.module.css";
-import { IoPricetags } from "react-icons/io5";
+import { IoPricetags, IoSend } from "react-icons/io5";
 
 export default function DashboardLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("dashboard");
   const [isMobile, setIsMobile] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [userPlan, setUserPlan] = useState("Free");
   const [breadcrumbs, setBreadcrumbs] = useState([]);
+  const [pageStyle, setPageStyle] = useState({});
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+      setIsMobile(window.innerWidth <= 1024);
     };
 
     checkMobile();
@@ -49,107 +48,121 @@ export default function DashboardLayout({ children }) {
     {
       id: "dashboard",
       label: "Dashboard",
-      color: "#f65ce2ff",
-      icon: <MdDashboard />,
+      icon: <MdDashboard size={20} />,
       path: "/freelancer-dashboard",
-      bgColor: "#f0f9ff"
+      bgColor: "#f0f9ff",
     },
     {
       id: "messages",
       label: "Messages",
-      icon: <FiMessageSquare />,
-      color: "#8B5CF6",
+      icon: <FiMessageSquare size={20} />,
       path: "/freelancer-dashboard/messages",
-      bgColor: "#faf5ff"
+      bgColor: "#faf5ff",
     },
     {
-      id: "plan",
-      label: "Plan",
-      icon: <IoPricetags />,
-      color: "#af7a07ff",
-      path: "/freelancer-dashboard/plan",
-      bgColor: "#fffbeb"
+      id: "proposals",
+      label: "Proposals",
+      icon: <IoSend size={18} />,
+      path: "/freelancer-dashboard/proposals",
+      bgColor: "#f0fdf4",
     },
     {
-      id: "profile",
-      label: "Profile",
-      icon: <FiUser />,
-      color: "#10B981",
-      path: "/freelancer-dashboard/profile",
-      bgColor: "#f0fdf4"
+      id: "project-management",
+      label: "Projects",
+      icon: <MdWork size={20} />,
+      path: "/freelancer-dashboard/project-management",
+      bgColor: "#fef7ff",
     },
     {
       id: "wallet",
       label: "Wallet",
-      icon: <FiDollarSign />,
-      color: "#06B6D4",
+      icon: <FiDollarSign size={20} />,
       path: "/freelancer-dashboard/wallet",
-      bgColor: "#ecfeff"
+      bgColor: "#ecfeff",
     },
     {
-      id: "project-management",
-      label: "Project Management",
-      icon: <FiBarChart />,
-      color: "#8B5CF6",
-      path: "/freelancer-dashboard/project-management",
-      bgColor: "#faf5ff"
+      id: "plan",
+      label: "Plan & Billing",
+      icon: <IoPricetags size={18} />,
+      path: "/freelancer-dashboard/plan",
+      bgColor: "#fffbeb",
+    },
+    {
+      id: "profile",
+      label: "Profile",
+      icon: <FiUser size={20} />,
+      path: "/freelancer-dashboard/profile",
+      bgColor: "#f0fdf4",
+    },
+    {
+      id: "find-work",
+      label: "Find Work",
+      icon: <FiUser size={20} />,
+      path: "/freelancer-dashboard/find-work",
+      bgColor: "#f0fdf4",
     },
   ];
 
-  // Update active tab, background color and breadcrumbs based on current route
+  // Update background color and breadcrumbs based on current route
   useEffect(() => {
     const routeMap = {
       "/freelancer-dashboard": {
-        tab: "dashboard",
-        color: "#f0f9ff",
-        breadcrumbs: ["Dashboard"]
+        breadcrumbs: ["Dashboard"],
+        bgColor: "#f0f9ff",
       },
       "/freelancer-dashboard/messages": {
-        tab: "messages", 
-        color: "#faf5ff",
-        breadcrumbs: ["Dashboard", "Messages"]
+        breadcrumbs: ["Dashboard", "Messages"],
+        bgColor: "#faf5ff",
       },
       "/freelancer-dashboard/plan": {
-        tab: "plan",
-        color: "#fffbeb",
-        breadcrumbs: ["Dashboard", "Plan"]
+        breadcrumbs: ["Dashboard", "Plan & Billing"],
+        bgColor: "#fffbeb",
       },
       "/freelancer-dashboard/profile": {
-        tab: "profile",
-        color: "#f0fdf4",
-        breadcrumbs: ["Dashboard", "Profile"]
+        breadcrumbs: ["Dashboard", "Profile"],
+        bgColor: "#f0fdf4",
       },
       "/freelancer-dashboard/wallet": {
-        tab: "wallet",
-        color: "#ecfeff",
-        breadcrumbs: ["Dashboard", "Wallet"]
+        breadcrumbs: ["Dashboard", "Wallet"],
+        bgColor: "#ecfeff",
       },
       "/freelancer-dashboard/project-management": {
-        tab: "project-management",
-        color: "#faf5ff",
-        breadcrumbs: ["Dashboard", "Project Management"]
+        breadcrumbs: ["Dashboard", "Projects"],
+        bgColor: "#fef7ff",
+      },
+      "/freelancer-dashboard/proposals": {
+        breadcrumbs: ["Dashboard", "Proposals"],
+        bgColor: "#f0fdf4",
       },
       "/freelancer-dashboard/settings": {
-        tab: "settings",
-        color: "#f8fafc",
-        breadcrumbs: ["Dashboard", "Settings"]
-      }
+        breadcrumbs: ["Dashboard", "Settings"],
+        bgColor: "#f8fafc",
+      },
     };
 
     const currentRoute = Object.keys(routeMap).find((route) =>
       pathname.startsWith(route)
     );
-    
+
     if (currentRoute) {
-      setActiveTab(routeMap[currentRoute].tab);
-      setBackgroundColor(routeMap[currentRoute].color);
       setBreadcrumbs(routeMap[currentRoute].breadcrumbs);
+      setPageStyle({
+        backgroundColor: routeMap[currentRoute].bgColor,
+        minHeight: "100vh",
+      });
     } else {
-      // Default values
-      setBackgroundColor("#ffffff");
       setBreadcrumbs(["Dashboard"]);
+      setPageStyle({
+        backgroundColor: "#ffffff",
+        minHeight: "100vh",
+      });
     }
   }, [pathname]);
+
+  // Check if a nav item is active
+  const isActive = (itemPath) => {
+    return pathname === itemPath || pathname.startsWith(itemPath + "/");
+  };
 
   const fetchCurrentUser = async () => {
     try {
@@ -158,6 +171,7 @@ export default function DashboardLayout({ children }) {
         const data = await response.json();
         if (data.success && data.user) {
           setCurrentUser(data.user);
+          fetchUserPlan(data.user.id);
         } else {
           router.push("/auth/login");
         }
@@ -172,6 +186,31 @@ export default function DashboardLayout({ children }) {
     }
   };
 
+  const fetchUserPlan = async (userId) => {
+    try {
+      const response = await fetch(`/api/users/${userId}/plan`);
+      if (response.ok) {
+        const data = await response.json();
+        setUserPlan(data.plan || "Free");
+      }
+    } catch (error) {
+      console.error("Error fetching user plan:", error);
+    }
+  };
+
+  const getPlanBadgeClass = (plan) => {
+    switch (plan?.toLowerCase()) {
+      case "premium":
+        return styles.premiumBadge;
+      case "pro":
+        return styles.proBadge;
+      case "business":
+        return styles.businessBadge;
+      default:
+        return styles.freeBadge;
+    }
+  };
+
   const sidebarVariants = {
     open: { x: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
     closed: {
@@ -180,36 +219,22 @@ export default function DashboardLayout({ children }) {
     },
   };
 
-  const menuItemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: (i) => ({
-      opacity: 1,
-      x: 0,
-      transition: { delay: i * 0.1, duration: 0.3 },
-    }),
-  };
-
   const handleNavigation = (item) => {
-    setActiveTab(item.id);
-    setBackgroundColor(item.bgColor);
+    setPageStyle({
+      backgroundColor: item.bgColor,
+      minHeight: "100vh",
+    });
     setIsMobileMenuOpen(false);
-    router.push(item.path);
   };
 
   const handleLogout = async () => {
     try {
-      // Clear client-side storage
       localStorage.removeItem("user");
       sessionStorage.removeItem("user");
-
-      // Call logout API
       await fetch("/api/auth/logout", { method: "POST" });
-
-      // Redirect to home page
       router.push("/");
     } catch (error) {
       console.error("Logout error:", error);
-      // Still redirect even if API call fails
       router.push("/");
     }
   };
@@ -223,36 +248,6 @@ export default function DashboardLayout({ children }) {
       .slice(0, 2);
   };
 
-  // Function to get active dots based on current path
-  const getActiveDots = () => {
-    const activeItem = menuItems.find(item => item.path === pathname || pathname.startsWith(item.path));
-    if (activeItem) {
-      return (
-        <div className={styles.activeDots}>
-          {menuItems.map((item, index) => (
-            <motion.div
-              key={item.id}
-              className={`${styles.dot} ${
-                item.path === pathname || pathname.startsWith(item.path) 
-                  ? styles.activeDot 
-                  : styles.inactiveDot
-              }`}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: index * 0.1 }}
-              style={{
-                backgroundColor: item.path === pathname || pathname.startsWith(item.path) 
-                  ? item.color 
-                  : "#e5e7eb"
-              }}
-            />
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
-
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -261,181 +256,158 @@ export default function DashboardLayout({ children }) {
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         />
-        <p>Loading...</p>
+        <p>Loading dashboard...</p>
       </div>
     );
   }
 
   return (
-    <div 
-      className={styles.dashboard}
-      style={{ backgroundColor }}
-    >
+    <div className={styles.dashboard} style={pageStyle}>
       {/* Mobile Header */}
-      <motion.header
-        className={styles.mobileHeader}
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        style={{ backgroundColor }}
-      >
-        <button
-          className={styles.menuToggle}
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
-        </button>
-        <div className={styles.mobileHeaderContent}>
-          <h1>Freelancer Pro</h1>
-          {/* Active dots for mobile */}
-          <div className={styles.mobileDots}>
-            {getActiveDots()}
+      <header className={styles.mobileHeader}>
+        <div className={styles.mobileHeaderLeft}>
+          <button
+            className={styles.menuToggle}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
+          </button>
+          <Link href="/freelancer-dashboard" className={styles.logo}>
+            <FiBriefcase size={24} />
+            <span>Freelancer</span>
+          </Link>
+        </div>
+
+        <div className={styles.mobileHeaderRight}>
+          <div className={styles.planDisplayMobile}>
+            <span className={getPlanBadgeClass(userPlan)}>{userPlan}</span>
+          </div>
+          <div className={styles.avatarSmall}>
+            {getUserInitials(currentUser?.name)}
           </div>
         </div>
-        <div className={styles.avatarSmall}>
-          {getUserInitials(currentUser?.name)}
-        </div>
-      </motion.header>
+      </header>
 
       <div className={styles.container}>
         {/* Sidebar */}
         <AnimatePresence>
           {(!isMobile || isMobileMenuOpen) && (
-            <motion.aside
-              className={styles.sidebar}
-              variants={sidebarVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-            >
-              <div className={styles.sidebarHeader}>
+            <>
+              {isMobile && isMobileMenuOpen && (
                 <motion.div
-                  className={styles.logo}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring" }}
-                  onClick={() => router.push("/freelancer-dashboard")}
-                  style={{ cursor: "pointer" }}
-                >
-                  <FiBriefcase size={24} />
-                </motion.div>
-                <div>
-                  <h2>Freelancer Pro</h2>
-                  <p className={styles.tagline}>Your Work, Your Way</p>
-                </div>
-              </div>
+                  className={styles.overlay}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                />
+              )}
 
-              {/* Active dots for desktop sidebar */}
-              <div className={styles.sidebarDots}>
-                {getActiveDots()}
-              </div>
-
-              <nav className={styles.nav}>
-                {menuItems.map((item, index) => (
-                  <motion.button
-                    key={item.id}
-                    custom={index}
-                    variants={menuItemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className={`${styles.navItem} ${
-                      activeTab === item.id ? styles.active : ""
-                    }`}
-                    onClick={() => handleNavigation(item)}
-                    style={{
-                      borderLeftColor:
-                        activeTab === item.id ? item.color : "transparent",
-                      backgroundColor: activeTab === item.id ? `${item.color}15` : "transparent",
-                    }}
-                  >
-                    <span
-                      className={styles.navIcon}
-                      style={{ color: item.color }}
-                    >
-                      {item.icon}
-                    </span>
-                    <span className={styles.navLabel}>{item.label}</span>
-                    
-                    {/* Active indicator dot */}
-                    <motion.div
-                      className={styles.activeDotIndicator}
-                      initial={{ scale: 0 }}
-                      animate={{ 
-                        scale: (item.path === pathname || pathname.startsWith(item.path)) ? 1 : 0,
-                        backgroundColor: item.color
-                      }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                    />
-                  </motion.button>
-                ))}
-              </nav>
-
-              <motion.div
-                className={styles.userInfo}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
+              <motion.aside
+                className={styles.sidebar}
+                variants={sidebarVariants}
+                initial="closed"
+                animate="open"
+                exit="closed"
               >
-                <div className={styles.avatar}>
-                  <span>{getUserInitials(currentUser?.name)}</span>
+                {/* Sidebar Header */}
+                <div className={styles.sidebarHeader}>
+                  <Link href="/freelancer-dashboard" className={styles.logo}>
+                    <FiBriefcase size={28} />
+                    <div className={styles.logoText}>
+                      <h2>Freelancer</h2>
+                      <p>Dashboard</p>
+                    </div>
+                  </Link>
                 </div>
-                <div className={styles.userDetails}>
-                  <p className={styles.userName}>
-                    {currentUser?.name || "User"}
-                  </p>
-                  <p className={styles.userRole}>
-                    {currentUser?.role === "freelancer"
-                      ? "Freelancer"
-                      : currentUser?.role === "client"
-                      ? "Client"
-                      : "User"}
-                  </p>
-                  <div className={styles.userStats}>
-                    <span>Active</span>
-                    <span>Member</span>
+
+                {/* User Profile Section */}
+                <div className={styles.userSection}>
+                  <div className={styles.avatar}>
+                    {getUserInitials(currentUser?.name)}
+                  </div>
+                  <div className={styles.userInfo}>
+                    <h3 className={styles.userName}>
+                      {currentUser?.name || "User"}
+                    </h3>
+                    <p className={styles.userRole}>
+                      {currentUser?.role === "freelancer"
+                        ? "Freelancer"
+                        : "User"}
+                    </p>
+                    <div className={styles.planDisplay}>
+                      <span className={getPlanBadgeClass(userPlan)}>
+                        {userPlan} Plan
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </motion.div>
 
-              <div className={styles.sidebarFooter}>
-                <button
-                  className={styles.sidebarButton}
-                  onClick={() => router.push("/freelancer-dashboard/settings")}
-                >
-                  <FiSettings size={18} />
-                  <span>Settings</span>
-                </button>
-                <button className={styles.sidebarButton} onClick={handleLogout}>
-                  <FiLogOut size={18} />
-                  <span>Logout</span>
-                </button>
-              </div>
-            </motion.aside>
+                {/* Navigation Menu */}
+                <nav className={styles.nav}>
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={item.path}
+                      className={`${styles.navItem} ${
+                        isActive(item.path) ? styles.active : ""
+                      }`}
+                      onClick={() => handleNavigation(item)}
+                    >
+                      <span className={styles.navIcon}>{item.icon}</span>
+                      <span className={styles.navLabel}>{item.label}</span>
+                      {isActive(item.path) && (
+                        <div className={styles.activeIndicator} />
+                      )}
+                    </Link>
+                  ))}
+                </nav>
+
+                {/* Sidebar Footer */}
+                <div className={styles.sidebarFooter}>
+                  <Link
+                    href="/freelancer-dashboard/settings"
+                    className={styles.sidebarButton}
+                  >
+                    <FiSettings size={18} />
+                    <span>Settings</span>
+                  </Link>
+                  <button
+                    className={`${styles.sidebarButton} ${styles.logoutButton}`}
+                    onClick={handleLogout}
+                  >
+                    <FiLogOut size={18} />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              </motion.aside>
+            </>
           )}
         </AnimatePresence>
 
         {/* Main Content */}
-        <main 
-          className={styles.main}
-          style={{ backgroundColor }}
-        >
+        <main className={styles.main} style={pageStyle}>
           {/* Breadcrumbs */}
-          <div className={styles.breadcrumbs}>
-            {breadcrumbs.map((crumb, index) => (
-              <span key={index} className={styles.breadcrumbItem}>
-                {crumb}
-                {index < breadcrumbs.length - 1 && (
-                  <span className={styles.breadcrumbSeparator}>/</span>
-                )}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbs}>
+              {breadcrumbs.map((crumb, index) => (
+                <span key={index} className={styles.breadcrumbItem}>
+                  {crumb}
+                  {index < breadcrumbs.length - 1 && (
+                    <span className={styles.breadcrumbSeparator}>/</span>
+                  )}
+                </span>
+              ))}
+            </div>
+            <div className={styles.headerActions}>
+              <span className={getPlanBadgeClass(userPlan)}>
+                {userPlan} Plan
               </span>
-            ))}
+            </div>
           </div>
-          
-          {children}
+
+          {/* Page Content */}
+          <div className={styles.content}>{children}</div>
         </main>
       </div>
     </div>

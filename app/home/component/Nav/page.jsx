@@ -20,26 +20,78 @@ export default function Nav() {
     freelancer: false,
   });
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     AOS.init({ duration: 1000 });
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    checkAuthStatus();
 
     const handleScroll = () => setIsFixed(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await fetch("/api/auth/verify", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUser(data.user);
+          setUserRole(data.user.role);
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+      } else {
+        setUser(null);
+        setUserRole(null);
+        localStorage.removeItem("user");
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      setUser(null);
+      setUserRole(null);
+      localStorage.removeItem("user");
+    }
+  };
 
   const toggleDropdown = (name) =>
     setDropdown((prev) => ({ ...prev, [name]: !prev[name] }));
 
   const getDashboardLink = () => {
-    if (!user) return "/login";
-    if (user.role === "client") return "/client-dashboard";
-    if (user.role === "freelancer") return "/freelancer-dashboard";
-    if (user.role === "admin") return "/wp-admin";
-    return "/dashboard";
+    if (!userRole) return "/login";
+
+    switch (userRole.toLowerCase()) {
+      case "client":
+        return "/client-dashboard";
+      case "freelancer":
+        return "/freelancer-dashboard";
+      case "admin":
+        return "/wp-admin";
+      default:
+        return "/dashboard";
+    }
+  };
+
+  const getDashboardLabel = () => {
+    if (!userRole) return "Dashboard";
+
+    switch (userRole.toLowerCase()) {
+      case "client":
+        return "Client Dashboard";
+      case "freelancer":
+        return "Freelancer Dashboard";
+      case "admin":
+        return "Admin Dashboard";
+      default:
+        return "Dashboard";
+    }
   };
 
   return (
@@ -96,12 +148,20 @@ export default function Nav() {
             </button>
             {dropdown.services && (
               <div className={styles.dropdownMenu}>
-                <Link href="/services/virtual-assistance">Virtual Assistance</Link>
+                <Link href="/services/virtual-assistance">
+                  Virtual Assistance
+                </Link>
                 <Link href="/services/form-filling">Online Form Filling</Link>
                 <Link href="/services/web-development">Web Development</Link>
-                <Link href="/services/e-commerce-solutions">E-Commerce Solution</Link>
-                <Link href="/services/travel-bookings">Travel & Hotel booking</Link>
-                <Link href="/services/data-visualization">Data & AI Solution</Link>
+                <Link href="/services/e-commerce-solutions">
+                  E-Commerce Solution
+                </Link>
+                <Link href="/services/travel-bookings">
+                  Travel & Hotel booking
+                </Link>
+                <Link href="/services/data-visualization">
+                  Data & AI Solution
+                </Link>
               </div>
             )}
           </li>
@@ -136,14 +196,12 @@ export default function Nav() {
               Contact Us
             </Link>
           </li>
-
-          {/* 👥 Freelancer Hub Dropdown */}
         </ul>
 
         <div className={styles.actions}>
           {user ? (
             <Link href={getDashboardLink()} className={styles.dashboardBtn}>
-              <FaUser /> Dashboard
+              <FaUser /> {getDashboardLabel()}
             </Link>
           ) : (
             <>

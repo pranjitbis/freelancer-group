@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./FreelancerHub.module.css";
-import Nav from "../home/component/Nav/page";
+import Nav from "../../home/component/Nav/page";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSearch,

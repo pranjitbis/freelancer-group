@@ -363,6 +363,14 @@ export default function FreelancerMessagesPage() {
 
     handleStopTyping();
   };
+  
+    if (isConnected) {
+      console.log("Connected");
+    } else {
+      console.log("not Connected");
+    }
+
+
 
   const handleTypingStart = () => {
     if (!socket || !isConnected || !activeConversation) return;
@@ -603,23 +611,6 @@ export default function FreelancerMessagesPage() {
 
   return (
     <div className={styles.freelancerMessages}>
-      {/* Connection Status */}
-      <div
-        className={`${styles.connectionStatus} ${
-          isConnected ? styles.connected : styles.disconnected
-        }`}
-      >
-        {isConnected ? "🟢 Connected" : "🔴 Disconnected"}
-        {!isConnected && (
-          <button
-            onClick={() => window.location.reload()}
-            className={styles.reconnectButton}
-          >
-            Reconnect
-          </button>
-        )}
-      </div>
-
       <div className={styles.container}>
         {/* Header */}
         <motion.div
