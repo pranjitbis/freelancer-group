@@ -74,7 +74,7 @@ export default function ClientProposalsPage() {
     try {
       setLoading(true);
       const response = await fetch(`/api/proposals/client?userId=${userId}`);
-      
+
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
@@ -95,16 +95,25 @@ export default function ClientProposalsPage() {
 
     // Filter by status
     if (filterStatus !== "all") {
-      filtered = filtered.filter(proposal => proposal.status === filterStatus);
+      filtered = filtered.filter(
+        (proposal) => proposal.status === filterStatus
+      );
     }
 
     // Filter by search term
     if (searchTerm) {
-      filtered = filtered.filter(proposal =>
-        proposal.job?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        proposal.freelancer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        proposal.freelancer?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        proposal.coverLetter?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (proposal) =>
+          proposal.job?.title
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          proposal.freelancer?.name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          proposal.freelancer?.email
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          proposal.coverLetter?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -118,7 +127,7 @@ export default function ClientProposalsPage() {
 
   const handleProposalAction = async (proposalId, action) => {
     setActionLoading(proposalId);
-    
+
     try {
       const response = await fetch("/api/proposals/action", {
         method: "POST",
@@ -135,13 +144,13 @@ export default function ClientProposalsPage() {
 
       if (response.ok) {
         // Update local state
-        setProposals(prev => prev.map(p => 
-          p.id === proposalId ? { ...p, status: action } : p
-        ));
-        
+        setProposals((prev) =>
+          prev.map((p) => (p.id === proposalId ? { ...p, status: action } : p))
+        );
+
         // Update selected proposal if it's the one being viewed
         if (selectedProposal && selectedProposal.id === proposalId) {
-          setSelectedProposal(prev => ({ ...prev, status: action }));
+          setSelectedProposal((prev) => ({ ...prev, status: action }));
         }
       } else {
         alert(data.error || "Failed to update proposal");
@@ -177,15 +186,19 @@ export default function ClientProposalsPage() {
       completed: { color: "#3b82f6", label: "Completed", bgColor: "#eff6ff" },
     };
 
-    const config = statusConfig[status] || { color: "#6b7280", label: status, bgColor: "#f9fafb" };
+    const config = statusConfig[status] || {
+      color: "#6b7280",
+      label: status,
+      bgColor: "#f9fafb",
+    };
 
     return (
       <span
         className={styles.statusBadge}
-        style={{ 
+        style={{
           backgroundColor: config.bgColor,
           color: config.color,
-          borderColor: config.color 
+          borderColor: config.color,
         }}
       >
         {getStatusIcon(status)}
@@ -197,7 +210,8 @@ export default function ClientProposalsPage() {
   const getSkillsArray = (skills) => {
     if (!skills) return [];
     if (Array.isArray(skills)) return skills;
-    if (typeof skills === 'string') return skills.split(',').map(skill => skill.trim());
+    if (typeof skills === "string")
+      return skills.split(",").map((skill) => skill.trim());
     return [];
   };
 
@@ -232,7 +246,7 @@ export default function ClientProposalsPage() {
         animate={{ opacity: 1, y: 0 }}
       >
         <div className={styles.headerContent}>
-          <button 
+          <button
             onClick={() => router.push("/client-dashboard")}
             className={styles.backButton}
           >
@@ -244,14 +258,12 @@ export default function ClientProposalsPage() {
           </div>
           <div className={styles.stats}>
             <div className={styles.stat}>
-              <span className={styles.statNumber}>
-                {proposals.length}
-              </span>
+              <span className={styles.statNumber}>{proposals.length}</span>
               <span className={styles.statLabel}>Total Proposals</span>
             </div>
             <div className={styles.stat}>
               <span className={styles.statNumber}>
-                {proposals.filter(p => p.status === 'pending').length}
+                {proposals.filter((p) => p.status === "pending").length}
               </span>
               <span className={styles.statLabel}>Pending Review</span>
             </div>
@@ -358,12 +370,9 @@ export default function ClientProposalsPage() {
                         <div className={styles.freelancerName}>
                           {proposal.freelancer?.name}
                         </div>
-                        <div className={styles.freelancerEmail}>
-                          {proposal.freelancer?.email}
-                        </div>
                       </div>
                     </div>
-                    
+
                     {proposal.freelancer?.profile && (
                       <div className={styles.freelancerDetails}>
                         {proposal.freelancer.profile.title && (
@@ -373,8 +382,8 @@ export default function ClientProposalsPage() {
                         )}
                         {proposal.freelancer.profile.hourlyRate && (
                           <div className={styles.hourlyRate}>
-                            <FaDollarSign />
-                            ${proposal.freelancer.profile.hourlyRate}/hr
+                            <FaDollarSign />$
+                            {proposal.freelancer.profile.hourlyRate}/hr
                           </div>
                         )}
                         {proposal.freelancer.profile.location && (
@@ -392,15 +401,24 @@ export default function ClientProposalsPage() {
                     <div className={styles.bidInfo}>
                       <div className={styles.bidItem}>
                         <FaDollarSign className={styles.bidIcon} />
-                        <span>Bid: ${proposal.bidAmount?.toLocaleString()}</span>
+                        <span>
+                          Bid: ${proposal.bidAmount?.toLocaleString()}
+                        </span>
                       </div>
                       <div className={styles.bidItem}>
                         <FaClock className={styles.bidIcon} />
                         <span>Timeline: {proposal.timeframe} days</span>
                       </div>
-                      {calculateSavings(proposal.job?.budget, proposal.bidAmount) > 0 && (
+                      {calculateSavings(
+                        proposal.job?.budget,
+                        proposal.bidAmount
+                      ) > 0 && (
                         <div className={styles.savings}>
-                          You save: ${calculateSavings(proposal.job?.budget, proposal.bidAmount).toLocaleString()}
+                          You save: $
+                          {calculateSavings(
+                            proposal.job?.budget,
+                            proposal.bidAmount
+                          ).toLocaleString()}
                         </div>
                       )}
                     </div>
@@ -417,9 +435,14 @@ export default function ClientProposalsPage() {
                                 {skill}
                               </span>
                             ))}
-                          {getSkillsArray(proposal.freelancer.profile.skills).length > 4 && (
+                          {getSkillsArray(proposal.freelancer.profile.skills)
+                            .length > 4 && (
                             <span className={styles.moreSkills}>
-                              +{getSkillsArray(proposal.freelancer.profile.skills).length - 4} more
+                              +
+                              {getSkillsArray(
+                                proposal.freelancer.profile.skills
+                              ).length - 4}{" "}
+                              more
                             </span>
                           )}
                         </div>
@@ -437,7 +460,8 @@ export default function ClientProposalsPage() {
                   <div className={styles.proposalMeta}>
                     <span className={styles.submittedDate}>
                       <FaCalendar />
-                      Submitted: {new Date(proposal.createdAt).toLocaleDateString()}
+                      Submitted:{" "}
+                      {new Date(proposal.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                   <div className={styles.proposalActions}>
@@ -449,11 +473,13 @@ export default function ClientProposalsPage() {
                     >
                       <FaEye /> View Details
                     </motion.button>
-                    
+
                     {proposal.status === "pending" && (
                       <div className={styles.actionButtons}>
                         <motion.button
-                          onClick={() => handleProposalAction(proposal.id, "accepted")}
+                          onClick={() =>
+                            handleProposalAction(proposal.id, "accepted")
+                          }
                           disabled={actionLoading === proposal.id}
                           className={styles.acceptButton}
                           whileHover={{ scale: 1.05 }}
@@ -467,7 +493,9 @@ export default function ClientProposalsPage() {
                           Accept
                         </motion.button>
                         <motion.button
-                          onClick={() => handleProposalAction(proposal.id, "rejected")}
+                          onClick={() =>
+                            handleProposalAction(proposal.id, "rejected")
+                          }
                           disabled={actionLoading === proposal.id}
                           className={styles.rejectButton}
                           whileHover={{ scale: 1.05 }}
@@ -482,10 +510,12 @@ export default function ClientProposalsPage() {
                         </motion.button>
                       </div>
                     )}
-                    
+
                     {proposal.status === "accepted" && (
                       <motion.button
-                        onClick={() => handleProposalAction(proposal.id, "completed")}
+                        onClick={() =>
+                          handleProposalAction(proposal.id, "completed")
+                        }
                         disabled={actionLoading === proposal.id}
                         className={styles.completeButton}
                         whileHover={{ scale: 1.05 }}
@@ -545,13 +575,16 @@ export default function ClientProposalsPage() {
                       <strong>Job Title:</strong> {selectedProposal.job?.title}
                     </div>
                     <div className={styles.detailItem}>
-                      <strong>Category:</strong> {selectedProposal.job?.category}
+                      <strong>Category:</strong>{" "}
+                      {selectedProposal.job?.category}
                     </div>
                     <div className={styles.detailItem}>
-                      <strong>Budget:</strong> ${selectedProposal.job?.budget?.toLocaleString()}
+                      <strong>Budget:</strong> $
+                      {selectedProposal.job?.budget?.toLocaleString()}
                     </div>
                     <div className={styles.detailItem}>
-                      <strong>Experience Level:</strong> {selectedProposal.job?.experienceLevel}
+                      <strong>Experience Level:</strong>{" "}
+                      {selectedProposal.job?.experienceLevel}
                     </div>
                   </div>
                   <div className={styles.jobDescription}>
@@ -568,39 +601,45 @@ export default function ClientProposalsPage() {
                   <div className={styles.freelancerModalInfo}>
                     <div className={styles.freelancerHeader}>
                       <div className={styles.avatarLarge}>
-                        {selectedProposal.freelancer?.name?.charAt(0).toUpperCase()}
+                        {selectedProposal.freelancer?.name
+                          ?.charAt(0)
+                          .toUpperCase()}
                       </div>
                       <div>
                         <h4>{selectedProposal.freelancer?.name}</h4>
-                        <p>{selectedProposal.freelancer?.email}</p>
                       </div>
                     </div>
-                    
+
                     {selectedProposal.freelancer?.profile && (
                       <div className={styles.freelancerDetailsGrid}>
                         {selectedProposal.freelancer.profile.title && (
                           <div className={styles.detailItem}>
-                            <strong>Professional Title:</strong> {selectedProposal.freelancer.profile.title}
+                            <strong>Professional Title:</strong>{" "}
+                            {selectedProposal.freelancer.profile.title}
                           </div>
                         )}
                         {selectedProposal.freelancer.profile.hourlyRate && (
                           <div className={styles.detailItem}>
-                            <strong>Hourly Rate:</strong> ${selectedProposal.freelancer.profile.hourlyRate}/hr
+                            <strong>Hourly Rate:</strong> $
+                            {selectedProposal.freelancer.profile.hourlyRate}/hr
                           </div>
                         )}
                         {selectedProposal.freelancer.profile.location && (
                           <div className={styles.detailItem}>
-                            <strong>Location:</strong> {selectedProposal.freelancer.profile.location}
+                            <strong>Location:</strong>{" "}
+                            {selectedProposal.freelancer.profile.location}
                           </div>
                         )}
                         {selectedProposal.freelancer.profile.experience && (
                           <div className={styles.detailItem}>
-                            <strong>Experience:</strong> {selectedProposal.freelancer.profile.experience}
+                            <strong>Experience:</strong>{" "}
+                            {selectedProposal.freelancer.profile.experience}
                           </div>
                         )}
                         {selectedProposal.freelancer.profile.education && (
                           <div className={styles.detailItem}>
-                            <strong>Education:</strong> {selectedProposal.freelancer.profile.education}
+                            <strong>Education:</strong>{" "}
+                            {selectedProposal.freelancer.profile.education}
                           </div>
                         )}
                       </div>
@@ -611,7 +650,9 @@ export default function ClientProposalsPage() {
                       <div className={styles.skillsSection}>
                         <strong>Skills:</strong>
                         <div className={styles.skillsList}>
-                          {getSkillsArray(selectedProposal.freelancer.profile.skills).map((skill, index) => (
+                          {getSkillsArray(
+                            selectedProposal.freelancer.profile.skills
+                          ).map((skill, index) => (
                             <span key={index} className={styles.skillTag}>
                               {skill}
                             </span>
@@ -637,16 +678,20 @@ export default function ClientProposalsPage() {
                   </h3>
                   <div className={styles.detailGrid}>
                     <div className={styles.detailItem}>
-                      <strong>Bid Amount:</strong> ${selectedProposal.bidAmount?.toLocaleString()}
+                      <strong>Bid Amount:</strong> $
+                      {selectedProposal.bidAmount?.toLocaleString()}
                     </div>
                     <div className={styles.detailItem}>
-                      <strong>Timeline:</strong> {selectedProposal.timeframe} days
+                      <strong>Timeline:</strong> {selectedProposal.timeframe}{" "}
+                      days
                     </div>
                     <div className={styles.detailItem}>
-                      <strong>Status:</strong> {getStatusBadge(selectedProposal.status)}
+                      <strong>Status:</strong>{" "}
+                      {getStatusBadge(selectedProposal.status)}
                     </div>
                     <div className={styles.detailItem}>
-                      <strong>Submitted:</strong> {new Date(selectedProposal.createdAt).toLocaleString()}
+                      <strong>Submitted:</strong>{" "}
+                      {new Date(selectedProposal.createdAt).toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -666,7 +711,9 @@ export default function ClientProposalsPage() {
                 {selectedProposal.status === "pending" && (
                   <div className={styles.modalActions}>
                     <motion.button
-                      onClick={() => handleProposalAction(selectedProposal.id, "accepted")}
+                      onClick={() =>
+                        handleProposalAction(selectedProposal.id, "accepted")
+                      }
                       disabled={actionLoading === selectedProposal.id}
                       className={styles.acceptButton}
                       whileHover={{ scale: 1.05 }}
@@ -680,7 +727,9 @@ export default function ClientProposalsPage() {
                       Accept Proposal
                     </motion.button>
                     <motion.button
-                      onClick={() => handleProposalAction(selectedProposal.id, "rejected")}
+                      onClick={() =>
+                        handleProposalAction(selectedProposal.id, "rejected")
+                      }
                       disabled={actionLoading === selectedProposal.id}
                       className={styles.rejectButton}
                       whileHover={{ scale: 1.05 }}

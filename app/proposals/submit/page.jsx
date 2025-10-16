@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./SubmitProposal.module.css";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,14 +17,29 @@ import {
   FaRupeeSign,
 } from "react-icons/fa";
 
-export default function SubmitProposalPage() {
+// Loading component for Suspense fallback
+function SubmitProposalLoading() {
+  return (
+    <div className={styles.loadingContainer}>
+      <motion.div
+        className={styles.professionalSpinner}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+      />
+      <p>Loading proposal form...</p>
+    </div>
+  );
+}
+
+// Main component that uses useSearchParams
+function SubmitProposalContent() {
   const [job, setJob] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({
     coverLetter: "",
     bidAmount: "",
     timeline: "",
-    timeframe: "", // Add timeframe field
+    timeframe: "",
     attachments: "",
   });
   const [loading, setLoading] = useState(true);
@@ -177,16 +192,15 @@ export default function SubmitProposalPage() {
     }
   };
 
-  // Calculate timeframe in days from timeline date
   const calculateTimeframe = (timelineDate) => {
     if (!timelineDate) return 0;
-    
+
     const today = new Date();
     const targetDate = new Date(timelineDate);
     const diffTime = targetDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return Math.max(1, diffDays); // Minimum 1 day
+
+    return Math.max(1, diffDays);
   };
 
   const handleSubmit = async (e) => {
@@ -221,7 +235,6 @@ export default function SubmitProposalPage() {
       setSubmitting(true);
       setError("");
 
-      // Calculate timeframe from timeline date
       const timeframe = calculateTimeframe(formData.timeline);
 
       let bidAmountUSD = parseFloat(formData.bidAmount);
@@ -231,11 +244,11 @@ export default function SubmitProposalPage() {
 
       const proposalData = {
         jobId: job.id,
-        freelancerId: currentUser.id, // Add freelancerId
+        freelancerId: currentUser.id,
         coverLetter: formData.coverLetter.trim(),
         bidAmount: bidAmountUSD,
-        timeframe: timeframe, // Add timeframe in days
-        timeline: formData.timeline.trim(), // Keep original timeline for reference
+        timeframe: timeframe,
+        timeline: formData.timeline.trim(),
         attachments: formData.attachments.trim(),
         status: "submitted",
       };
@@ -269,11 +282,10 @@ export default function SubmitProposalPage() {
     }
   };
 
-  // Format date for min attribute (tomorrow)
   const getMinDate = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0];
+    return tomorrow.toISOString().split("T")[0];
   };
 
   if (loading) {
@@ -404,8 +416,8 @@ export default function SubmitProposalPage() {
                 <div className={styles.skillsSection}>
                   <h4>Required Skills</h4>
                   <div className={styles.skillsList}>
-                    {typeof job.skills === 'string' 
-                      ? job.skills.split(',').map((skill, index) => (
+                    {typeof job.skills === "string"
+                      ? job.skills.split(",").map((skill, index) => (
                           <span key={index} className={styles.skillTag}>
                             {skill.trim()}
                           </span>
@@ -414,8 +426,7 @@ export default function SubmitProposalPage() {
                           <span key={index} className={styles.skillTag}>
                             {skill}
                           </span>
-                        ))
-                    }
+                        ))}
                   </div>
                 </div>
               )}
@@ -442,10 +453,7 @@ export default function SubmitProposalPage() {
                     <div className={styles.clientHeader}>
                       <div className={styles.clientAvatar}>
                         {job.user.avatar ? (
-                          <img
-                            src={job.user.avatar}
-                            alt={job.user.name}
-                          />
+                          <img src={job.user.avatar} alt={job.user.name} />
                         ) : (
                           <div className={styles.avatarPlaceholder}>
                             <FaUser />
@@ -555,7 +563,8 @@ export default function SubmitProposalPage() {
               {/* Timeline */}
               <div className={styles.formGroup}>
                 <label htmlFor="timeline">
-                  Estimated Completion Date <span className={styles.required}>*</span>
+                  Estimated Completion Date{" "}
+                  <span className={styles.required}>*</span>
                 </label>
                 <input
                   type="date"
@@ -570,7 +579,8 @@ export default function SubmitProposalPage() {
                 <div className={styles.timelineNote}>
                   {formData.timeline && (
                     <span>
-                      Estimated timeframe: {calculateTimeframe(formData.timeline)} days
+                      Estimated timeframe:{" "}
+                      {calculateTimeframe(formData.timeline)} days
                     </span>
                   )}
                 </div>
@@ -615,5 +625,14 @@ export default function SubmitProposalPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function SubmitProposalPage() {
+  return (
+    <Suspense fallback={<SubmitProposalLoading />}>
+      <SubmitProposalContent />
+    </Suspense>
   );
 }

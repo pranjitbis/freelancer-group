@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./FreelancerHub.module.css";
-import Nav from "../../home/component/Nav/page";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSearch,
@@ -51,9 +50,17 @@ export default function FreelancerHub() {
   const categories = [
     { value: "all", label: "All Categories", icon: MdWork },
     { value: "web-development", label: "Web Development", icon: FaBriefcase },
-    { value: "mobile-development", label: "Mobile Development", icon: FaBriefcase },
+    {
+      value: "mobile-development",
+      label: "Mobile Development",
+      icon: FaBriefcase,
+    },
     { value: "graphic-design", label: "Graphic Design", icon: FaBriefcase },
-    { value: "digital-marketing", label: "Digital Marketing", icon: MdTrendingUp },
+    {
+      value: "digital-marketing",
+      label: "Digital Marketing",
+      icon: MdTrendingUp,
+    },
     { value: "video-animation", label: "Video & Animation", icon: FaBriefcase },
     { value: "data-science", label: "Data Science", icon: IoStatsChart },
     { value: "ai-ml", label: "AI & ML", icon: IoStatsChart },
@@ -84,16 +91,16 @@ export default function FreelancerHub() {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        duration: 0.6
-      }
-    }
+        duration: 0.6,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { 
-      y: 30, 
+    hidden: {
+      y: 30,
       opacity: 0,
-      scale: 0.95
+      scale: 0.95,
     },
     visible: {
       y: 0,
@@ -103,8 +110,8 @@ export default function FreelancerHub() {
         type: "spring",
         stiffness: 100,
         damping: 15,
-        duration: 0.5
-      }
+        duration: 0.5,
+      },
     },
     hover: {
       y: -8,
@@ -112,38 +119,38 @@ export default function FreelancerHub() {
       transition: {
         type: "spring",
         stiffness: 400,
-        damping: 25
-      }
+        damping: 25,
+      },
     },
     tap: {
       scale: 0.98,
       transition: {
         type: "spring",
         stiffness: 400,
-        damping: 25
-      }
-    }
+        damping: 25,
+      },
+    },
   };
 
   const bannerVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
-      y: 50 
+      y: 50,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
         duration: 0.8,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   const badgeVariants = {
-    hidden: { 
+    hidden: {
       scale: 0,
-      rotate: -180 
+      rotate: -180,
     },
     visible: {
       scale: 1,
@@ -152,15 +159,15 @@ export default function FreelancerHub() {
         type: "spring",
         stiffness: 200,
         damping: 15,
-        delay: 0.3
-      }
-    }
+        delay: 0.3,
+      },
+    },
   };
 
   const statsVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
-      y: 20 
+      y: 20,
     },
     visible: {
       opacity: 1,
@@ -168,24 +175,24 @@ export default function FreelancerHub() {
       transition: {
         duration: 0.6,
         staggerChildren: 0.2,
-        delay: 0.5
-      }
-    }
+        delay: 0.5,
+      },
+    },
   };
 
   const statItemVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
-      scale: 0.8 
+      scale: 0.8,
     },
     visible: {
       opacity: 1,
       scale: 1,
       transition: {
         type: "spring",
-        stiffness: 150
-      }
-    }
+        stiffness: 150,
+      },
+    },
   };
 
   const searchVariants = {
@@ -194,23 +201,23 @@ export default function FreelancerHub() {
       boxShadow: "0 10px 40px rgba(59, 130, 246, 0.15)",
       transition: {
         type: "spring",
-        stiffness: 300
-      }
+        stiffness: 300,
+      },
     },
     unfocused: {
       scale: 1,
       boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
       transition: {
         type: "spring",
-        stiffness: 300
-      }
-    }
+        stiffness: 300,
+      },
+    },
   };
 
   const filterVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
-      y: 20 
+      y: 20,
     },
     visible: {
       opacity: 1,
@@ -218,36 +225,36 @@ export default function FreelancerHub() {
       transition: {
         duration: 0.5,
         staggerChildren: 0.1,
-        delay: 0.8
-      }
-    }
+        delay: 0.8,
+      },
+    },
   };
 
   const loadingVariants = {
-    initial: { 
+    initial: {
       opacity: 0,
-      scale: 0.8 
+      scale: 0.8,
     },
     animate: {
       opacity: 1,
       scale: 1,
       transition: {
-        duration: 0.5
-      }
+        duration: 0.5,
+      },
     },
     exit: {
       opacity: 0,
       scale: 0.8,
       transition: {
-        duration: 0.3
-      }
-    }
+        duration: 0.3,
+      },
+    },
   };
 
   const emptyStateVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
-      scale: 0.9 
+      scale: 0.9,
     },
     visible: {
       opacity: 1,
@@ -255,23 +262,23 @@ export default function FreelancerHub() {
       transition: {
         type: "spring",
         stiffness: 100,
-        damping: 15
-      }
-    }
+        damping: 15,
+      },
+    },
   };
 
   const paginationVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
-      y: 20 
+      y: 20,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   useEffect(() => {
@@ -440,8 +447,6 @@ export default function FreelancerHub() {
 
   return (
     <div className={styles.container}>
-      <Nav />
-      
       {/* Professional Header Banner with Animations */}
       <motion.section
         className={styles.heroBanner}
@@ -460,8 +465,8 @@ export default function FreelancerHub() {
               <IoBusiness className={styles.badgeIcon} />
               <span>Asia's Leading Platform</span>
             </motion.div>
-            
-            <motion.h1 
+
+            <motion.h1
               className={styles.bannerTitle}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -469,17 +474,18 @@ export default function FreelancerHub() {
             >
               The #1 Freelancing Hub in Asia
             </motion.h1>
-            
-            <motion.p 
+
+            <motion.p
               className={styles.bannerSubtitle}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.7 }}
             >
-              Connect with premium clients and build your career on Asia's most trusted freelance platform
+              Connect with premium clients and build your career on Asia's most
+              trusted freelance platform
             </motion.p>
 
-            <motion.div 
+            <motion.div
               className={styles.bannerStats}
               variants={statsVariants}
               initial="hidden"
@@ -491,18 +497,13 @@ export default function FreelancerHub() {
               </motion.div>
               <div className={styles.statDivider}></div>
               <motion.div className={styles.stat} variants={statItemVariants}>
-                <div className={styles.statNumber}>$25M+</div>
-                <div className={styles.statLabel}>Total Earnings</div>
-              </motion.div>
-              <div className={styles.statDivider}></div>
-              <motion.div className={styles.stat} variants={statItemVariants}>
                 <div className={styles.statNumber}>98%</div>
                 <div className={styles.statLabel}>Success Rate</div>
               </motion.div>
             </motion.div>
           </div>
-          
-          <motion.div 
+
+          <motion.div
             className={styles.bannerVisual}
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -527,7 +528,7 @@ export default function FreelancerHub() {
         animate="visible"
       >
         <div className={styles.filterContainer}>
-          <motion.div 
+          <motion.div
             className={styles.filterHeader}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -536,7 +537,7 @@ export default function FreelancerHub() {
             <h2>Find Perfect Projects</h2>
             <p>Filter by your preferences and skills</p>
           </motion.div>
-          
+
           <div className={styles.searchRow}>
             <motion.div
               className={styles.searchBox}
@@ -556,7 +557,7 @@ export default function FreelancerHub() {
               />
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className={styles.currencySelector}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -588,7 +589,7 @@ export default function FreelancerHub() {
             </motion.div>
           </div>
 
-          <motion.div 
+          <motion.div
             className={styles.filterRow}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -646,7 +647,7 @@ export default function FreelancerHub() {
 
       {/* Main Jobs Grid */}
       <section className={styles.jobsSection}>
-        <motion.div 
+        <motion.div
           className={styles.sectionHeader}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -676,7 +677,7 @@ export default function FreelancerHub() {
               animate="animate"
               exit="exit"
             >
-              <motion.div 
+              <motion.div
                 className={styles.loadingSpinner}
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -702,7 +703,9 @@ export default function FreelancerHub() {
                   const urgency = getUrgencyLevel(job.deadline);
                   const isSaved = savedJobs.has(job.id);
                   const budget = formatBudget(job.budget);
-                  const CategoryIcon = categories.find(cat => cat.value === job.category)?.icon || FaBriefcase;
+                  const CategoryIcon =
+                    categories.find((cat) => cat.value === job.category)
+                      ?.icon || FaBriefcase;
 
                   return (
                     <motion.div
@@ -713,17 +716,17 @@ export default function FreelancerHub() {
                       animate="visible"
                       whileHover="hover"
                       whileTap="tap"
-                      exit={{ 
-                        opacity: 0, 
+                      exit={{
+                        opacity: 0,
                         scale: 0.8,
-                        transition: { duration: 0.3 }
+                        transition: { duration: 0.3 },
                       }}
                       layout
                     >
                       {/* Card Header */}
                       <div className={styles.cardHeader}>
                         <div className={styles.clientSection}>
-                          <motion.div 
+                          <motion.div
                             className={styles.clientAvatar}
                             whileHover={{ scale: 1.1 }}
                             transition={{ type: "spring", stiffness: 400 }}
@@ -737,7 +740,7 @@ export default function FreelancerHub() {
                               <FaUser />
                             )}
                             {job.user.avgRating > 4.5 && (
-                              <motion.div 
+                              <motion.div
                                 className={styles.verifiedBadge}
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
@@ -748,7 +751,9 @@ export default function FreelancerHub() {
                             )}
                           </motion.div>
                           <div className={styles.clientInfo}>
-                            <h4 className={styles.clientName}>{job.user.name}</h4>
+                            <h4 className={styles.clientName}>
+                              {job.user.name}
+                            </h4>
                             <div className={styles.clientRating}>
                               <FaStar className={styles.ratingIcon} />
                               <span>{job.user.avgRating || "New"}</span>
@@ -768,8 +773,8 @@ export default function FreelancerHub() {
                           }}
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          animate={{ 
-                            scale: isSaved ? [1, 1.2, 1] : 1 
+                          animate={{
+                            scale: isSaved ? [1, 1.2, 1] : 1,
                           }}
                           transition={{ duration: 0.3 }}
                         >
@@ -779,7 +784,7 @@ export default function FreelancerHub() {
 
                       {/* Job Content */}
                       <div className={styles.jobContent}>
-                        <motion.div 
+                        <motion.div
                           className={styles.jobCategory}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -788,9 +793,9 @@ export default function FreelancerHub() {
                           <CategoryIcon className={styles.categoryIcon} />
                           <span>{job.category.replace("-", " ")}</span>
                         </motion.div>
-                        
-                        <motion.h3 
-                          className={styles.jobTitle} 
+
+                        <motion.h3
+                          className={styles.jobTitle}
                           onClick={() => handleJobClick(job)}
                           whileHover={{ color: "#3b82f6" }}
                           transition={{ duration: 0.2 }}
@@ -798,7 +803,7 @@ export default function FreelancerHub() {
                           {job.title}
                         </motion.h3>
 
-                        <motion.p 
+                        <motion.p
                           className={styles.jobDescription}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
@@ -807,7 +812,7 @@ export default function FreelancerHub() {
                           {truncateDescription(job.description, 25)}
                         </motion.p>
 
-                        <motion.div 
+                        <motion.div
                           className={styles.jobMeta}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -825,7 +830,7 @@ export default function FreelancerHub() {
                           </div>
                         </motion.div>
 
-                        <motion.div 
+                        <motion.div
                           className={styles.budgetSection}
                           initial={{ opacity: 0, scale: 0.9 }}
                           animate={{ opacity: 1, scale: 1 }}
@@ -846,7 +851,7 @@ export default function FreelancerHub() {
                           </div>
                         </motion.div>
 
-                        <motion.div 
+                        <motion.div
                           className={styles.skillsSection}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
@@ -858,8 +863,8 @@ export default function FreelancerHub() {
                           </div>
                           <div className={styles.skills}>
                             {job.skills.slice(0, 4).map((skill, index) => (
-                              <motion.span 
-                                key={index} 
+                              <motion.span
+                                key={index}
                                 className={styles.skillTag}
                                 initial={{ opacity: 0, scale: 0 }}
                                 animate={{ opacity: 1, scale: 1 }}
@@ -870,7 +875,7 @@ export default function FreelancerHub() {
                               </motion.span>
                             ))}
                             {job.skills.length > 4 && (
-                              <motion.span 
+                              <motion.span
                                 className={styles.moreSkills}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -884,7 +889,7 @@ export default function FreelancerHub() {
                       </div>
 
                       {/* Card Footer */}
-                      <motion.div 
+                      <motion.div
                         className={styles.cardFooter}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -903,9 +908,9 @@ export default function FreelancerHub() {
                         <motion.button
                           className={styles.applyButton}
                           onClick={() => handleJobClick(job)}
-                          whileHover={{ 
+                          whileHover={{
                             scale: 1.05,
-                            backgroundColor: "#374151"
+                            backgroundColor: "#374151",
                           }}
                           whileTap={{ scale: 0.95 }}
                         >
@@ -964,7 +969,7 @@ export default function FreelancerHub() {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       animate={{
-                        scale: pagination.currentPage === page ? 1.1 : 1
+                        scale: pagination.currentPage === page ? 1.1 : 1,
                       }}
                     >
                       {page}
@@ -999,15 +1004,15 @@ export default function FreelancerHub() {
             initial="hidden"
             animate="visible"
           >
-            <motion.div 
+            <motion.div
               className={styles.emptyIllustration}
-              animate={{ 
+              animate={{
                 y: [0, -10, 0],
-                transition: { 
-                  duration: 2, 
+                transition: {
+                  duration: 2,
                   repeat: Infinity,
-                  ease: "easeInOut"
-                }
+                  ease: "easeInOut",
+                },
               }}
             >
               <FaBriefcase />
