@@ -800,45 +800,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Quick Messages */}
-          <div className={styles.messagesSection}>
-            <div className={styles.sectionHeader}>
-              <div className={styles.sectionTitle}>
-                <FiMessageSquare className={styles.sectionTitleIcon} />
-                <h2>Quick Messages</h2>
-              </div>
-            </div>
-            <div className={styles.messagesList}>
-              {messages.length > 0 ? (
-                messages.slice(0, 3).map((message) => (
-                  <motion.div
-                    key={message.id}
-                    className={`${styles.messageItem} ${
-                      message.unread ? styles.unread : ""
-                    }`}
-                    whileHover={{ backgroundColor: "#f8fafc" }}
-                  >
-                    <div className={styles.messageAvatar}>
-                      <FiUser />
-                    </div>
-                    <div className={styles.messageContent}>
-                      <div className={styles.messageHeader}>
-                        <strong>{message.sender}</strong>
-                        <span>{message.time}</span>
-                      </div>
-                      <p>{message.content}</p>
-                    </div>
-                  </motion.div>
-                ))
-              ) : (
-                <div className={styles.emptyState}>
-                  <FiMessageSquare className={styles.emptyStateIcon} />
-                  <h3>No Messages</h3>
-                  <p>Your messages will appear here</p>
-                </div>
-              )}
-            </div>
-          </div>
+      
         </div>
       </div>
     </motion.div>
@@ -1012,31 +974,6 @@ export default function DashboardPage() {
   return (
     <div className={styles.dashboardPage}>
       {/* Navigation Sidebar */}
-      <div className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
-          <h2>Freelancer Hub</h2>
-        </div>
-        <nav className={styles.sidebarNav}>
-          {[
-            { id: "dashboard", label: "Dashboard", icon: FiBarChart },
-            { id: "projects", label: "Projects", icon: FiBriefcase },
-            { id: "messages", label: "Messages", icon: FiMessageSquare },
-            { id: "payments", label: "Payments", icon: FiCreditCard },
-            { id: "wallet", label: "Wallet", icon: FiDollarSign },
-          ].map((item) => (
-            <button
-              key={item.id}
-              className={`${styles.navItem} ${
-                activeSection === item.id ? styles.active : ""
-              }`}
-              onClick={() => setActiveSection(item.id)}
-            >
-              <item.icon className={styles.navIcon} />
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </div>
 
       {/* Main Content */}
       <main className={styles.mainContent}>

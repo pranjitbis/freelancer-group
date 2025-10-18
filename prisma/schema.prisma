@@ -29,7 +29,7 @@ model User {
   reviewsReceived Review[] @relation("ReviewReceived")
   transactions Transaction[]
 
-  // New relations for messaging system
+  // Messaging & Projects
   clientConversations Conversation[] @relation("ClientConversations")
   freelancerConversations Conversation[] @relation("FreelancerConversations")
   clientPaymentRequests PaymentRequest[] @relation("ClientPaymentRequests")
@@ -38,19 +38,21 @@ model User {
   freelancerProjects Project[] @relation("FreelancerProjects")
   readMessages Message[] @relation("MessageReads")
 
-  // NEW: Add these relations for plan system
+  // Plan & Wallet
   userPlan          UserPlan?
   connectTransactions ConnectTransaction[]
   planSubscriptions PlanSubscription[]
-
-  // === FIX: Opposite relation for FreelancerWallet.user ===
   freelancerWallet  FreelancerWallet?
+
+  // ✅ Refund relations
+  clientRefunds     RefundRequest[] @relation("ClientRefunds")
+  freelancerRefunds RefundRequest[] @relation("FreelancerRefunds")
 }
 
 model Transaction {
   id          Int      @id @default(autoincrement())
   amount      Float
-  type        String   // 'credit' or 'debit'
+  type        String
   status      String   @default("completed")
   paymentId   String?
   orderId     String?
@@ -71,13 +73,13 @@ model UserProfile {
   portfolio   String?
   avatar      String?
   hourlyRate  Float?
-  title       String?  // Job title/headline
+  title       String?
   location    String?
   website     String?
   github      String?
   linkedin    String?
   twitter     String?
-  resumeUrl   String?  // PDF resume file URL
+  resumeUrl   String?
   available   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -89,7 +91,7 @@ model UserProfile {
 model JobPost {
   id              Int      @id @default(autoincrement())
   title           String
-  description String   @db.Text
+  description     String   @db.Text
   category        String
   skills          String
   budget          Float
@@ -126,7 +128,6 @@ model Proposal {
   conversationId Int?
   conversation   Conversation? @relation(fields: [conversationId], references: [id])
 
-  // 👇 ADD THIS LINE
   connectTransactions ConnectTransaction[]
 
   @@unique([jobId, freelancerId])
@@ -139,7 +140,7 @@ model Message {
   fileUrl         String?
   amount          Float?
   paymentStatus   String?
-  currency        String?  @default("USD") // Add this line
+  currency        String?  @default("USD")
   createdAt       DateTime @default(now())
 
   senderId        Int
@@ -203,8 +204,6 @@ model job {
   userId          Int?
   createdAt       DateTime @default(now())
   status          String   @default("Pending")
-
-  @@index([userId], map: "Job_userId_fkey")
 }
 
 model order {
@@ -226,14 +225,12 @@ model order {
   resume          String?
   subcategory     String?
   urgency         String?  @default("standard")
-
-  @@index([userId], map: "Order_userId_fkey")
 }
 
 model BankDetail {
   id             Int      @id @default(autoincrement())
   bankName       String
-  accountNumber  String   // Encrypted
+  accountNumber  String
   accountHolder  String
   ifscCode       String
   branch         String
@@ -244,15 +241,13 @@ model BankDetail {
 
   walletId       Int
   wallet         FreelancerWallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
-
-  // === FIX: Opposite relation for PayoutRequest.bankDetail ===
   payoutRequests  PayoutRequest[]
 }
 
 model WalletTransaction {
   id          Int      @id @default(autoincrement())
   amount      Float
-  type        String   // 'credit' or 'debit'
+  type        String
   description String
   status      String   @default("completed")
   createdAt   DateTime @default(now())
@@ -278,7 +273,7 @@ model FreelancerWallet {
 model PayoutRequest {
   id          Int      @id @default(autoincrement())
   amount      Float
-  status      String   @default("pending") // pending, approved, rejected, completed
+  status      String   @default("pending")
   description String?
   adminNotes  String?
   createdAt   DateTime @default(now())
@@ -301,30 +296,22 @@ model VirtualAssistance {
   createdAt DateTime @default(now())
 }
 
-// NEW MODELS FOR MESSAGING AND PAYMENT SYSTEM
 model Conversation {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Participants
   clientId     Int
   client       User    @relation("ClientConversations", fields: [clientId], references: [id], onDelete: Cascade)
 
   freelancerId Int
   freelancer   User    @relation("FreelancerConversations", fields: [freelancerId], references: [id], onDelete: Cascade)
 
-  // Project reference
   projectId Int?
   project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  // Messages in this conversation
   messages Message[]
-
-  // Payment requests
   paymentRequests PaymentRequest[]
-
-  // ✅ Fix: Link proposals properly
   proposals Proposal[]
 
   @@unique([clientId, freelancerId, projectId])
@@ -339,11 +326,8 @@ model PaymentRequest {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   currency        String   @default("USD")
-
   razorpayOrderId   String?
   razorpayPaymentId String?
-
-  // Add these fields for better tracking
   freelancerName   String?
   clientName       String?
   projectTitle     String?
@@ -358,6 +342,7 @@ model PaymentRequest {
   freelancer     User        @relation("FreelancerPaymentRequests", fields: [freelancerId], references: [id], onDelete: Cascade)
 
   messages       Message[]
+  refundRequests RefundRequest[]
 }
 
 model Project {
@@ -368,11 +353,10 @@ model Project {
   status      String   @default("active")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  completedAt DateTime? // Add this line
+  completedAt DateTime?
 
   clientId     Int
   client       User    @relation("ClientProjects", fields: [clientId], references: [id], onDelete: Cascade)
-
   freelancerId Int?
   freelancer   User?   @relation("FreelancerProjects", fields: [freelancerId], references: [id], onDelete: Cascade)
 
@@ -410,6 +394,47 @@ model ConnectTransaction {
   @@map("connecttransaction")
 }
 
+model RefundRequest {
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  reason      String
+  description String?
+  status      RefundStatus @default(pending)
+  adminNotes  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  paymentRequestId Int
+  paymentRequest   PaymentRequest @relation(fields: [paymentRequestId], references: [id], onDelete: Cascade)
+  
+  clientId     Int
+  client       User @relation("ClientRefunds", fields: [clientId], references: [id], onDelete: Cascade)
+  
+  freelancerId Int
+  freelancer   User @relation("FreelancerRefunds", fields: [freelancerId], references: [id], onDelete: Cascade)
+
+  processedById Int?
+  processedBy   Admin? @relation("AdminProcessedRefunds", fields: [processedById], references: [id])
+
+  @@map("refundrequest")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  status    String   @default("active")
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  processedRefunds RefundRequest[] @relation("AdminProcessedRefunds")
+  
+  @@map("admin")
+}
+
 model PlanSubscription {
   id          Int      @id @default(autoincrement())
   planType    String
@@ -430,7 +455,14 @@ model PlanSubscription {
   @@map("plansubscription")
 }
 
-// Enum for message types
+enum RefundStatus {
+  pending
+  approved
+  rejected
+  processed
+  cancelled
+}
+
 enum MessageType {
   TEXT
   IMAGE

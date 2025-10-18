@@ -20,6 +20,7 @@ export default function Nav() {
     freelancer: false,
   });
   const [user, setUser] = useState(null);
+  const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export default function Nav() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
+          setUserName(data.user.name);
           setUser(data.user);
           setUserRole(data.user.role);
           localStorage.setItem("user", JSON.stringify(data.user));
@@ -79,20 +81,6 @@ export default function Nav() {
     }
   };
 
-  const getDashboardLabel = () => {
-    if (!userRole) return "Dashboard";
-
-    switch (userRole.toLowerCase()) {
-      case "client":
-        return "Client Dashboard";
-      case "freelancer":
-        return "Freelancer Dashboard";
-      case "admin":
-        return "Admin Dashboard";
-      default:
-        return "Dashboard";
-    }
-  };
 
   return (
     <header className={`${styles.header} ${isFixed ? styles.fixed : ""}`}>
@@ -201,7 +189,7 @@ export default function Nav() {
         <div className={styles.actions}>
           {user ? (
             <Link href={getDashboardLink()} className={styles.dashboardBtn}>
-              <FaUser /> {getDashboardLabel()}
+              <FaUser /> {userName}
             </Link>
           ) : (
             <>

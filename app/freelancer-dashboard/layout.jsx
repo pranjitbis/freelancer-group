@@ -17,7 +17,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import styles from "./DashboardLayout.module.css";
 import { IoPricetags, IoSend } from "react-icons/io5";
-
+import { RiRefund2Line } from "react-icons/ri";
 export default function DashboardLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -99,6 +99,13 @@ export default function DashboardLayout({ children }) {
       label: "Find Work",
       icon: <FiUser size={20} />,
       path: "/freelancer-dashboard/find-work",
+      bgColor: "#f0fdf4",
+    },
+    {
+      id: "Refunds",
+      label: "Refunds",
+      icon: <RiRefund2Line size={20} />,
+      path: "/freelancer-dashboard/refunds",
       bgColor: "#f0fdf4",
     },
   ];
@@ -310,17 +317,6 @@ export default function DashboardLayout({ children }) {
                 animate="open"
                 exit="closed"
               >
-                {/* Sidebar Header */}
-                <div className={styles.sidebarHeader}>
-                  <Link href="/freelancer-dashboard" className={styles.logo}>
-                    <FiBriefcase size={28} />
-                    <div className={styles.logoText}>
-                      <h2>Freelancer</h2>
-                      <p>Dashboard</p>
-                    </div>
-                  </Link>
-                </div>
-
                 {/* User Profile Section */}
                 <div className={styles.userSection}>
                   <div className={styles.avatar}>
@@ -387,26 +383,6 @@ export default function DashboardLayout({ children }) {
 
         {/* Main Content */}
         <main className={styles.main} style={pageStyle}>
-          {/* Breadcrumbs */}
-          <div className={styles.breadcrumbSection}>
-            <div className={styles.breadcrumbs}>
-              {breadcrumbs.map((crumb, index) => (
-                <span key={index} className={styles.breadcrumbItem}>
-                  {crumb}
-                  {index < breadcrumbs.length - 1 && (
-                    <span className={styles.breadcrumbSeparator}>/</span>
-                  )}
-                </span>
-              ))}
-            </div>
-            <div className={styles.headerActions}>
-              <span className={getPlanBadgeClass(userPlan)}>
-                {userPlan} Plan
-              </span>
-            </div>
-          </div>
-
-          {/* Page Content */}
           <div className={styles.content}>{children}</div>
         </main>
       </div>

@@ -16,6 +16,43 @@
   gap: 1rem;
 }
 
+.dashboardBtn {
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 3px 8px rgba(0, 123, 255, 0.25);
+}
+
+.dashboardBtn:hover {
+  background: linear-gradient(135deg, #0062cc, #00a8e8);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+.dashboardBtn:active {
+  transform: scale(0.97);
+}
+
+.dashboardBtn .userIcon {
+  width: 22px;
+  height: 22px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 .topRight a {
   color: white;
   font-size: 1.1rem;

@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 import { MdMessage } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
+import { RiRefund2Line } from "react-icons/ri";
 
 export default function ClientDashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -65,6 +66,13 @@ export default function ClientDashboardLayout({ children }) {
       label: "Profile",
       icon: <FaUserCog />,
       path: "/client-dashboard/profile",
+    },
+    {
+      id: "Refunds",
+      label: "Refunds",
+      icon: <RiRefund2Line size={20} />,
+      path: "/freelancer-dashboard/refunds",
+      bgColor: "#f0fdf4",
     },
   ];
 
@@ -139,7 +147,6 @@ export default function ClientDashboardLayout({ children }) {
         animate={isMobile ? (isSidebarOpen ? "open" : "closed") : "open"}
       >
         <div className={styles.sidebarHeader}>
-          <h2>Client Dashboard</h2>
           {isMobile && (
             <button
               className={styles.closeBtn}
