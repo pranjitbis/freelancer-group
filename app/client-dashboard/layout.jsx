@@ -71,7 +71,7 @@ export default function ClientDashboardLayout({ children }) {
       id: "Refunds",
       label: "Refunds",
       icon: <RiRefund2Line size={20} />,
-      path: "/freelancer-dashboard/refunds",
+      path: "/client-dashboard/refunds",
       bgColor: "#f0fdf4",
     },
   ];

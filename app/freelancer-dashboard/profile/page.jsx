@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaUser,
   FaBriefcase,
@@ -23,6 +23,8 @@ import {
   FaStar,
   FaAward,
   FaCalendar,
+  FaCamera,
+  FaImage,
 } from "react-icons/fa";
 import styles from "./FreelancerProfile.module.css";
 
@@ -32,9 +34,12 @@ export default function FreelancerProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const fileInputRef = useRef(null);
+  const imageInputRef = useRef(null);
   const router = useRouter();
 
   // Form state
@@ -95,7 +100,6 @@ export default function FreelancerProfilePage() {
         if (data.success) {
           setProfile(data.profile);
           if (data.profile) {
-            // Populate form with existing data
             setFormData({
               title: data.profile.title || "",
               bio: data.profile.bio || "",
@@ -153,7 +157,6 @@ export default function FreelancerProfilePage() {
         setSuccess("Profile updated successfully!");
         setProfile(data.profile);
         setIsEditing(false);
-        // Refresh the profile data
         fetchProfile();
       } else {
         setError(data.error || "Failed to update profile");
@@ -188,7 +191,6 @@ export default function FreelancerProfilePage() {
 
       if (response.ok) {
         setSuccess("Resume uploaded successfully!");
-        // Update local profile state
         setProfile((prev) => ({
           ...prev,
           resumeUrl: data.resumeUrl,
@@ -201,7 +203,57 @@ export default function FreelancerProfilePage() {
       setError("Failed to upload resume");
     } finally {
       setUploading(false);
-      e.target.value = ""; // Reset file input
+      e.target.value = "";
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setError("Please select a valid image file");
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image size should be less than 5MB");
+      return;
+    }
+
+    setUploadingImage(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const formData = new FormData();
+      formData.append("profileImage", file);
+      formData.append("userId", currentUser.id);
+
+      const response = await fetch("/api/freelancer/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess("Profile image updated successfully!");
+        setProfile((prev) => ({
+          ...prev,
+          profileImage: data.imageUrl,
+        }));
+      } else {
+        setError(data.error || "Failed to upload image");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setError("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+      e.target.value = "";
     }
   };
 
@@ -209,8 +261,6 @@ export default function FreelancerProfilePage() {
     if (!confirm("Are you sure you want to delete your resume?")) return;
 
     try {
-      // In a real app, you'd call an API to delete the file
-      // For now, we'll just remove the URL from the profile
       const response = await fetch("/api/freelancer/profile", {
         method: "POST",
         headers: {
@@ -236,6 +286,35 @@ export default function FreelancerProfilePage() {
     }
   };
 
+  const deleteProfileImage = async () => {
+    if (!confirm("Are you sure you want to remove your profile image?")) return;
+
+    try {
+      const response = await fetch("/api/freelancer/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: currentUser.id,
+          ...formData,
+          profileImage: null,
+        }),
+      });
+
+      if (response.ok) {
+        setSuccess("Profile image removed successfully!");
+        setProfile((prev) => ({
+          ...prev,
+          profileImage: null,
+        }));
+      }
+    } catch (error) {
+      console.error("Error deleting profile image:", error);
+      setError("Failed to remove profile image");
+    }
+  };
+
   const getSkillsArray = () => {
     if (!formData.skills) return [];
     return formData.skills
@@ -253,6 +332,7 @@ export default function FreelancerProfilePage() {
       formData.experience,
       formData.hourlyRate,
       profile?.resumeUrl,
+      profile?.profileImage,
     ];
 
     fields.forEach((field) => {
@@ -291,45 +371,40 @@ export default function FreelancerProfilePage() {
           {!isEditing ? (
             <motion.button
               onClick={() => setIsEditing(true)}
-              className={styles.editButton}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className={styles.primaryButton}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <FaEdit /> Edit Profile
+              <FaEdit />
+              Edit Profile
             </motion.button>
           ) : (
             <div className={styles.editActions}>
               <motion.button
                 onClick={() => setIsEditing(false)}
-                className={styles.cancelButton}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className={styles.secondaryButton}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <FaTimes /> Cancel
+                <FaTimes />
+                Cancel
               </motion.button>
               <motion.button
                 onClick={handleSaveProfile}
                 disabled={saving}
-                className={styles.saveButton}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className={styles.primaryButton}
+                whileHover={{ scale: saving ? 1 : 1.02 }}
+                whileTap={{ scale: saving ? 1 : 0.98 }}
               >
                 {saving ? (
                   <>
-                    <motion.div
-                      className={styles.saveSpinner}
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    />
+                    <div className={styles.buttonSpinner} />
                     Saving...
                   </>
                 ) : (
                   <>
-                    <FaSave /> Save Changes
+                    <FaSave />
+                    Save Changes
                   </>
                 )}
               </motion.button>
@@ -339,28 +414,30 @@ export default function FreelancerProfilePage() {
       </motion.header>
 
       {/* Success/Error Messages */}
-      {success && (
-        <motion.div
-          className={styles.successMessage}
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-        >
-          <FaCheck />
-          {success}
-        </motion.div>
-      )}
-      {error && (
-        <motion.div
-          className={styles.errorMessage}
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-        >
-          <FaTimes />
-          {error}
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {success && (
+          <motion.div
+            className={styles.successMessage}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <FaCheck />
+            {success}
+          </motion.div>
+        )}
+        {error && (
+          <motion.div
+            className={styles.errorMessage}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <FaTimes />
+            {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className={styles.content}>
         {/* Left Column - Profile Form */}
@@ -377,6 +454,74 @@ export default function FreelancerProfilePage() {
             </div>
 
             <form onSubmit={handleSaveProfile} className={styles.profileForm}>
+              {/* Profile Image Upload */}
+              <div className={styles.formGroup}>
+                <label>Profile Image</label>
+                <div className={styles.imageUploadSection}>
+                  <div className={styles.imagePreview}>
+                    {profile?.profileImage ? (
+                      <>
+                        <img
+                          src={profile.profileImage}
+                          alt="Profile"
+                          className={styles.profileImage}
+                        />
+                        {isEditing && (
+                          <button
+                            type="button"
+                            onClick={deleteProfileImage}
+                            className={styles.removeImageButton}
+                          >
+                            <FaTrash />
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <div className={styles.imagePlaceholder}>
+                        <FaUser className={styles.placeholderIcon} />
+                      </div>
+                    )}
+                  </div>
+                  {isEditing && (
+                    <div className={styles.imageUploadControls}>
+                      <motion.button
+                        type="button"
+                        onClick={() => imageInputRef.current?.click()}
+                        className={styles.imageUploadButton}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        disabled={uploadingImage}
+                      >
+                        {uploadingImage ? (
+                          <>
+                            <div className={styles.buttonSpinner} />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <FaCamera />
+                            {profile?.profileImage
+                              ? "Change Image"
+                              : "Upload Image"}
+                          </>
+                        )}
+                      </motion.button>
+                      <input
+                        ref={imageInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploadingImage || !isEditing}
+                        className={styles.hiddenFileInput}
+                      />
+                      <p className={styles.uploadHelpText}>
+                        JPG, PNG or GIF • Max 5MB
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Professional Title */}
               <div className={styles.formGroup}>
                 <label htmlFor="title">
@@ -646,36 +791,52 @@ export default function FreelancerProfilePage() {
                       href={profile.resumeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={styles.viewResumeButton}
+                      className={styles.viewButton}
                     >
                       View
                     </a>
-                    <button
-                      onClick={deleteResume}
-                      className={styles.deleteResumeButton}
-                    >
-                      <FaTrash />
-                    </button>
+                    {isEditing && (
+                      <button
+                        onClick={deleteResume}
+                        className={styles.deleteButton}
+                      >
+                        <FaTrash />
+                      </button>
+                    )}
                   </div>
                 </div>
               ) : (
                 <div className={styles.resumeUpload}>
                   <FaUpload className={styles.uploadIcon} />
                   <p>Upload your resume (PDF only, max 5MB)</p>
-                  <label
-                    htmlFor="resume-upload"
-                    className={styles.uploadButton}
-                  >
-                    {uploading ? "Uploading..." : "Choose PDF File"}
-                    <input
-                      id="resume-upload"
-                      type="file"
-                      accept=".pdf"
-                      onChange={handleResumeUpload}
-                      disabled={uploading || !isEditing}
-                      className={styles.fileInput}
-                    />
-                  </label>
+                  {isEditing && (
+                    <motion.label
+                      htmlFor="resume-upload"
+                      className={styles.uploadButton}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {uploading ? (
+                        <>
+                          <div className={styles.buttonSpinner} />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <FaFilePdf />
+                          Choose PDF File
+                        </>
+                      )}
+                      <input
+                        id="resume-upload"
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleResumeUpload}
+                        disabled={uploading || !isEditing}
+                        className={styles.hiddenFileInput}
+                      />
+                    </motion.label>
+                  )}
                 </div>
               )}
             </div>
@@ -692,7 +853,15 @@ export default function FreelancerProfilePage() {
             <div className={styles.profilePreview}>
               <div className={styles.previewHeader}>
                 <div className={styles.previewAvatar}>
-                  {currentUser?.name?.charAt(0).toUpperCase()}
+                  {profile?.profileImage ? (
+                    <img
+                      src={profile.profileImage}
+                      alt="Profile"
+                      className={styles.previewImage}
+                    />
+                  ) : (
+                    currentUser?.name?.charAt(0).toUpperCase()
+                  )}
                 </div>
                 <div className={styles.previewInfo}>
                   <h4>{formData.title || "Your Professional Title"}</h4>
@@ -776,6 +945,7 @@ export default function FreelancerProfilePage() {
                   {!formData.bio && <li>Write a compelling bio</li>}
                   {!formData.skills && <li>Add your skills</li>}
                   {!profile?.resumeUrl && <li>Upload your resume</li>}
+                  {!profile?.profileImage && <li>Add a profile image</li>}
                 </ul>
               </div>
             </div>

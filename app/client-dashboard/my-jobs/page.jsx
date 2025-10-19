@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./MyJobs.module.css";
+import Banner from '../components/page'
 import {
   FaBriefcase,
   FaSearch,
@@ -257,7 +258,7 @@ export default function MyJobs() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Header */}
+      <Banner />
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h1>My Jobs</h1>

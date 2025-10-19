@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./WalletRecharge.module.css";
+import Banner from "../components/page";
 import {
   FaMoneyBillWave,
   FaCheckCircle,
@@ -104,8 +105,8 @@ export default function ClientPayments() {
       return;
     }
 
-    if (!rechargeAmount || rechargeAmount < 100) {
-      setRechargeMessage("Please enter a valid amount (minimum ₹100)");
+    if (!rechargeAmount || rechargeAmount < 1) {
+      setRechargeMessage("Please enter a valid amount (minimum ₹1)");
       return;
     }
 
@@ -115,14 +116,19 @@ export default function ClientPayments() {
     try {
       await loadRazorpayScript();
 
+      // Convert rupees to paisa for Razorpay (1 rupee = 100 paisa)
+      const amountInPaisa = Math.round(parseFloat(rechargeAmount) * 100);
+
       const orderResponse = await fetch("/api/payments/client-payment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: parseFloat(rechargeAmount),
+          amount: amountInPaisa, // Send amount in paisa
           userId: user.id,
+          displayAmount: parseFloat(rechargeAmount), // Keep original amount for display
+          currency: "INR",
         }),
       });
 
@@ -133,7 +139,7 @@ export default function ClientPayments() {
       }
 
       const paymentDetails = {
-        amount: parseFloat(rechargeAmount),
+        amount: parseFloat(rechargeAmount), // Original amount in rupees
         userId: user.id,
         currency: "INR",
         planType: "wallet_recharge",
@@ -141,10 +147,10 @@ export default function ClientPayments() {
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: orderData.order.amount,
+        amount: orderData.order.amount, // This should be in paisa from the API
         currency: orderData.order.currency,
         name: "Freelance Platform",
-        description: "Wallet Recharge",
+        description: `Wallet Recharge - ₹${rechargeAmount}`,
         order_id: orderData.order.id,
         handler: async function (response) {
           const verifyResponse = await fetch("/api/payments/verify", {
@@ -156,7 +162,7 @@ export default function ClientPayments() {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              amount: paymentDetails.amount,
+              amount: paymentDetails.amount, // Send original amount in rupees
               userId: paymentDetails.userId,
               currency: paymentDetails.currency,
               planType: paymentDetails.planType,
@@ -283,6 +289,8 @@ export default function ClientPayments() {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -314,6 +322,7 @@ export default function ClientPayments() {
 
   return (
     <div className={styles.container}>
+      <Banner />
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerMain}>
@@ -662,11 +671,11 @@ export default function ClientPayments() {
                     placeholder="Enter amount"
                     value={rechargeAmount}
                     onChange={(e) => handleCustomAmountChange(e.target.value)}
-                    min="100"
-                    step="100"
+                    min="1"
+                    step="1"
                   />
                 </div>
-                <p className={styles.minAmount}>Minimum amount: ₹100</p>
+                <p className={styles.minAmount}>Minimum amount: ₹1</p>
               </div>
 
               {rechargeMessage && (
@@ -700,7 +709,7 @@ export default function ClientPayments() {
   );
 }
 
-// Payment Request Card Component (same as before)
+// Payment Request Card Component
 const PaymentRequestCard = ({
   request,
   onRelease,

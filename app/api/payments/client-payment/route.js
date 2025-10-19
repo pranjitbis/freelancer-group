@@ -13,12 +13,13 @@ const razorpay = new Razorpay({
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { amount, userId, currency = "INR" } = body;
+    const { amount, userId, currency = "INR", displayAmount } = body;
 
     console.log("📦 Creating Razorpay order:", {
       amount,
       userId,
       currency,
+      displayAmount,
     });
 
     // Validate required fields
@@ -26,7 +27,7 @@ export async function POST(request) {
       return NextResponse.json(
         {
           error: "Missing required fields",
-          details: "amount, planType, and userId are required",
+          details: "amount and userId are required",
         },
         { status: 400 }
       );
@@ -41,13 +42,8 @@ export async function POST(request) {
       );
     }
 
-    // Convert amount to smallest currency unit
-    let amountInSmallestUnit;
-    if (currency === "INR") {
-      amountInSmallestUnit = Math.round(parseFloat(amount) * 100); // Convert to paise
-    } else {
-      amountInSmallestUnit = Math.round(parseFloat(amount) * 100); // Convert to cents
-    }
+    // The amount should already be in the smallest currency unit from frontend
+    let amountInSmallestUnit = Math.round(parseFloat(amount));
 
     if (isNaN(amountInSmallestUnit) || amountInSmallestUnit <= 0) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
@@ -66,17 +62,24 @@ export async function POST(request) {
     const options = {
       amount: amountInSmallestUnit,
       currency: currency,
-      receipt: `${Date.now()}`,
+      receipt: `receipt_${userId}_${Date.now()}`,
       notes: {
         userId: userId.toString(),
         currency: currency,
-        originalAmount: amount.toString(),
+        originalAmount: displayAmount
+          ? displayAmount.toString()
+          : amount.toString(),
       },
     };
 
     const order = await razorpay.orders.create(options);
 
-    console.log("✅ Razorpay order created:", order.id);
+    console.log("✅ Razorpay order created:", {
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      receipt: order.receipt,
+    });
 
     return NextResponse.json({
       success: true,

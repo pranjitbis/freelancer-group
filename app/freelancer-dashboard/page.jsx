@@ -553,10 +553,6 @@ export default function DashboardPage() {
     >
       <div className={styles.bannerContent}>
         <div className={styles.bannerText}>
-          <div className={styles.bannerBadge}>
-            <FiAward className={styles.badgeIcon} />
-            <span>The #1 Freelancing Hub in Asia</span>
-          </div>
           <h1 className={styles.bannerTitle}>
             Welcome back, {user?.name || "Professional"}!
           </h1>
@@ -799,8 +795,6 @@ export default function DashboardPage() {
               )}
             </div>
           </div>
-
-      
         </div>
       </div>
     </motion.div>

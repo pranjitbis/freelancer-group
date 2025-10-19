@@ -1,13 +1,13 @@
 // app/freelancer-dashboard/proposals/page.js
-'use client';
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaSearch, 
-  FaFilter, 
-  FaBriefcase, 
-  FaUser, 
-  FaClock, 
+"use client";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaSearch,
+  FaFilter,
+  FaBriefcase,
+  FaUser,
+  FaClock,
   FaMoneyBillWave,
   FaCalendarAlt,
   FaEye,
@@ -15,18 +15,18 @@ import {
   FaTimes,
   FaExclamationTriangle,
   FaCheckCircle,
-  FaHourglassHalf
-} from 'react-icons/fa';
-import styles from './Proposals.module.css';
-
+  FaHourglassHalf,
+} from "react-icons/fa";
+import styles from "./Proposals.module.css";
+import Banner from "../components/page.jsx";
 const ProposalsPage = () => {
   const [proposals, setProposals] = useState([]);
   const [filteredProposals, setFilteredProposals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('newest');
+  const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProposal, setSelectedProposal] = useState(null);
 
@@ -41,30 +41,30 @@ const ProposalsPage = () => {
   const fetchProposals = async () => {
     try {
       setLoading(true);
-      setError('');
-      
+      setError("");
+
       // Get current user ID from localStorage or auth context
-      const userData = localStorage.getItem('user');
+      const userData = localStorage.getItem("user");
       const userId = userData ? JSON.parse(userData).id : null;
-      
+
       if (!userId) {
-        throw new Error('User not authenticated');
+        throw new Error("User not authenticated");
       }
 
       const response = await fetch(`/api/proposals?userId=${userId}`);
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch proposals');
+        throw new Error(data.error || "Failed to fetch proposals");
       }
 
       if (data.success) {
         setProposals(data.proposals || []);
       } else {
-        throw new Error(data.error || 'Failed to fetch proposals');
+        throw new Error(data.error || "Failed to fetch proposals");
       }
     } catch (err) {
-      console.error('Error fetching proposals:', err);
+      console.error("Error fetching proposals:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -76,31 +76,38 @@ const ProposalsPage = () => {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(proposal =>
-        proposal.job?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        proposal.job?.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        proposal.coverLetter?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (proposal) =>
+          proposal.job?.title
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          proposal.job?.user?.name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          proposal.coverLetter?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Apply status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(proposal => proposal.status === statusFilter);
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(
+        (proposal) => proposal.status === statusFilter
+      );
     }
 
     // Apply sorting
     filtered = [...filtered].sort((a, b) => {
       switch (sortBy) {
-        case 'newest':
+        case "newest":
           return new Date(b.createdAt) - new Date(a.createdAt);
-        case 'oldest':
+        case "oldest":
           return new Date(a.createdAt) - new Date(b.createdAt);
-        case 'highest-bid':
+        case "highest-bid":
           return b.bidAmount - a.bidAmount;
-        case 'lowest-bid':
+        case "lowest-bid":
           return a.bidAmount - b.bidAmount;
-        case 'job-title':
-          return (a.job?.title || '').localeCompare(b.job?.title || '');
+        case "job-title":
+          return (a.job?.title || "").localeCompare(b.job?.title || "");
         default:
           return 0;
       }
@@ -111,11 +118,11 @@ const ProposalsPage = () => {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'accepted':
+      case "accepted":
         return <FaCheckCircle className={styles.statusIconAccepted} />;
-      case 'rejected':
+      case "rejected":
         return <FaTimes className={styles.statusIconRejected} />;
-      case 'pending':
+      case "pending":
         return <FaHourglassHalf className={styles.statusIconPending} />;
       default:
         return <FaExclamationTriangle className={styles.statusIconDefault} />;
@@ -124,11 +131,11 @@ const ProposalsPage = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'accepted':
+      case "accepted":
         return styles.statusAccepted;
-      case 'rejected':
+      case "rejected":
         return styles.statusRejected;
-      case 'pending':
+      case "pending":
         return styles.statusPending;
       default:
         return styles.statusDefault;
@@ -136,17 +143,17 @@ const ProposalsPage = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(amount);
   };
 
@@ -163,9 +170,9 @@ const ProposalsPage = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -174,9 +181,9 @@ const ProposalsPage = () => {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   if (loading) {
@@ -208,10 +215,7 @@ const ProposalsPage = () => {
         <FaExclamationTriangle className={styles.errorIcon} />
         <h3>Unable to Load Proposals</h3>
         <p>{error}</p>
-        <button 
-          onClick={fetchProposals}
-          className={styles.retryButton}
-        >
+        <button onClick={fetchProposals} className={styles.retryButton}>
           Try Again
         </button>
       </motion.div>
@@ -220,7 +224,7 @@ const ProposalsPage = () => {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
+      <Banner />
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -239,13 +243,13 @@ const ProposalsPage = () => {
           </div>
           <div className={styles.stat}>
             <span className={styles.statNumber}>
-              {proposals.filter(p => p.status === 'accepted').length}
+              {proposals.filter((p) => p.status === "accepted").length}
             </span>
             <span className={styles.statLabel}>Accepted</span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statNumber}>
-              {proposals.filter(p => p.status === 'pending').length}
+              {proposals.filter((p) => p.status === "pending").length}
             </span>
             <span className={styles.statLabel}>Pending</span>
           </div>
@@ -273,7 +277,9 @@ const ProposalsPage = () => {
         <div className={styles.controlButtons}>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`${styles.filterButton} ${showFilters ? styles.active : ''}`}
+            className={`${styles.filterButton} ${
+              showFilters ? styles.active : ""
+            }`}
           >
             <FaFilter />
             Filters
@@ -301,7 +307,7 @@ const ProposalsPage = () => {
         {showFilters && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             className={styles.filtersPanel}
           >
@@ -339,10 +345,9 @@ const ProposalsPage = () => {
             <FaBriefcase className={styles.emptyIcon} />
             <h3>No proposals found</h3>
             <p>
-              {proposals.length === 0 
+              {proposals.length === 0
                 ? "You haven't submitted any proposals yet. Start applying to jobs!"
-                : "No proposals match your current filters."
-              }
+                : "No proposals match your current filters."}
             </p>
           </motion.div>
         ) : (
@@ -356,9 +361,13 @@ const ProposalsPage = () => {
               <div className={styles.cardHeader}>
                 <div className={styles.jobTitle}>
                   <FaBriefcase className={styles.titleIcon} />
-                  <h3>{proposal.job?.title || 'Untitled Job'}</h3>
+                  <h3>{proposal.job?.title || "Untitled Job"}</h3>
                 </div>
-                <div className={`${styles.status} ${getStatusColor(proposal.status)}`}>
+                <div
+                  className={`${styles.status} ${getStatusColor(
+                    proposal.status
+                  )}`}
+                >
                   {getStatusIcon(proposal.status)}
                   <span>{proposal.status}</span>
                 </div>
@@ -366,7 +375,7 @@ const ProposalsPage = () => {
 
               <div className={styles.clientInfo}>
                 <FaUser className={styles.clientIcon} />
-                <span>{proposal.job?.user?.name || 'Unknown Client'}</span>
+                <span>{proposal.job?.user?.name || "Unknown Client"}</span>
               </div>
 
               <div className={styles.detailsGrid}>
@@ -496,7 +505,11 @@ const ProposalsPage = () => {
                     </div>
                     <div>
                       <strong>Status:</strong>
-                      <p className={`${styles.status} ${getStatusColor(selectedProposal.status)}`}>
+                      <p
+                        className={`${styles.status} ${getStatusColor(
+                          selectedProposal.status
+                        )}`}
+                      >
                         {getStatusIcon(selectedProposal.status)}
                         {selectedProposal.status}
                       </p>

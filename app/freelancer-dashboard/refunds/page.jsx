@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Banner from "../components/page"
 import {
   FaArrowLeft,
   FaMoneyBillWave,
@@ -88,7 +89,7 @@ export default function FreelancerRefundsPage() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
+      <Banner />
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <h1>Refund Requests</h1>

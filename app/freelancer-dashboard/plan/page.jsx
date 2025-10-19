@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import {
   FaCheck,
   FaTimes,
-  FaRocket,
   FaCrown,
   FaArrowLeft,
   FaDollarSign,
@@ -15,19 +14,13 @@ import {
   FaRupeeSign,
   FaGlobe,
   FaStar,
-  FaBolt,
-  FaShieldAlt,
-  FaChartLine,
-  FaUsers,
-  FaGem,
-  FaSeedling,
-  FaAward,
-  FaMedal,
-  FaBusinessTime,
   FaCreditCard,
-  FaExclamationTriangle,
+  FaShieldAlt,
+  FaDownload,
+  FaFileInvoice,
 } from "react-icons/fa";
 import styles from "./Plans.module.css";
+import Banner from "../components/page.jsx";
 
 export default function PlansPage() {
   const [user, setUser] = useState(null);
@@ -39,29 +32,27 @@ export default function PlansPage() {
   const [authLoading, setAuthLoading] = useState(true);
   const [currency, setCurrency] = useState("INR");
   const [showNoConnectsError, setShowNoConnectsError] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+  const [plans, setPlans] = useState([]);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [invoiceData, setInvoiceData] = useState(null);
+  const [recentPurchase, setRecentPurchase] = useState(null);
   const router = useRouter();
 
-  // Professional color scheme - no gradients
   const colors = {
     primary: "#2563eb",
     primaryLight: "#eff6ff",
-    secondary: "#7c3aed",
-    accent: "#059669",
-    accentLight: "#ecfdf5",
     premium: "#d97706",
     premiumLight: "#fffbeb",
-    dark: "#1e293b",
-    light: "#f8fafc",
-    border: "#e2e8f0",
     success: "#059669",
-    warning: "#d97706",
     error: "#dc2626",
     gray: "#6b7280",
   };
 
   const exchangeRates = {
     INR: 1,
-    USD: 0.01133,
+    USD: 0.012,
   };
 
   const basePlans = [
@@ -86,7 +77,7 @@ export default function PlansPage() {
       ],
       popular: false,
       bestFor: "Beginners exploring the platform",
-      icon: FaSeedling,
+      icon: "FaSeedling",
       color: colors.primary,
       bgColor: colors.primaryLight,
     },
@@ -111,23 +102,67 @@ export default function PlansPage() {
       limitations: [],
       popular: true,
       bestFor: "Serious professionals seeking growth",
-      icon: FaCrown,
+      icon: "FaCrown",
       color: colors.premium,
       bgColor: colors.premiumLight,
     },
   ];
 
-  const plans = basePlans.map((plan) => {
-    let displayPrice = plan.price;
-    if (currency === "USD" && plan.price > 0) {
-      displayPrice = Math.round(plan.price * exchangeRates.USD * 100) / 100;
+  // Update plans when currency changes
+  useEffect(() => {
+    const updatedPlans = basePlans.map((plan) => {
+      let displayPrice = plan.price;
+      if (currency === "USD" && plan.price > 0) {
+        displayPrice = Math.round(plan.price * exchangeRates.USD * 100) / 100;
+      }
+      return {
+        ...plan,
+        displayPrice,
+        currency: currency,
+      };
+    });
+    setPlans(updatedPlans);
+  }, [currency]);
+
+  // Update selectedPlan when currency changes
+  useEffect(() => {
+    if (selectedPlan) {
+      const updatedSelectedPlan = plans.find(
+        (plan) => plan.id === selectedPlan.id
+      );
+      if (updatedSelectedPlan) {
+        setSelectedPlan(updatedSelectedPlan);
+      }
     }
-    return {
-      ...plan,
-      displayPrice,
-      currency: currency,
+  }, [plans, selectedPlan?.id]);
+
+  // Load Razorpay script
+  useEffect(() => {
+    const loadRazorpay = () => {
+      return new Promise((resolve) => {
+        if (window.Razorpay) {
+          setRazorpayLoaded(true);
+          resolve(true);
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        script.onload = () => {
+          setRazorpayLoaded(true);
+          resolve(true);
+        };
+        script.onerror = () => {
+          console.error("Failed to load Razorpay script");
+          resolve(false);
+        };
+        document.body.appendChild(script);
+      });
     };
-  });
+
+    loadRazorpay();
+  }, []);
 
   useEffect(() => {
     checkAuthentication();
@@ -193,6 +228,246 @@ export default function PlansPage() {
     }
   };
 
+  const calculateTotalAmount = (plan) => {
+    if (currency === "USD") {
+      // For USD, no GST, just return the display price
+      return plan.displayPrice;
+    }
+
+    // For INR, calculate with GST
+    const basePrice = plan.price;
+    const gstRate = 0.18; // 18% GST
+    const gstAmount = Math.round(basePrice * gstRate);
+    return basePrice + gstAmount;
+  };
+
+  const generateInvoiceData = (plan, paymentId = null) => {
+    const basePrice = plan.price;
+    const gstRate = 0.18;
+    const gstAmount = Math.round(basePrice * gstRate);
+    const totalAmount = basePrice + gstAmount;
+
+    return {
+      invoiceNumber: `INV-${Date.now()}`,
+      invoiceDate: new Date().toLocaleDateString(),
+      planName: plan.name,
+      connects: plan.connects,
+      basePrice,
+      gstRate: gstRate * 100,
+      gstAmount,
+      totalAmount,
+      currency: currency,
+      paymentId: paymentId || `PAY-${Date.now()}`,
+      customerName: user?.name || "Customer",
+      customerEmail: user?.email || "customer@example.com",
+    };
+  };
+
+  const downloadInvoice = () => {
+    if (!invoiceData) return;
+
+    const invoiceContent = `
+FREELANCE PLATFORM - INVOICE
+=============================
+
+Invoice No: ${invoiceData.invoiceNumber}
+Invoice Date: ${invoiceData.invoiceDate}
+
+BILL TO:
+${invoiceData.customerName}
+${invoiceData.customerEmail}
+
+PLAN DETAILS:
+-------------
+Plan: ${invoiceData.planName}
+Connects: ${invoiceData.connects} per month
+Billing Period: Monthly
+
+PRICE BREAKDOWN:
+----------------
+Base Price: ${formatCurrency(invoiceData.basePrice)}
+GST (${invoiceData.gstRate}%): ${formatCurrency(invoiceData.gstAmount)}
+-------------------------------------
+Total Amount: ${formatCurrency(invoiceData.totalAmount)}
+
+Payment ID: ${invoiceData.paymentId}
+Status: Paid
+
+Thank you for your business!
+This is a computer-generated invoice and does not require a signature.
+    `;
+
+    const blob = new Blob([invoiceContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `invoice-${invoiceData.invoiceNumber}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    setShowInvoiceModal(false);
+  };
+
+  const handleViewInvoice = () => {
+    if (!recentPurchase) return;
+
+    const invoice = generateInvoiceData(
+      recentPurchase.plan,
+      recentPurchase.paymentId
+    );
+    setInvoiceData(invoice);
+    setShowInvoiceModal(true);
+  };
+
+  const handleUpgradeClick = (plan) => {
+    if (plan.price === 0) {
+      handleSelectPlan(plan);
+      return;
+    }
+
+    setSelectedPlan(plan);
+    setShowPaymentModal(true);
+  };
+
+  const handlePayNow = async () => {
+    if (!selectedPlan || !razorpayLoaded) {
+      alert("Payment system is loading. Please try again in a moment.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Calculate total amount in the actual currency
+      const totalAmount = calculateTotalAmount(selectedPlan);
+
+      // For Razorpay, send the amount in the actual currency (not multiplied by 100)
+      const razorpayAmount = totalAmount;
+
+      let description = `${selectedPlan.name} Plan - ${selectedPlan.connects} connects monthly`;
+
+      if (currency === "INR") {
+        description += ` (including 18% GST)`;
+      }
+
+      const response = await fetch("/api/payments/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: razorpayAmount,
+          planType: selectedPlan.id,
+          userId: user.id,
+          currency: currency,
+        }),
+      });
+
+      const orderData = await response.json();
+
+      if (!orderData.success) {
+        throw new Error(orderData.error || "Failed to create payment order");
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: "Freelance Platform",
+        description: description,
+        order_id: orderData.order.id,
+        handler: async function (response) {
+          try {
+            const verifyResponse = await fetch("/api/payments/verify", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                planType: selectedPlan.id,
+                userId: user.id,
+              }),
+            });
+
+            const verifyResult = await verifyResponse.json();
+
+            if (verifyResponse.ok) {
+              const newPlan = {
+                planType: "premium",
+                connects: 20,
+                usedConnects: 0,
+              };
+
+              setUserPlan(newPlan);
+              setShowNoConnectsError(false);
+              setShowPaymentModal(false);
+
+              // Store recent purchase data for invoice
+              setRecentPurchase({
+                plan: selectedPlan,
+                paymentId: response.razorpay_payment_id,
+                date: new Date().toISOString(),
+              });
+
+              // Show success message with invoice option
+              alert(
+                "🎉 Professional plan activated successfully! You can download your invoice from the download button."
+              );
+              router.refresh();
+            } else {
+              alert(verifyResult.error || "Payment verification failed");
+            }
+          } catch (verifyError) {
+            console.error("Payment verification error:", verifyError);
+            alert("Payment verification failed");
+          }
+        },
+        prefill: {
+          name: user.name || "Customer",
+          email: user.email || "customer@example.com",
+        },
+        theme: {
+          color: colors.primary,
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+          },
+        },
+      };
+
+      // For USD, restrict payment methods
+      if (currency === "USD") {
+        options.method = {
+          netbanking: false,
+          card: true,
+          upi: false,
+          wallet: false,
+        };
+      }
+
+      console.log("Payment Details:", {
+        displayAmount: totalAmount,
+        razorpayAmount: razorpayAmount,
+        currency: currency,
+        description: description,
+      });
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert(error.message || "Failed to initialize payment. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSelectPlan = async (plan) => {
     if (!user) {
       alert("Please log in to select a plan");
@@ -229,114 +504,6 @@ export default function PlansPage() {
       } finally {
         setLoading(false);
       }
-    } else {
-      setLoading(true);
-      setSelectedPlan(plan);
-
-      try {
-        const razorpayCurrency = currency === "INR" ? "INR" : "USD";
-        let razorpayAmount;
-        if (currency === "INR") {
-          razorpayAmount = plan.price;
-        } else {
-          razorpayAmount = plan.displayPrice;
-        }
-
-        const response = await fetch("/api/payments/create-order", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            amount: razorpayAmount,
-            planType: plan.id,
-            userId: user.id,
-            currency: razorpayCurrency,
-          }),
-        });
-
-        const orderData = await response.json();
-
-        if (!orderData.success) {
-          throw new Error(orderData.error || "Failed to create payment order");
-        }
-
-        const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-          amount: orderData.order.amount,
-          currency: orderData.order.currency,
-          name: "Freelance Platform",
-          description: `Professional Plan - ${plan.connects} connects monthly`,
-          order_id: orderData.order.id,
-          handler: async function (response) {
-            try {
-              const verifyResponse = await fetch("/api/payments/verify", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_signature: response.razorpay_signature,
-                  planType: plan.id,
-                  userId: user.id,
-                  currency: razorpayCurrency,
-                  amount: razorpayAmount,
-                }),
-              });
-
-              const verifyResult = await verifyResponse.json();
-
-              if (verifyResponse.ok) {
-                setUserPlan((prev) => ({
-                  ...prev,
-                  planType: "premium",
-                  connects: 20,
-                  usedConnects: 0,
-                }));
-                setShowNoConnectsError(false);
-                alert("🎉 Professional plan activated successfully!");
-                router.refresh();
-              } else {
-                alert(verifyResult.error || "Payment verification failed");
-              }
-            } catch (verifyError) {
-              console.error("Payment verification error:", verifyError);
-              alert("Payment verification failed");
-            }
-          },
-          prefill: {
-            name: user.name,
-            email: user.email,
-          },
-          theme: {
-            color: colors.primary,
-          },
-          modal: {
-            ondismiss: function () {
-              setLoading(false);
-            },
-          },
-        };
-
-        if (razorpayCurrency === "USD") {
-          options.method = {
-            netbanking: false,
-            card: true,
-            upi: false,
-            wallet: false,
-          };
-        }
-
-        const rzp = new window.Razorpay(options);
-        rzp.open();
-      } catch (error) {
-        console.error("Payment error:", error);
-        alert(error.message || "Failed to initialize payment");
-      } finally {
-        setLoading(false);
-      }
     }
   };
 
@@ -359,6 +526,25 @@ export default function PlansPage() {
     return userPlan.connects - userPlan.usedConnects;
   };
 
+  const formatCurrency = (amount, curr = currency) => {
+    return new Intl.NumberFormat(curr === "INR" ? "en-IN" : "en-US", {
+      style: "currency",
+      currency: curr,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  const PlanIcon = ({ iconName, ...props }) => {
+    const icons = {
+      FaSeedling: FaCrown,
+      FaCrown: FaCrown,
+    };
+
+    const IconComponent = icons[iconName] || FaCrown;
+    return <IconComponent {...props} />;
+  };
+
   if (authLoading) {
     return (
       <div className={styles.loadingContainer}>
@@ -374,18 +560,25 @@ export default function PlansPage() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <button
-            onClick={() => router.back()}
-            className={styles.backButton}
-          >
+          <button onClick={() => router.back()} className={styles.backButton}>
             <FaArrowLeft />
             Back to Dashboard
           </button>
-          
+
           <div className={styles.headerControls}>
+            {/* Invoice Download Button - Only show if user has premium plan */}
+            {userPlan?.planType === "premium" && recentPurchase && (
+              <button
+                className={styles.invoiceButton}
+                onClick={handleViewInvoice}
+              >
+                <FaDownload />
+                Download Invoice
+              </button>
+            )}
+
             <div className={styles.currencySelector}>
               <FaGlobe className={styles.globeIcon} />
               <select
@@ -400,35 +593,37 @@ export default function PlansPage() {
           </div>
         </div>
       </header>
-
+      <Banner />
       <main className={styles.main}>
-        {/* Hero Section */}
-        <section className={styles.heroSection}>
-          <div className={styles.heroContent}>
-            <h1 className={styles.heroTitle}>Choose Your Plan</h1>
-            <p className={styles.heroSubtitle}>
-              Select the perfect plan that matches your freelance journey and accelerate your success
-            </p>
-          </div>
-        </section>
-
         {/* Current Plan Status */}
         <section className={styles.currentPlanSection}>
           <div className={styles.currentPlanCard}>
             <div className={styles.planStatusHeader}>
               <div className={styles.planInfo}>
-                <div 
+                <div
                   className={styles.planIcon}
-                  style={{ 
-                    backgroundColor: userPlan?.planType === "premium" ? colors.premiumLight : colors.primaryLight,
-                    color: userPlan?.planType === "premium" ? colors.premium : colors.primary
+                  style={{
+                    backgroundColor:
+                      userPlan?.planType === "premium"
+                        ? colors.premiumLight
+                        : colors.primaryLight,
+                    color:
+                      userPlan?.planType === "premium"
+                        ? colors.premium
+                        : colors.primary,
                   }}
                 >
-                  {userPlan?.planType === "premium" ? <FaCrown /> : <FaSeedling />}
+                  {userPlan?.planType === "premium" ? (
+                    <FaCrown />
+                  ) : (
+                    <PlanIcon iconName="FaSeedling" />
+                  )}
                 </div>
                 <div className={styles.planDetails}>
                   <h2 className={styles.planName}>
-                    {userPlan?.planType?.charAt(0).toUpperCase() + userPlan?.planType?.slice(1)} Plan
+                    {userPlan?.planType?.charAt(0).toUpperCase() +
+                      userPlan?.planType?.slice(1)}{" "}
+                    Plan
                   </h2>
                   <p className={styles.planDescription}>
                     {getAvailableConnects() === 0
@@ -437,41 +632,59 @@ export default function PlansPage() {
                       ? "Premium features unlocked"
                       : "Upgrade to unlock premium features"}
                   </p>
+
+                  {/* Show recent purchase info */}
+                  {recentPurchase && (
+                    <div className={styles.recentPurchase}>
+                      <FaCheck style={{ color: colors.success }} />
+                      <span>
+                        Plan activated successfully! Download your invoice
+                        above.
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
-              
+
               <div className={styles.planStats}>
                 <div className={styles.connectsCount}>
                   <span className={styles.availableConnects}>
                     {getAvailableConnects()}
                   </span>
-                  <span className={styles.connectsLabel}>Available Connects</span>
+                  <span className={styles.connectsLabel}>
+                    Available Connects
+                  </span>
                 </div>
-                
+
                 <div className={styles.progressSection}>
                   <div className={styles.progressBar}>
-                    <div 
+                    <div
                       className={styles.progressFill}
-                      style={{ 
+                      style={{
                         width: `${getConnectUsagePercentage()}%`,
-                        backgroundColor: userPlan?.planType === "premium" ? colors.premium : colors.primary
+                        backgroundColor:
+                          userPlan?.planType === "premium"
+                            ? colors.premium
+                            : colors.primary,
                       }}
                     ></div>
                   </div>
                   <div className={styles.progressText}>
-                    {userPlan?.usedConnects || 0} of {userPlan?.connects || 5} used ({getConnectUsagePercentage()}%)
+                    {userPlan?.usedConnects || 0} of {userPlan?.connects || 5}{" "}
+                    used ({getConnectUsagePercentage()}%)
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div className={styles.planActions}>
               <div className={styles.resetInfo}>
                 <FaCalendar className={styles.calendarIcon} />
                 <span>Resets in {getDaysUntilReset()} days</span>
               </div>
-              
-              {(userPlan?.planType === "free" || getAvailableConnects() === 0) && (
+
+              {(userPlan?.planType === "free" ||
+                getAvailableConnects() === 0) && (
                 <button
                   className={styles.upgradeButton}
                   onClick={() =>
@@ -481,14 +694,17 @@ export default function PlansPage() {
                   }
                 >
                   <FaCrown />
-                  {getAvailableConnects() === 0 ? "Recharge Now" : "Upgrade Plan"}
+                  {getAvailableConnects() === 0
+                    ? "Recharge Now"
+                    : "Upgrade Plan"}
                 </button>
               )}
             </div>
           </div>
         </section>
 
-        {/* Plans Comparison */}
+        {/* Rest of your existing code remains the same... */}
+        {/* Plans Comparison Section */}
         <section id="plans-section" className={styles.plansSection}>
           <div className={styles.plansGrid}>
             {plans.map((plan) => (
@@ -498,8 +714,9 @@ export default function PlansPage() {
                   plan.popular ? styles.popular : ""
                 }`}
               >
+                {/* ... existing plan card content ... */}
                 {plan.popular && (
-                  <div 
+                  <div
                     className={styles.popularBadge}
                     style={{ backgroundColor: plan.color }}
                   >
@@ -509,28 +726,30 @@ export default function PlansPage() {
                 )}
 
                 <div className={styles.planHeader}>
-                  <div 
+                  <div
                     className={styles.planIcon}
-                    style={{ 
+                    style={{
                       backgroundColor: plan.bgColor,
-                      color: plan.color
+                      color: plan.color,
                     }}
                   >
-                    <plan.icon />
+                    <PlanIcon iconName={plan.icon} />
                   </div>
-                  
+
                   <h3 className={styles.planName}>{plan.name}</h3>
-                  
+
                   <div className={styles.connectsDisplay}>
-                    <span 
+                    <span
                       className={styles.connectsCount}
                       style={{ color: plan.color }}
                     >
                       {plan.connects}
                     </span>
-                    <span className={styles.connectsLabel}>Connects / Month</span>
+                    <span className={styles.connectsLabel}>
+                      Connects / Month
+                    </span>
                   </div>
-                  
+
                   <div className={styles.priceSection}>
                     {plan.price === 0 ? (
                       <div className={styles.freePrice}>
@@ -541,13 +760,22 @@ export default function PlansPage() {
                       <div className={styles.paidPrice}>
                         <div className={styles.priceLine}>
                           <span className={styles.currencySymbol}>
-                            {currency === "INR" ? <FaRupeeSign /> : <FaDollarSign />}
+                            {currency === "INR" ? (
+                              <FaRupeeSign />
+                            ) : (
+                              <FaDollarSign />
+                            )}
                           </span>
                           <span className={styles.priceAmount}>
                             {plan.displayPrice}
                           </span>
                         </div>
                         <span className={styles.pricePeriod}>per month</span>
+                        {currency === "INR" && (
+                          <div className={styles.gstNote}>
+                            +18% GST applicable
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -562,7 +790,10 @@ export default function PlansPage() {
                   <ul className={styles.featuresList}>
                     {plan.features.map((feature, index) => (
                       <li key={index} className={styles.featureItem}>
-                        <FaCheck className={styles.featureIcon} style={{ color: colors.success }} />
+                        <FaCheck
+                          className={styles.featureIcon}
+                          style={{ color: colors.success }}
+                        />
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -575,7 +806,10 @@ export default function PlansPage() {
                     <ul className={styles.limitationsList}>
                       {plan.limitations.map((limitation, index) => (
                         <li key={index} className={styles.limitationItem}>
-                          <FaTimes className={styles.limitationIcon} style={{ color: colors.error }} />
+                          <FaTimes
+                            className={styles.limitationIcon}
+                            style={{ color: colors.error }}
+                          />
                           <span>{limitation}</span>
                         </li>
                       ))}
@@ -583,9 +817,9 @@ export default function PlansPage() {
                   </div>
                 )}
 
-                <div className={styles.planAction}>
+                <div className={styles.planActionsRow}>
                   <button
-                    onClick={() => handleSelectPlan(plan)}
+                    onClick={() => handleUpgradeClick(plan)}
                     disabled={loading || userPlan?.planType === plan.id}
                     className={`${styles.selectButton} ${
                       plan.popular ? styles.popularButton : ""
@@ -593,11 +827,12 @@ export default function PlansPage() {
                       userPlan?.planType === plan.id ? styles.currentButton : ""
                     }`}
                     style={{
-                      backgroundColor: userPlan?.planType === plan.id 
-                        ? colors.gray 
-                        : plan.popular 
-                        ? plan.color 
-                        : colors.primary
+                      backgroundColor:
+                        userPlan?.planType === plan.id
+                          ? colors.gray
+                          : plan.popular
+                          ? plan.color
+                          : colors.primary,
                     }}
                   >
                     {loading && selectedPlan?.id === plan.id ? (
@@ -625,7 +860,7 @@ export default function PlansPage() {
           </div>
         </section>
 
-        {/* Connect History */}
+        {/* Connect History Section */}
         <section className={styles.historySection}>
           <div className={styles.historyCard}>
             <div className={styles.historyHeader}>
@@ -648,7 +883,8 @@ export default function PlansPage() {
                 <FaHistory className={styles.emptyIcon} />
                 <h4>No connect history yet</h4>
                 <p>
-                  Your connect usage will appear here once you start submitting proposals
+                  Your connect usage will appear here once you start submitting
+                  proposals
                 </p>
               </div>
             ) : (
@@ -664,13 +900,16 @@ export default function PlansPage() {
                       </div>
                       <div className={styles.historyMeta}>
                         <span className={styles.historyDate}>
-                          {new Date(item.createdAt).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                          {new Date(item.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
                         </span>
                       </div>
                     </div>
@@ -689,6 +928,225 @@ export default function PlansPage() {
           </div>
         </section>
       </main>
+
+      {/* Payment Modal */}
+      {showPaymentModal && selectedPlan && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.paymentModal}>
+            <div className={styles.modalHeader}>
+              <h2>Upgrade to {selectedPlan.name}</h2>
+              <button
+                className={styles.closeButton}
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  setLoading(false);
+                }}
+                disabled={loading}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className={styles.paymentContent}>
+              <div className={styles.paymentSummary}>
+                <div className={styles.planSummary}>
+                  <div className={styles.planIcon}>
+                    <PlanIcon iconName={selectedPlan.icon} />
+                  </div>
+                  <div className={styles.planDetails}>
+                    <h3>{selectedPlan.name} Plan</h3>
+                    <p>{selectedPlan.connects} connects per month</p>
+                  </div>
+                </div>
+
+                <div className={styles.priceBreakdown}>
+                  <div className={styles.priceRow}>
+                    <span>Monthly Price:</span>
+                    <span>{formatCurrency(selectedPlan.displayPrice)}</span>
+                  </div>
+                  {currency === "INR" && (
+                    <div className={styles.priceRow}>
+                      <span>GST (18%):</span>
+                      <span>
+                        {formatCurrency(Math.round(selectedPlan.price * 0.18))}
+                      </span>
+                    </div>
+                  )}
+                  <div className={styles.totalRow}>
+                    <span>Total Amount:</span>
+                    <span className={styles.totalAmount}>
+                      {formatCurrency(calculateTotalAmount(selectedPlan))}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.featurePreview}>
+                  <h4>You'll get:</h4>
+                  <ul>
+                    {selectedPlan.features.slice(0, 3).map((feature, index) => (
+                      <li key={index}>
+                        <FaCheck style={{ color: colors.success }} />
+                        {feature}
+                      </li>
+                    ))}
+                    {selectedPlan.features.length > 3 && (
+                      <li>
+                        + {selectedPlan.features.length - 3} more features
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+
+              <div className={styles.paymentSecurity}>
+                <FaShieldAlt />
+                <span>Secure payment powered by Razorpay</span>
+              </div>
+
+              {loading && (
+                <div className={styles.paymentLoading}>
+                  <FaSync className={styles.spinningIcon} />
+                  <span>Preparing payment...</span>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.payNowButton}
+                onClick={handlePayNow}
+                disabled={loading || !razorpayLoaded}
+              >
+                {loading ? (
+                  <>
+                    <FaSync className={styles.spinningIcon} />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <FaCreditCard />
+                    Pay {formatCurrency(calculateTotalAmount(selectedPlan))} Now
+                  </>
+                )}
+              </button>
+
+              <button
+                className={styles.cancelButton}
+                onClick={() => setShowPaymentModal(false)}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Invoice Modal */}
+      {showInvoiceModal && invoiceData && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.invoiceModal}>
+            <div className={styles.modalHeader}>
+              <h2>Invoice</h2>
+              <button
+                className={styles.closeButton}
+                onClick={() => setShowInvoiceModal(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className={styles.invoiceContent}>
+              <div className={styles.invoiceHeader}>
+                <h3>FREELANCE PLATFORM</h3>
+                <p>INVOICE</p>
+              </div>
+
+              <div className={styles.invoiceDetails}>
+                <div className={styles.invoiceRow}>
+                  <span>Invoice No:</span>
+                  <span>{invoiceData.invoiceNumber}</span>
+                </div>
+                <div className={styles.invoiceRow}>
+                  <span>Invoice Date:</span>
+                  <span>{invoiceData.invoiceDate}</span>
+                </div>
+                <div className={styles.invoiceRow}>
+                  <span>Payment ID:</span>
+                  <span>{invoiceData.paymentId}</span>
+                </div>
+              </div>
+
+              <div className={styles.customerDetails}>
+                <h4>Bill To:</h4>
+                <p>{invoiceData.customerName}</p>
+                <p>{invoiceData.customerEmail}</p>
+              </div>
+
+              <div className={styles.planDetails}>
+                <h4>Plan Details:</h4>
+                <div className={styles.invoiceRow}>
+                  <span>Plan:</span>
+                  <span>{invoiceData.planName}</span>
+                </div>
+                <div className={styles.invoiceRow}>
+                  <span>Connects:</span>
+                  <span>{invoiceData.connects} per month</span>
+                </div>
+                <div className={styles.invoiceRow}>
+                  <span>Billing Period:</span>
+                  <span>Monthly</span>
+                </div>
+              </div>
+
+              <div className={styles.priceBreakdown}>
+                <h4>Price Breakdown:</h4>
+                <div className={styles.priceRow}>
+                  <span>Base Price:</span>
+                  <span>{formatCurrency(invoiceData.basePrice)}</span>
+                </div>
+                <div className={styles.priceRow}>
+                  <span>GST ({invoiceData.gstRate}%):</span>
+                  <span>{formatCurrency(invoiceData.gstAmount)}</span>
+                </div>
+                <div className={styles.totalRow}>
+                  <span>Total Amount:</span>
+                  <span className={styles.totalAmount}>
+                    {formatCurrency(invoiceData.totalAmount)}
+                  </span>
+                </div>
+              </div>
+
+              <div className={styles.invoiceFooter}>
+                <p>
+                  Status: <strong>Paid</strong>
+                </p>
+                <p>Thank you for your business!</p>
+                <p className={styles.footerNote}>
+                  This is a computer-generated invoice and does not require a
+                  signature.
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.downloadInvoiceButton}
+                onClick={downloadInvoice}
+              >
+                <FaDownload />
+                Download Invoice
+              </button>
+              <button
+                className={styles.closeModalButton}
+                onClick={() => setShowInvoiceModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -12,7 +12,7 @@ import {
   FaPlus,
 } from "react-icons/fa";
 import styles from "./Refunds.module.css";
-
+import Banner from '../components/page'
 export default function ClientRefundsPage() {
   const [user, setUser] = useState(null);
   const [paymentRequests, setPaymentRequests] = useState([]);
@@ -154,7 +154,7 @@ export default function ClientRefundsPage() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
+      <Banner />
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <button onClick={() => router.back()} className={styles.backButton}>

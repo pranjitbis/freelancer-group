@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Banner from '../components/page'
 import {
   FaCheckCircle,
   FaClock,
@@ -451,7 +452,7 @@ export default function ProjectManagement() {
 
   return (
     <div className={styles.container}>
-      {/* Header Section */}
+      <Banner />
       <div className={styles.headerSection}>
         <div className={styles.headerContent}>
           <div className={styles.headerText}>

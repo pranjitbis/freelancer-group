@@ -18,9 +18,11 @@ import Link from "next/link";
 import styles from "./DashboardLayout.module.css";
 import { IoPricetags, IoSend } from "react-icons/io5";
 import { RiRefund2Line } from "react-icons/ri";
+
 export default function DashboardLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userPlan, setUserPlan] = useState("Free");
@@ -30,13 +32,15 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 1024);
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width <= 768);
+      setIsTablet(width > 768 && width <= 1200);
     };
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   // Fetch current user data
@@ -270,7 +274,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className={styles.dashboard} style={pageStyle}>
-      {/* Mobile Header */}
+      {/* Mobile Header - Always visible on mobile */}
       <header className={styles.mobileHeader}>
         <div className={styles.mobileHeaderLeft}>
           <button
@@ -279,15 +283,21 @@ export default function DashboardLayout({ children }) {
           >
             {isMobileMenuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
           </button>
-          <Link href="/freelancer-dashboard" className={styles.logo}>
+          <Link
+            href="/freelancer-dashboard"
+            className={styles.logo}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
             <FiBriefcase size={24} />
-            <span>Freelancer</span>
+            {!isTablet && <span>Freelancer</span>}
           </Link>
         </div>
 
         <div className={styles.mobileHeaderRight}>
           <div className={styles.planDisplayMobile}>
-            <span className={getPlanBadgeClass(userPlan)}>{userPlan}</span>
+            <span className={getPlanBadgeClass(userPlan)}>
+              {isMobile ? userPlan : `${userPlan} Plan`}
+            </span>
           </div>
           <div className={styles.avatarSmall}>
             {getUserInitials(currentUser?.name)}
@@ -296,20 +306,18 @@ export default function DashboardLayout({ children }) {
       </header>
 
       <div className={styles.container}>
-        {/* Sidebar */}
+        {/* Sidebar - Different rendering logic for mobile vs desktop/tablet */}
         <AnimatePresence>
-          {(!isMobile || isMobileMenuOpen) && (
+          {/* Mobile: Only show when menu is open */}
+          {isMobile && isMobileMenuOpen && (
             <>
-              {isMobile && isMobileMenuOpen && (
-                <motion.div
-                  className={styles.overlay}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                />
-              )}
-
+              <motion.div
+                className={styles.overlay}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
               <motion.aside
                 className={styles.sidebar}
                 variants={sidebarVariants}
@@ -364,6 +372,7 @@ export default function DashboardLayout({ children }) {
                   <Link
                     href="/freelancer-dashboard/settings"
                     className={styles.sidebarButton}
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <FiSettings size={18} />
                     <span>Settings</span>
@@ -379,10 +388,98 @@ export default function DashboardLayout({ children }) {
               </motion.aside>
             </>
           )}
+
+          {/* Desktop/Tablet: Always show sidebar */}
+          {!isMobile && (
+            <aside
+              className={`${styles.sidebar} ${
+                isTablet ? styles.sidebarTablet : ""
+              }`}
+            >
+              {/* User Profile Section */}
+              <div className={styles.userSection}>
+                <div className={styles.avatar}>
+                  {getUserInitials(currentUser?.name)}
+                </div>
+                {!isTablet && (
+                  <div className={styles.userInfo}>
+                    <h3 className={styles.userName}>
+                      {currentUser?.name || "User"}
+                    </h3>
+                    <p className={styles.userRole}>
+                      {currentUser?.role === "freelancer"
+                        ? "Freelancer"
+                        : "User"}
+                    </p>
+                    <div className={styles.planDisplay}>
+                      <span className={getPlanBadgeClass(userPlan)}>
+                        {userPlan} Plan
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation Menu */}
+              <nav className={styles.nav}>
+                {menuItems.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={item.path}
+                    className={`${styles.navItem} ${
+                      isActive(item.path) ? styles.active : ""
+                    } ${isTablet ? styles.navItemTablet : ""}`}
+                    onClick={() => handleNavigation(item)}
+                    title={isTablet ? item.label : ""}
+                  >
+                    <span className={styles.navIcon}>{item.icon}</span>
+                    {!isTablet && (
+                      <span className={styles.navLabel}>{item.label}</span>
+                    )}
+                    {isActive(item.path) && !isTablet && (
+                      <div className={styles.activeIndicator} />
+                    )}
+                    {isTablet && isActive(item.path) && (
+                      <div className={styles.activeIndicatorTablet} />
+                    )}
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Sidebar Footer */}
+              <div className={styles.sidebarFooter}>
+                <Link
+                  href="/freelancer-dashboard/settings"
+                  className={`${styles.sidebarButton} ${
+                    isTablet ? styles.sidebarButtonTablet : ""
+                  }`}
+                  title={isTablet ? "Settings" : ""}
+                >
+                  <FiSettings size={18} />
+                  {!isTablet && <span>Settings</span>}
+                </Link>
+                <button
+                  className={`${styles.sidebarButton} ${styles.logoutButton} ${
+                    isTablet ? styles.sidebarButtonTablet : ""
+                  }`}
+                  onClick={handleLogout}
+                  title={isTablet ? "Logout" : ""}
+                >
+                  <FiLogOut size={18} />
+                  {!isTablet && <span>Logout</span>}
+                </button>
+              </div>
+            </aside>
+          )}
         </AnimatePresence>
 
         {/* Main Content */}
-        <main className={styles.main} style={pageStyle}>
+        <main
+          className={`${styles.main} ${isTablet ? styles.mainTablet : ""} ${
+            isMobile ? styles.mainMobile : ""
+          }`}
+          style={pageStyle}
+        >
           <div className={styles.content}>{children}</div>
         </main>
       </div>

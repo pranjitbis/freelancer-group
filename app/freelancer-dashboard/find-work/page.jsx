@@ -447,7 +447,6 @@ export default function FreelancerHub() {
 
   return (
     <div className={styles.container}>
-      {/* Professional Header Banner with Animations */}
       <motion.section
         className={styles.heroBanner}
         variants={bannerVariants}

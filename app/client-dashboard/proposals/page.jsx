@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Banner from '../components/page'
 import {
   FaSearch,
   FaFilter,
@@ -239,7 +240,7 @@ export default function ClientProposalsPage() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
+    <Banner />
       <motion.header
         className={styles.header}
         initial={{ opacity: 0, y: -20 }}
