@@ -211,9 +211,22 @@ export default function FreelancerProfilePage() {
     const file = e.target.files[0];
     if (!file) return;
 
+    console.log("Selected file:", {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+    });
+
     // Validate file type
-    if (!file.type.startsWith("image/")) {
-      setError("Please select a valid image file");
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      setError("Please select a valid image file (JPEG, PNG, WebP, or GIF)");
       return;
     }
 
@@ -229,15 +242,23 @@ export default function FreelancerProfilePage() {
 
     try {
       const formData = new FormData();
-      formData.append("profileImage", file);
+      formData.append("profileImage", file); // Make sure this matches the API
       formData.append("userId", currentUser.id);
+
+      console.log("Uploading image...", {
+        userId: currentUser.id,
+        fileName: file.name,
+        fileSize: file.size,
+      });
 
       const response = await fetch("/api/freelancer/upload-image", {
         method: "POST",
         body: formData,
+        // Don't set Content-Type header for FormData - browser will set it automatically
       });
 
       const data = await response.json();
+      console.log("Upload response:", { status: response.status, data });
 
       if (response.ok) {
         setSuccess("Profile image updated successfully!");
@@ -245,15 +266,25 @@ export default function FreelancerProfilePage() {
           ...prev,
           profileImage: data.imageUrl,
         }));
+        // Also update formData to reflect the change
+        setFormData((prev) => ({
+          ...prev,
+          profileImage: data.imageUrl,
+        }));
       } else {
-        setError(data.error || "Failed to upload image");
+        throw new Error(
+          data.error || `Upload failed with status ${response.status}`
+        );
       }
     } catch (error) {
       console.error("Error uploading image:", error);
-      setError("Failed to upload image");
+      setError("Failed to upload image: " + error.message);
     } finally {
       setUploadingImage(false);
-      e.target.value = "";
+      // Reset the file input
+      if (imageInputRef.current) {
+        imageInputRef.current.value = "";
+      }
     }
   };
 
