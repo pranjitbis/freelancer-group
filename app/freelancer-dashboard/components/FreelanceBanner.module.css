@@ -1,18 +1,18 @@
 /* components/FreelanceBanner.module.css */
 .container {
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  position: relative;
+  max-width: 2400px;
+  padding: 0 0rem;
 }
 
 /* Professional Banner */
 .professionalBanner {
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: white;
-  padding: 3rem 2rem;
-  margin: 2rem 0;
-  border-radius: 1rem;
+  padding: 0rem 2rem 1.5rem;
+  margin: 0rem 0 2.3rem;
+  border-radius: 0rem 0rem 1rem 1rem;
   position: relative;
   overflow: hidden;
 }
@@ -53,20 +53,25 @@
   background: rgba(255, 255, 255, 0.1);
   padding: 0.5rem 1rem;
   border-radius: 2rem;
-  margin-bottom: 1rem;
+  margin: 1rem;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   font-size: 0.875rem;
   font-weight: 500;
 }
 
+.bannerBadge span {
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+}
+
 .badgeIcon {
   color: #f59e0b;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .bannerTitle {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
   color: white;
@@ -80,7 +85,7 @@
 }
 
 .bannerSubtitle {
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   color: #cbd5e1;
   margin: 0;
   line-height: 1.6;
@@ -88,8 +93,10 @@
 }
 
 .bannerStats {
-  display: flex;
-  gap: 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  justify-items: center; /* Centers items horizontally */
 }
 
 .bannerStat {
@@ -137,45 +144,41 @@
 @media (max-width: 1357px) {
   .container {
     position: relative;
-    right: 60px;
-    max-width: 800px;
+    right: 0px;
+    max-width: 900px;
+  }
+  .statIcon {
+    font-size: 1rem;
+  }
+  .statContent span {
+    font-size: 0.8rem;
+  }
+  .bannerTitle {
+    font-size: 1rem;
   }
 
   .bannerContent {
     max-width: 800px;
-  }
-}
-@media (max-width: 1299px) {
-  .container {
-    right: 40px;
-    max-width: 600px;
-  }
-
-  .bannerContent {
-    max-width: 600px;
-  }
-}
-@media (max-width: 1439px) {
-  .container {
-    max-width: 1000px;
-  }
-
-  .bannerContent {
-    max-width: 1000px;
   }
 }
 
 /* Small Desktop (1024px - 1199px) */
 @media (max-width: 1199px) {
   .container {
-    max-width: 900px;
     padding: 0 2rem;
     position: relative;
     right: 40px;
+    max-width: 1100px;
+  }
+
+  .bannerStats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    justify-items: center; /* Centers items horizontally */
   }
 
   .bannerContent {
-    max-width: 900px;
     gap: 2.5rem;
   }
 
@@ -199,6 +202,13 @@
     max-width: 800px;
     position: relative;
     right: 10px;
+  }
+
+  .bannerStats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    justify-items: center; /* Centers items horizontally */
   }
 
   .bannerContent {
@@ -229,11 +239,20 @@
 }
 
 /* Tablet Portrait (768px - 899px) */
+@media (max-width: 843px) {
+  .container {
+    max-width: 700px;
+    position: relative;
+    right: 20px;
+  }
+}
 @media (max-width: 939px) {
   .container {
     max-width: 800px;
-    position: relative;
-    right: 10px;
+  }
+
+  .statLabel {
+    font-size: 0.7rem !important;
   }
   .professionalBanner {
     padding: 2.5rem 1.5rem;
@@ -270,7 +289,7 @@
   .container {
     max-width: 660px;
     position: relative;
-    right: 10px;
+    right: 0;
   }
 
   .professionalBanner {
@@ -332,7 +351,16 @@
   .professionalBanner {
     padding: 1.75rem 1rem;
   }
+  .bannerText {
+    margin: 20px 0px;
+  }
 
+  .container {
+    position: relative;
+    right: 30px;
+    width: 1100%;
+    max-width: 500px;
+  }
   .bannerTitle {
     font-size: 1.5rem;
   }
@@ -366,7 +394,7 @@
 /* Small Mobile (375px - 479px) */
 @media (max-width: 479px) {
   .container {
-    padding: 0 0.75rem;
+    padding: 1rem 0;
   }
 
   .professionalBanner {
@@ -385,6 +413,7 @@
 
   .bannerSubtitle {
     font-size: 0.9rem;
+    width: 300px;
   }
 
   .bannerBadge {
@@ -395,6 +424,8 @@
   .bannerStats {
     flex-direction: column;
     gap: 0.75rem;
+    position: relative;
+    left: 80px;
   }
 
   .bannerStat {
@@ -421,10 +452,6 @@
 
 /* Extra Small Mobile (320px - 374px) */
 @media (max-width: 374px) {
-  .container {
-    padding: 0 0.5rem;
-  }
-
   .professionalBanner {
     padding: 1.25rem 0.75rem;
   }

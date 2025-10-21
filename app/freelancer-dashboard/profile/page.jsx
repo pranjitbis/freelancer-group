@@ -15,7 +15,6 @@ import {
   FaLink,
   FaUpload,
   FaSave,
-  FaEdit,
   FaCheck,
   FaTimes,
   FaFilePdf,
@@ -24,7 +23,6 @@ import {
   FaAward,
   FaCalendar,
   FaCamera,
-  FaImage,
 } from "react-icons/fa";
 import styles from "./FreelancerProfile.module.css";
 
@@ -37,7 +35,7 @@ export default function FreelancerProfilePage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(true); // Always in edit mode
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
   const router = useRouter();
@@ -156,7 +154,6 @@ export default function FreelancerProfilePage() {
       if (response.ok) {
         setSuccess("Profile updated successfully!");
         setProfile(data.profile);
-        setIsEditing(false);
         fetchProfile();
       } else {
         setError(data.error || "Failed to update profile");
@@ -242,7 +239,7 @@ export default function FreelancerProfilePage() {
 
     try {
       const formData = new FormData();
-      formData.append("profileImage", file); // Make sure this matches the API
+      formData.append("profileImage", file);
       formData.append("userId", currentUser.id);
 
       console.log("Uploading image...", {
@@ -254,7 +251,6 @@ export default function FreelancerProfilePage() {
       const response = await fetch("/api/freelancer/upload-image", {
         method: "POST",
         body: formData,
-        // Don't set Content-Type header for FormData - browser will set it automatically
       });
 
       const data = await response.json();
@@ -266,7 +262,6 @@ export default function FreelancerProfilePage() {
           ...prev,
           profileImage: data.imageUrl,
         }));
-        // Also update formData to reflect the change
         setFormData((prev) => ({
           ...prev,
           profileImage: data.imageUrl,
@@ -281,7 +276,6 @@ export default function FreelancerProfilePage() {
       setError("Failed to upload image: " + error.message);
     } finally {
       setUploadingImage(false);
-      // Reset the file input
       if (imageInputRef.current) {
         imageInputRef.current.value = "";
       }
@@ -399,48 +393,25 @@ export default function FreelancerProfilePage() {
           <p>Build your professional profile to attract clients</p>
         </div>
         <div className={styles.headerActions}>
-          {!isEditing ? (
-            <motion.button
-              onClick={() => setIsEditing(true)}
-              className={styles.primaryButton}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <FaEdit />
-              Edit Profile
-            </motion.button>
-          ) : (
-            <div className={styles.editActions}>
-              <motion.button
-                onClick={() => setIsEditing(false)}
-                className={styles.secondaryButton}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <FaTimes />
-                Cancel
-              </motion.button>
-              <motion.button
-                onClick={handleSaveProfile}
-                disabled={saving}
-                className={styles.primaryButton}
-                whileHover={{ scale: saving ? 1 : 1.02 }}
-                whileTap={{ scale: saving ? 1 : 0.98 }}
-              >
-                {saving ? (
-                  <>
-                    <div className={styles.buttonSpinner} />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <FaSave />
-                    Save Changes
-                  </>
-                )}
-              </motion.button>
-            </div>
-          )}
+          <motion.button
+            onClick={handleSaveProfile}
+            disabled={saving}
+            className={styles.primaryButton}
+            whileHover={{ scale: saving ? 1 : 1.02 }}
+            whileTap={{ scale: saving ? 1 : 0.98 }}
+          >
+            {saving ? (
+              <>
+                <div className={styles.buttonSpinner} />
+                Saving...
+              </>
+            ) : (
+              <>
+                <FaSave />
+                Save Changes
+              </>
+            )}
+          </motion.button>
         </div>
       </motion.header>
 
@@ -497,15 +468,13 @@ export default function FreelancerProfilePage() {
                           alt="Profile"
                           className={styles.profileImage}
                         />
-                        {isEditing && (
-                          <button
-                            type="button"
-                            onClick={deleteProfileImage}
-                            className={styles.removeImageButton}
-                          >
-                            <FaTrash />
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          onClick={deleteProfileImage}
+                          className={styles.removeImageButton}
+                        >
+                          <FaTrash />
+                        </button>
                       </>
                     ) : (
                       <div className={styles.imagePlaceholder}>
@@ -513,43 +482,41 @@ export default function FreelancerProfilePage() {
                       </div>
                     )}
                   </div>
-                  {isEditing && (
-                    <div className={styles.imageUploadControls}>
-                      <motion.button
-                        type="button"
-                        onClick={() => imageInputRef.current?.click()}
-                        className={styles.imageUploadButton}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        disabled={uploadingImage}
-                      >
-                        {uploadingImage ? (
-                          <>
-                            <div className={styles.buttonSpinner} />
-                            Uploading...
-                          </>
-                        ) : (
-                          <>
-                            <FaCamera />
-                            {profile?.profileImage
-                              ? "Change Image"
-                              : "Upload Image"}
-                          </>
-                        )}
-                      </motion.button>
-                      <input
-                        ref={imageInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        disabled={uploadingImage || !isEditing}
-                        className={styles.hiddenFileInput}
-                      />
-                      <p className={styles.uploadHelpText}>
-                        JPG, PNG or GIF • Max 5MB
-                      </p>
-                    </div>
-                  )}
+                  <div className={styles.imageUploadControls}>
+                    <motion.button
+                      type="button"
+                      onClick={() => imageInputRef.current?.click()}
+                      className={styles.imageUploadButton}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      disabled={uploadingImage}
+                    >
+                      {uploadingImage ? (
+                        <>
+                          <div className={styles.buttonSpinner} />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <FaCamera />
+                          {profile?.profileImage
+                            ? "Change Image"
+                            : "Upload Image"}
+                        </>
+                      )}
+                    </motion.button>
+                    <input
+                      ref={imageInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                      className={styles.hiddenFileInput}
+                    />
+                    <p className={styles.uploadHelpText}>
+                      JPG, PNG or GIF • Max 5MB
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -564,7 +531,6 @@ export default function FreelancerProfilePage() {
                   value={formData.title}
                   onChange={(e) => handleInputChange("title", e.target.value)}
                   placeholder="e.g., Senior Full Stack Developer"
-                  disabled={!isEditing}
                   className={styles.formInput}
                 />
                 <div className={styles.helpText}>
@@ -583,7 +549,6 @@ export default function FreelancerProfilePage() {
                   onChange={(e) => handleInputChange("bio", e.target.value)}
                   placeholder="Describe your expertise, experience, and what you can offer to clients..."
                   rows="4"
-                  disabled={!isEditing}
                   className={styles.formTextarea}
                 />
                 <div className={styles.helpText}>
@@ -603,7 +568,6 @@ export default function FreelancerProfilePage() {
                   onChange={(e) => handleInputChange("skills", e.target.value)}
                   placeholder="React, Node.js, Python, UI/UX Design, Project Management..."
                   rows="3"
-                  disabled={!isEditing}
                   className={styles.formTextarea}
                 />
                 <div className={styles.helpText}>
@@ -635,7 +599,6 @@ export default function FreelancerProfilePage() {
                   }
                   placeholder="Describe your work experience, previous projects, and achievements..."
                   rows="4"
-                  disabled={!isEditing}
                   className={styles.formTextarea}
                 />
                 <div className={styles.helpText}>
@@ -656,7 +619,6 @@ export default function FreelancerProfilePage() {
                   }
                   placeholder="Your educational background, degrees, and relevant certifications..."
                   rows="3"
-                  disabled={!isEditing}
                   className={styles.formTextarea}
                 />
               </div>
@@ -676,7 +638,6 @@ export default function FreelancerProfilePage() {
                   placeholder="50"
                   min="0"
                   step="5"
-                  disabled={!isEditing}
                   className={styles.formInput}
                 />
                 <div className={styles.helpText}>
@@ -697,7 +658,6 @@ export default function FreelancerProfilePage() {
                     handleInputChange("location", e.target.value)
                   }
                   placeholder="City, Country"
-                  disabled={!isEditing}
                   className={styles.formInput}
                 />
               </div>
@@ -717,7 +677,6 @@ export default function FreelancerProfilePage() {
                       onChange={(e) =>
                         handleInputChange("website", e.target.value)
                       }
-                      disabled={!isEditing}
                       className={styles.formInput}
                     />
                   </div>
@@ -730,7 +689,6 @@ export default function FreelancerProfilePage() {
                       onChange={(e) =>
                         handleInputChange("github", e.target.value)
                       }
-                      disabled={!isEditing}
                       className={styles.formInput}
                     />
                   </div>
@@ -743,7 +701,6 @@ export default function FreelancerProfilePage() {
                       onChange={(e) =>
                         handleInputChange("linkedin", e.target.value)
                       }
-                      disabled={!isEditing}
                       className={styles.formInput}
                     />
                   </div>
@@ -756,7 +713,6 @@ export default function FreelancerProfilePage() {
                       onChange={(e) =>
                         handleInputChange("twitter", e.target.value)
                       }
-                      disabled={!isEditing}
                       className={styles.formInput}
                     />
                   </div>
@@ -769,7 +725,6 @@ export default function FreelancerProfilePage() {
                       onChange={(e) =>
                         handleInputChange("portfolio", e.target.value)
                       }
-                      disabled={!isEditing}
                       className={styles.formInput}
                     />
                   </div>
@@ -785,7 +740,6 @@ export default function FreelancerProfilePage() {
                     onChange={(e) =>
                       handleInputChange("available", e.target.checked)
                     }
-                    disabled={!isEditing}
                     className={styles.checkbox}
                   />
                   <span className={styles.checkboxText}>
@@ -826,48 +780,44 @@ export default function FreelancerProfilePage() {
                     >
                       View
                     </a>
-                    {isEditing && (
-                      <button
-                        onClick={deleteResume}
-                        className={styles.deleteButton}
-                      >
-                        <FaTrash />
-                      </button>
-                    )}
+                    <button
+                      onClick={deleteResume}
+                      className={styles.deleteButton}
+                    >
+                      <FaTrash />
+                    </button>
                   </div>
                 </div>
               ) : (
                 <div className={styles.resumeUpload}>
                   <FaUpload className={styles.uploadIcon} />
                   <p>Upload your resume (PDF only, max 5MB)</p>
-                  {isEditing && (
-                    <motion.label
-                      htmlFor="resume-upload"
-                      className={styles.uploadButton}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {uploading ? (
-                        <>
-                          <div className={styles.buttonSpinner} />
-                          Uploading...
-                        </>
-                      ) : (
-                        <>
-                          <FaFilePdf />
-                          Choose PDF File
-                        </>
-                      )}
-                      <input
-                        id="resume-upload"
-                        type="file"
-                        accept=".pdf"
-                        onChange={handleResumeUpload}
-                        disabled={uploading || !isEditing}
-                        className={styles.hiddenFileInput}
-                      />
-                    </motion.label>
-                  )}
+                  <motion.label
+                    htmlFor="resume-upload"
+                    className={styles.uploadButton}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {uploading ? (
+                      <>
+                        <div className={styles.buttonSpinner} />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <FaFilePdf />
+                        Choose PDF File
+                      </>
+                    )}
+                    <input
+                      id="resume-upload"
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleResumeUpload}
+                      disabled={uploading}
+                      className={styles.hiddenFileInput}
+                    />
+                  </motion.label>
                 </div>
               )}
             </div>

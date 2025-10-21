@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./MyJobs.module.css";
-import Banner from '../components/page'
+import Banner from "../components/page";
 import {
   FaBriefcase,
   FaSearch,
@@ -152,6 +152,23 @@ export default function MyJobs() {
       console.error("Error deleting job:", error);
       alert("Failed to delete job");
     }
+  };
+
+  // FIXED: View job function with correct routing
+  const viewJob = (job) => {
+    // Get username from user data or job data
+    const username =
+      user?.username ||
+      user?.name?.toLowerCase()?.replace(/\s+/g, "-") ||
+      "user";
+
+    // Route to the job details page
+    router.push(`/find-work/${username}/${job.id}`);
+  };
+
+  // FIXED: Edit job function
+  const editJob = (jobId) => {
+    router.push(`/client-dashboard/edit-job/${jobId}`);
   };
 
   const filteredJobs = jobs.filter((job) => {
@@ -410,22 +427,24 @@ export default function MyJobs() {
                 </div>
 
                 <div className={styles.jobActions}>
+                  {/* FIXED: View button with correct routing */}
                   <button
                     className={styles.actionBtn}
-                    onClick={() => router.push(`/jobs/${job.id}`)}
+                    onClick={() => viewJob(job)}
                   >
                     <FaEye />
                     View
                   </button>
+
+                  {/* FIXED: Edit button with correct routing */}
                   <button
                     className={styles.actionBtn}
-                    onClick={() =>
-                      router.push(`/client-dashboard/edit-job/${job.id}`)
-                    }
+                    onClick={() => editJob(job.id)}
                   >
                     <FaEdit />
                     Edit
                   </button>
+
                   <button
                     className={`${styles.actionBtn} ${styles.deleteBtn}`}
                     onClick={() => deleteJob(job.id)}

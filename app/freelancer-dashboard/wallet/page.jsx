@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./FreelancerWallet.module.css";
+import Banner from '../components/page'
 import {
   FaWallet,
   FaMoneyBillWave,
@@ -354,52 +355,7 @@ export default function FreelancerWallet() {
   };
 
   // Professional Banner Component
-  const ProfessionalBanner = () => (
-    <motion.div
-      className={styles.professionalBanner}
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      <div className={styles.bannerContent}>
-        <div className={styles.bannerText}>
-          <div className={styles.bannerBadge}>
-            <FaAward className={styles.badgeIcon} />
-            <span>Secure Payment Hub</span>
-          </div>
-          <h1 className={styles.bannerTitle}>Your Professional Wallet</h1>
-          <p className={styles.bannerSubtitle}>
-            Manage your earnings securely with instant payouts and real-time
-            transaction tracking
-          </p>
-        </div>
-        <div className={styles.bannerStats}>
-          <div className={styles.bannerStat}>
-            <FaShieldAlt className={styles.statsIcon} />
-            <div>
-              <span className={styles.statNumber}>Bank-Level</span>
-              <span className={styles.statLabel}>Security</span>
-            </div>
-          </div>
-          <div className={styles.bannerStat}>
-            <FaRocket className={styles.statsIcon} />
-            <div>
-              <span className={styles.statNumber}>Instant</span>
-              <span className={styles.statLabel}>Payouts</span>
-            </div>
-          </div>
-          <div className={styles.bannerStat}>
-            <FaWallet className={styles.statsIcon} />
-            <div>
-              <span className={styles.statNumber}>24/7</span>
-              <span className={styles.statLabel}>Access</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-
+ 
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -436,8 +392,7 @@ export default function FreelancerWallet() {
         </div>
       )}
 
-      {/* Professional Banner */}
-      <ProfessionalBanner />
+    <Banner />
 
       {/* Header */}
       <div className={styles.header}>

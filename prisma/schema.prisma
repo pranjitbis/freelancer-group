@@ -483,3 +483,13 @@ model PasswordResetToken {
 
   @@map("passwordresettoken")
 }
+
+model OTP {
+  id        String   @id @default(cuid())
+  otp       String
+  email     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("otps")
+}

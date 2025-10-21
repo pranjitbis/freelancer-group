@@ -77,7 +77,7 @@
   padding: 1rem 0;
 }
 
-.avatarImage{
+.avatarImage {
   width: 59px;
   border-radius: 50%;
   height: 59px;
@@ -228,4 +228,18 @@
   .content {
     padding: 1rem;
   }
+}
+.settings {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #c5c2c2;
+  background: rgb(86, 86, 206);
+  border: none;
+  cursor: pointer;
+  width: 240px;
+  text-align: left;
+  margin: 0px 0px 0px 20px ;
+  padding: 1rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }

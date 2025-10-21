@@ -110,7 +110,7 @@ export default function JobDetailPage() {
           params.jobId !== expectedJobId
         ) {
           router.replace(
-            `/freelancer-hub/${expectedUsername}/${expectedJobId}`
+            `/find-work/${expectedUsername}/${expectedJobId}`
           );
         }
       } else {

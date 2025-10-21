@@ -13,10 +13,11 @@ import {
   FaTimes,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
 import { MdMessage } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { RiRefund2Line } from "react-icons/ri";
-
+import Link from "next/link";
 export default function ClientDashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -190,6 +191,11 @@ export default function ClientDashboardLayout({ children }) {
           ))}
         </nav>
 
+        <Link href="/client-dashboard/settings">
+          <button className={styles.settings}>
+            <IoMdSettings /> settings
+          </button>
+        </Link>
         <button onClick={handleLogout} className={styles.logoutBtn}>
           <FaSignOutAlt /> Logout
         </button>
@@ -203,7 +209,7 @@ export default function ClientDashboardLayout({ children }) {
         />
       )}
 
-      {/* Main Content */}
+      {/* Header */}
       <div
         className={`${styles.mainContent} ${
           isSidebarOpen && isMobile ? styles.shifted : ""
@@ -216,10 +222,6 @@ export default function ClientDashboardLayout({ children }) {
           >
             <FaBars />
           </button>
-          <div className={styles.headerContent}>
-            <h1>Client Dashboard</h1>
-            <div className={styles.welcomeText}>Welcome back, {user.name}!</div>
-          </div>
         </header>
 
         <main className={styles.content}>{children}</main>

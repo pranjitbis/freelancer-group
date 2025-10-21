@@ -223,318 +223,321 @@ const ProposalsPage = () => {
   }
 
   return (
-    <div className={styles.container}>
+    <>
+      {" "}
       <Banner />
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={styles.header}
-      >
-        <div className={styles.headerContent}>
-          <h1 className={styles.title}>My Proposals</h1>
-          <p className={styles.subtitle}>
-            Track and manage your job applications
-          </p>
-        </div>
-        <div className={styles.stats}>
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>{proposals.length}</span>
-            <span className={styles.statLabel}>Total</span>
+      <div className={styles.container}>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={styles.header}
+        >
+          <div className={styles.headerContent}>
+            <h1 className={styles.title}>My Proposals</h1>
+            <p className={styles.subtitle}>
+              Track and manage your job applications
+            </p>
           </div>
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>
-              {proposals.filter((p) => p.status === "accepted").length}
-            </span>
-            <span className={styles.statLabel}>Accepted</span>
+          <div className={styles.stats}>
+            <div className={styles.stat}>
+              <span className={styles.statNumber}>{proposals.length}</span>
+              <span className={styles.statLabel}>Total</span>
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statNumber}>
+                {proposals.filter((p) => p.status === "accepted").length}
+              </span>
+              <span className={styles.statLabel}>Accepted</span>
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statNumber}>
+                {proposals.filter((p) => p.status === "pending").length}
+              </span>
+              <span className={styles.statLabel}>Pending</span>
+            </div>
           </div>
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>
-              {proposals.filter((p) => p.status === "pending").length}
-            </span>
-            <span className={styles.statLabel}>Pending</span>
+        </motion.div>
+
+        {/* Controls */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className={styles.controls}
+        >
+          <div className={styles.searchContainer}>
+            <FaSearch className={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder="Search by job title, client name, or proposal content..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
           </div>
-        </div>
-      </motion.div>
 
-      {/* Controls */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className={styles.controls}
-      >
-        <div className={styles.searchContainer}>
-          <FaSearch className={styles.searchIcon} />
-          <input
-            type="text"
-            placeholder="Search by job title, client name, or proposal content..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={styles.searchInput}
-          />
-        </div>
-
-        <div className={styles.controlButtons}>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`${styles.filterButton} ${
-              showFilters ? styles.active : ""
-            }`}
-          >
-            <FaFilter />
-            Filters
-          </button>
-
-          <div className={styles.sortContainer}>
-            <FaSort className={styles.sortIcon} />
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className={styles.sortSelect}
+          <div className={styles.controlButtons}>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`${styles.filterButton} ${
+                showFilters ? styles.active : ""
+              }`}
             >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="highest-bid">Highest Bid</option>
-              <option value="lowest-bid">Lowest Bid</option>
-              <option value="job-title">Job Title</option>
-            </select>
-          </div>
-        </div>
-      </motion.div>
+              <FaFilter />
+              Filters
+            </button>
 
-      {/* Filters */}
-      <AnimatePresence>
-        {showFilters && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className={styles.filtersPanel}
-          >
-            <div className={styles.filterGroup}>
-              <label>Status:</label>
+            <div className={styles.sortContainer}>
+              <FaSort className={styles.sortIcon} />
               <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className={styles.filterSelect}
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className={styles.sortSelect}
               >
-                <option value="all">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="accepted">Accepted</option>
-                <option value="rejected">Rejected</option>
-                <option value="completed">Completed</option>
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="highest-bid">Highest Bid</option>
+                <option value="lowest-bid">Lowest Bid</option>
+                <option value="job-title">Job Title</option>
               </select>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </motion.div>
 
-      {/* Proposals Grid */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className={styles.proposalsGrid}
-      >
-        {filteredProposals.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className={styles.emptyState}
-          >
-            <FaBriefcase className={styles.emptyIcon} />
-            <h3>No proposals found</h3>
-            <p>
-              {proposals.length === 0
-                ? "You haven't submitted any proposals yet. Start applying to jobs!"
-                : "No proposals match your current filters."}
-            </p>
-          </motion.div>
-        ) : (
-          filteredProposals.map((proposal) => (
+        {/* Filters */}
+        <AnimatePresence>
+          {showFilters && (
             <motion.div
-              key={proposal.id}
-              variants={itemVariants}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              className={styles.proposalCard}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className={styles.filtersPanel}
             >
-              <div className={styles.cardHeader}>
-                <div className={styles.jobTitle}>
-                  <FaBriefcase className={styles.titleIcon} />
-                  <h3>{proposal.job?.title || "Untitled Job"}</h3>
-                </div>
-                <div
-                  className={`${styles.status} ${getStatusColor(
-                    proposal.status
-                  )}`}
+              <div className={styles.filterGroup}>
+                <label>Status:</label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className={styles.filterSelect}
                 >
-                  {getStatusIcon(proposal.status)}
-                  <span>{proposal.status}</span>
-                </div>
+                  <option value="all">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="completed">Completed</option>
+                </select>
               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-              <div className={styles.clientInfo}>
-                <FaUser className={styles.clientIcon} />
-                <span>{proposal.job?.user?.name || "Unknown Client"}</span>
-              </div>
-
-              <div className={styles.detailsGrid}>
-                <div className={styles.detailItem}>
-                  <FaMoneyBillWave className={styles.detailIcon} />
-                  <div className={styles.detailContent}>
-                    <span className={styles.detailLabel}>My Bid</span>
-                    <span className={styles.detailValue}>
-                      {formatCurrency(proposal.bidAmount)}
-                    </span>
+        {/* Proposals Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className={styles.proposalsGrid}
+        >
+          {filteredProposals.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className={styles.emptyState}
+            >
+              <FaBriefcase className={styles.emptyIcon} />
+              <h3>No proposals found</h3>
+              <p>
+                {proposals.length === 0
+                  ? "You haven't submitted any proposals yet. Start applying to jobs!"
+                  : "No proposals match your current filters."}
+              </p>
+            </motion.div>
+          ) : (
+            filteredProposals.map((proposal) => (
+              <motion.div
+                key={proposal.id}
+                variants={itemVariants}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                className={styles.proposalCard}
+              >
+                <div className={styles.cardHeader}>
+                  <div className={styles.jobTitle}>
+                    <FaBriefcase className={styles.titleIcon} />
+                    <h3>{proposal.job?.title || "Untitled Job"}</h3>
+                  </div>
+                  <div
+                    className={`${styles.status} ${getStatusColor(
+                      proposal.status
+                    )}`}
+                  >
+                    {getStatusIcon(proposal.status)}
+                    <span>{proposal.status}</span>
                   </div>
                 </div>
 
-                <div className={styles.detailItem}>
-                  <FaClock className={styles.detailIcon} />
-                  <div className={styles.detailContent}>
-                    <span className={styles.detailLabel}>Timeframe</span>
-                    <span className={styles.detailValue}>
-                      {proposal.timeframe} days
-                    </span>
-                  </div>
+                <div className={styles.clientInfo}>
+                  <FaUser className={styles.clientIcon} />
+                  <span>{proposal.job?.user?.name || "Unknown Client"}</span>
                 </div>
 
-                <div className={styles.detailItem}>
-                  <FaCalendarAlt className={styles.detailIcon} />
-                  <div className={styles.detailContent}>
-                    <span className={styles.detailLabel}>Submitted</span>
-                    <span className={styles.detailValue}>
-                      {formatDate(proposal.createdAt)}
-                    </span>
-                  </div>
-                </div>
-
-                {proposal.job?.budget && (
+                <div className={styles.detailsGrid}>
                   <div className={styles.detailItem}>
                     <FaMoneyBillWave className={styles.detailIcon} />
                     <div className={styles.detailContent}>
-                      <span className={styles.detailLabel}>Job Budget</span>
+                      <span className={styles.detailLabel}>My Bid</span>
                       <span className={styles.detailValue}>
-                        {formatCurrency(proposal.job.budget)}
+                        {formatCurrency(proposal.bidAmount)}
                       </span>
                     </div>
                   </div>
-                )}
-              </div>
 
-              {proposal.coverLetter && (
-                <div className={styles.coverLetterPreview}>
-                  <p>{proposal.coverLetter.substring(0, 120)}...</p>
+                  <div className={styles.detailItem}>
+                    <FaClock className={styles.detailIcon} />
+                    <div className={styles.detailContent}>
+                      <span className={styles.detailLabel}>Timeframe</span>
+                      <span className={styles.detailValue}>
+                        {proposal.timeframe} days
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={styles.detailItem}>
+                    <FaCalendarAlt className={styles.detailIcon} />
+                    <div className={styles.detailContent}>
+                      <span className={styles.detailLabel}>Submitted</span>
+                      <span className={styles.detailValue}>
+                        {formatDate(proposal.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {proposal.job?.budget && (
+                    <div className={styles.detailItem}>
+                      <FaMoneyBillWave className={styles.detailIcon} />
+                      <div className={styles.detailContent}>
+                        <span className={styles.detailLabel}>Job Budget</span>
+                        <span className={styles.detailValue}>
+                          {formatCurrency(proposal.job.budget)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
 
-              <div className={styles.cardActions}>
-                <button
-                  onClick={() => handleViewDetails(proposal)}
-                  className={styles.viewButton}
-                >
-                  <FaEye />
-                  View Details
-                </button>
-              </div>
-            </motion.div>
-          ))
-        )}
-      </motion.div>
+                {proposal.coverLetter && (
+                  <div className={styles.coverLetterPreview}>
+                    <p>{proposal.coverLetter.substring(0, 120)}...</p>
+                  </div>
+                )}
 
-      {/* Proposal Details Modal */}
-      <AnimatePresence>
-        {selectedProposal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.modalOverlay}
-            onClick={handleCloseDetails}
-          >
+                <div className={styles.cardActions}>
+                  <button
+                    onClick={() => handleViewDetails(proposal)}
+                    className={styles.viewButton}
+                  >
+                    <FaEye />
+                    View Details
+                  </button>
+                </div>
+              </motion.div>
+            ))
+          )}
+        </motion.div>
+
+        {/* Proposal Details Modal */}
+        <AnimatePresence>
+          {selectedProposal && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 50 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 50 }}
-              className={styles.modalContent}
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={styles.modalOverlay}
+              onClick={handleCloseDetails}
             >
-              <div className={styles.modalHeader}>
-                <h2>Proposal Details</h2>
-                <button
-                  onClick={handleCloseDetails}
-                  className={styles.closeButton}
-                >
-                  <FaTimes />
-                </button>
-              </div>
-
-              <div className={styles.modalBody}>
-                <div className={styles.modalSection}>
-                  <h3>Job Information</h3>
-                  <div className={styles.modalGrid}>
-                    <div>
-                      <strong>Job Title:</strong>
-                      <p>{selectedProposal.job?.title}</p>
-                    </div>
-                    <div>
-                      <strong>Client:</strong>
-                      <p>{selectedProposal.job?.user?.name}</p>
-                    </div>
-                    <div>
-                      <strong>Job Budget:</strong>
-                      <p>{formatCurrency(selectedProposal.job?.budget)}</p>
-                    </div>
-                    <div>
-                      <strong>Experience Level:</strong>
-                      <p>{selectedProposal.job?.experienceLevel}</p>
-                    </div>
-                  </div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 50 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 50 }}
+                className={styles.modalContent}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className={styles.modalHeader}>
+                  <h2>Proposal Details</h2>
+                  <button
+                    onClick={handleCloseDetails}
+                    className={styles.closeButton}
+                  >
+                    <FaTimes />
+                  </button>
                 </div>
 
-                <div className={styles.modalSection}>
-                  <h3>Your Proposal</h3>
-                  <div className={styles.modalGrid}>
-                    <div>
-                      <strong>Bid Amount:</strong>
-                      <p>{formatCurrency(selectedProposal.bidAmount)}</p>
-                    </div>
-                    <div>
-                      <strong>Timeframe:</strong>
-                      <p>{selectedProposal.timeframe} days</p>
-                    </div>
-                    <div>
-                      <strong>Status:</strong>
-                      <p
-                        className={`${styles.status} ${getStatusColor(
-                          selectedProposal.status
-                        )}`}
-                      >
-                        {getStatusIcon(selectedProposal.status)}
-                        {selectedProposal.status}
-                      </p>
-                    </div>
-                    <div>
-                      <strong>Submitted:</strong>
-                      <p>{formatDate(selectedProposal.createdAt)}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {selectedProposal.coverLetter && (
+                <div className={styles.modalBody}>
                   <div className={styles.modalSection}>
-                    <h3>Cover Letter</h3>
-                    <div className={styles.coverLetterFull}>
-                      <p>{selectedProposal.coverLetter}</p>
+                    <h3>Job Information</h3>
+                    <div className={styles.modalGrid}>
+                      <div>
+                        <strong>Job Title:</strong>
+                        <p>{selectedProposal.job?.title}</p>
+                      </div>
+                      <div>
+                        <strong>Client:</strong>
+                        <p>{selectedProposal.job?.user?.name}</p>
+                      </div>
+                      <div>
+                        <strong>Job Budget:</strong>
+                        <p>{formatCurrency(selectedProposal.job?.budget)}</p>
+                      </div>
+                      <div>
+                        <strong>Experience Level:</strong>
+                        <p>{selectedProposal.job?.experienceLevel}</p>
+                      </div>
                     </div>
                   </div>
-                )}
-              </div>
+
+                  <div className={styles.modalSection}>
+                    <h3>Your Proposal</h3>
+                    <div className={styles.modalGrid}>
+                      <div>
+                        <strong>Bid Amount:</strong>
+                        <p>{formatCurrency(selectedProposal.bidAmount)}</p>
+                      </div>
+                      <div>
+                        <strong>Timeframe:</strong>
+                        <p>{selectedProposal.timeframe} days</p>
+                      </div>
+                      <div>
+                        <strong>Status:</strong>
+                        <p
+                          className={`${styles.status} ${getStatusColor(
+                            selectedProposal.status
+                          )}`}
+                        >
+                          {getStatusIcon(selectedProposal.status)}
+                          {selectedProposal.status}
+                        </p>
+                      </div>
+                      <div>
+                        <strong>Submitted:</strong>
+                        <p>{formatDate(selectedProposal.createdAt)}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {selectedProposal.coverLetter && (
+                    <div className={styles.modalSection}>
+                      <h3>Cover Letter</h3>
+                      <div className={styles.coverLetterFull}>
+                        <p>{selectedProposal.coverLetter}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
   );
 };
 

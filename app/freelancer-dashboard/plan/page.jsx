@@ -593,7 +593,7 @@ This is a computer-generated invoice and does not require a signature.
           </div>
         </div>
       </header>
-      <Banner />
+      <Banner className={styles.banner}/>
       <main className={styles.main}>
         {/* Current Plan Status */}
         <section className={styles.currentPlanSection}>

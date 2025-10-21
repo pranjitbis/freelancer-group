@@ -321,391 +321,392 @@ export default function ClientPayments() {
   );
 
   return (
-    <div className={styles.container}>
+    <>
       <Banner />
-      {/* Header */}
-      <div className={styles.header}>
-        <div className={styles.headerMain}>
-          <h1>Payment Management</h1>
-          <p>Manage and release payments to freelancers</p>
-        </div>
-        <div className={styles.walletInfo}>
-          <div className={styles.walletBalance}>
-            <FaMoneyBillWave className={styles.walletIcon} />
-            <div>
-              <span className={styles.balanceLabel}>Wallet Balance</span>
-              <span className={styles.balanceAmount}>
-                {formatCurrency(walletBalance)}
-              </span>
-            </div>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <div className={styles.headerMain}>
+            <h1>Payment Management</h1>
+            <p>Manage and release payments to freelancers</p>
           </div>
+          <div className={styles.walletInfo}>
+            <div className={styles.walletBalance}>
+              <FaMoneyBillWave className={styles.walletIcon} />
+              <div>
+                <span className={styles.balanceLabel}>Wallet Balance</span>
+                <span className={styles.balanceAmount}>
+                  {formatCurrency(walletBalance)}
+                </span>
+              </div>
+            </div>
+            <button
+              className={styles.rechargeBtn}
+              onClick={() => setShowRechargeModal(true)}
+            >
+              <FaPlus /> Recharge Wallet
+            </button>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className={styles.tabs}>
           <button
-            className={styles.rechargeBtn}
-            onClick={() => setShowRechargeModal(true)}
+            className={`${styles.tab} ${
+              activeTab === "pending" ? styles.activeTab : ""
+            }`}
+            onClick={() => setActiveTab("pending")}
           >
-            <FaPlus /> Recharge Wallet
+            <FaClock />
+            Pending Requests ({pendingRequests.length})
+          </button>
+          <button
+            className={`${styles.tab} ${
+              activeTab === "approved" ? styles.activeTab : ""
+            }`}
+            onClick={() => setActiveTab("approved")}
+          >
+            <FaCheckCircle />
+            Approved ({approvedRequests.length})
+          </button>
+          <button
+            className={`${styles.tab} ${
+              activeTab === "history" ? styles.activeTab : ""
+            }`}
+            onClick={() => setActiveTab("history")}
+          >
+            <FaHistory />
+            Payment History ({paymentHistory.length})
+          </button>
+          <button
+            className={`${styles.tab} ${
+              activeTab === "recharge" ? styles.activeTab : ""
+            }`}
+            onClick={() => setActiveTab("recharge")}
+          >
+            <FaCreditCard />
+            Recharge History ({rechargeHistory.length})
           </button>
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${
-            activeTab === "pending" ? styles.activeTab : ""
-          }`}
-          onClick={() => setActiveTab("pending")}
-        >
-          <FaClock />
-          Pending Requests ({pendingRequests.length})
-        </button>
-        <button
-          className={`${styles.tab} ${
-            activeTab === "approved" ? styles.activeTab : ""
-          }`}
-          onClick={() => setActiveTab("approved")}
-        >
-          <FaCheckCircle />
-          Approved ({approvedRequests.length})
-        </button>
-        <button
-          className={`${styles.tab} ${
-            activeTab === "history" ? styles.activeTab : ""
-          }`}
-          onClick={() => setActiveTab("history")}
-        >
-          <FaHistory />
-          Payment History ({paymentHistory.length})
-        </button>
-        <button
-          className={`${styles.tab} ${
-            activeTab === "recharge" ? styles.activeTab : ""
-          }`}
-          onClick={() => setActiveTab("recharge")}
-        >
-          <FaCreditCard />
-          Recharge History ({rechargeHistory.length})
-        </button>
-      </div>
+        {/* Content */}
+        <div className={styles.content}>
+          <AnimatePresence mode="wait">
+            {activeTab === "pending" && (
+              <motion.div
+                key="pending"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className={styles.tabContent}
+              >
+                {pendingRequests.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <FaMoneyBillWave className={styles.emptyIcon} />
+                    <h3>No Pending Payments</h3>
+                    <p>You don't have any pending payment requests</p>
+                  </div>
+                ) : (
+                  <div className={styles.paymentGrid}>
+                    {pendingRequests.map((request) => (
+                      <PaymentRequestCard
+                        key={request.id}
+                        request={request}
+                        onRelease={handleReleasePayment}
+                        onReject={handleRejectPayment}
+                        actionLoading={actionLoading}
+                        formatCurrency={formatCurrency}
+                        formatDate={formatDate}
+                        type="pending"
+                      />
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
 
-      {/* Content */}
-      <div className={styles.content}>
-        <AnimatePresence mode="wait">
-          {activeTab === "pending" && (
-            <motion.div
-              key="pending"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className={styles.tabContent}
-            >
-              {pendingRequests.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <FaMoneyBillWave className={styles.emptyIcon} />
-                  <h3>No Pending Payments</h3>
-                  <p>You don't have any pending payment requests</p>
-                </div>
-              ) : (
-                <div className={styles.paymentGrid}>
-                  {pendingRequests.map((request) => (
-                    <PaymentRequestCard
-                      key={request.id}
-                      request={request}
-                      onRelease={handleReleasePayment}
-                      onReject={handleRejectPayment}
-                      actionLoading={actionLoading}
-                      formatCurrency={formatCurrency}
-                      formatDate={formatDate}
-                      type="pending"
-                    />
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          )}
+            {activeTab === "approved" && (
+              <motion.div
+                key="approved"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className={styles.tabContent}
+              >
+                {approvedRequests.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <FaCheckCircle className={styles.emptyIcon} />
+                    <h3>No Approved Payments</h3>
+                    <p>You don't have any approved payment requests</p>
+                  </div>
+                ) : (
+                  <div className={styles.paymentGrid}>
+                    {approvedRequests.map((request) => (
+                      <PaymentRequestCard
+                        key={request.id}
+                        request={request}
+                        onRelease={handleReleasePayment}
+                        actionLoading={actionLoading}
+                        formatCurrency={formatCurrency}
+                        formatDate={formatDate}
+                        type="approved"
+                      />
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
 
-          {activeTab === "approved" && (
-            <motion.div
-              key="approved"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className={styles.tabContent}
-            >
-              {approvedRequests.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <FaCheckCircle className={styles.emptyIcon} />
-                  <h3>No Approved Payments</h3>
-                  <p>You don't have any approved payment requests</p>
-                </div>
-              ) : (
-                <div className={styles.paymentGrid}>
-                  {approvedRequests.map((request) => (
-                    <PaymentRequestCard
-                      key={request.id}
-                      request={request}
-                      onRelease={handleReleasePayment}
-                      actionLoading={actionLoading}
-                      formatCurrency={formatCurrency}
-                      formatDate={formatDate}
-                      type="approved"
-                    />
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          )}
-
-          {activeTab === "history" && (
-            <motion.div
-              key="history"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className={styles.tabContent}
-            >
-              {paymentHistory.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <FaHistory className={styles.emptyIcon} />
-                  <h3>No Payment History</h3>
-                  <p>Your completed payments will appear here</p>
-                </div>
-              ) : (
-                <div className={styles.historyTable}>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Freelancer</th>
-                        <th>Project</th>
-                        <th>Amount</th>
-                        <th>Released Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paymentHistory.map((request) => (
-                        <tr key={request.id}>
-                          <td>
-                            <div className={styles.userCell}>
-                              <div className={styles.avatar}>
-                                {request.freelancerName?.charAt(0) || "F"}
-                              </div>
-                              <span>{request.freelancerName}</span>
-                            </div>
-                          </td>
-                          <td>{request.projectTitle}</td>
-                          <td className={styles.amountCell}>
-                            {formatCurrency(request.amount)}
-                          </td>
-                          <td>{formatDate(request.updatedAt)}</td>
-                          <td>
-                            <span
-                              className={`${styles.status} ${styles.completed}`}
-                            >
-                              Completed
-                            </span>
-                          </td>
-                          <td>
-                            <div className={styles.actions}>
-                              <button
-                                className={styles.viewButton}
-                                onClick={() =>
-                                  router.push(
-                                    `/messages?conversation=${request.conversationId}`
-                                  )
-                                }
-                              >
-                                <FaEye />
-                              </button>
-                              <button
-                                className={styles.downloadButton}
-                                onClick={() =>
-                                  alert("Invoice download coming soon!")
-                                }
-                              >
-                                <FaDownload />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </motion.div>
-          )}
-
-          {activeTab === "recharge" && (
-            <motion.div
-              key="recharge"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className={styles.tabContent}
-            >
-              {rechargeHistory.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <FaCreditCard className={styles.emptyIcon} />
-                  <h3>No Recharge History</h3>
-                  <p>Your wallet recharge history will appear here</p>
-                  <button
-                    className={styles.rechargeNowBtn}
-                    onClick={() => setShowRechargeModal(true)}
-                  >
-                    <FaPlus /> Recharge Now
-                  </button>
-                </div>
-              ) : (
-                <div className={styles.rechargeHistory}>
+            {activeTab === "history" && (
+              <motion.div
+                key="history"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className={styles.tabContent}
+              >
+                {paymentHistory.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <FaHistory className={styles.emptyIcon} />
+                    <h3>No Payment History</h3>
+                    <p>Your completed payments will appear here</p>
+                  </div>
+                ) : (
                   <div className={styles.historyTable}>
                     <table>
                       <thead>
                         <tr>
-                          <th>Date</th>
+                          <th>Freelancer</th>
+                          <th>Project</th>
                           <th>Amount</th>
-                          <th>Payment ID</th>
+                          <th>Released Date</th>
                           <th>Status</th>
-                          <th>Description</th>
+                          <th>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {rechargeHistory.map((transaction) => (
-                          <tr key={transaction.id}>
-                            <td>{formatDate(transaction.createdAt)}</td>
+                        {paymentHistory.map((request) => (
+                          <tr key={request.id}>
+                            <td>
+                              <div className={styles.userCell}>
+                                <div className={styles.avatar}>
+                                  {request.freelancerName?.charAt(0) || "F"}
+                                </div>
+                                <span>{request.freelancerName}</span>
+                              </div>
+                            </td>
+                            <td>{request.projectTitle}</td>
                             <td className={styles.amountCell}>
-                              <span className={styles.creditAmount}>
-                                +{formatCurrency(transaction.amount)}
-                              </span>
+                              {formatCurrency(request.amount)}
                             </td>
-                            <td className={styles.paymentId}>
-                              {transaction.paymentId
-                                ? transaction.paymentId.slice(-8)
-                                : "N/A"}
-                            </td>
+                            <td>{formatDate(request.updatedAt)}</td>
                             <td>
                               <span
                                 className={`${styles.status} ${styles.completed}`}
                               >
-                                {transaction.status}
+                                Completed
                               </span>
                             </td>
-                            <td className={styles.description}>
-                              {transaction.description}
+                            <td>
+                              <div className={styles.actions}>
+                                <button
+                                  className={styles.viewButton}
+                                  onClick={() =>
+                                    router.push(
+                                      `/messages?conversation=${request.conversationId}`
+                                    )
+                                  }
+                                >
+                                  <FaEye />
+                                </button>
+                                <button
+                                  className={styles.downloadButton}
+                                  onClick={() =>
+                                    alert("Invoice download coming soon!")
+                                  }
+                                >
+                                  <FaDownload />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
+                )}
+              </motion.div>
+            )}
+
+            {activeTab === "recharge" && (
+              <motion.div
+                key="recharge"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className={styles.tabContent}
+              >
+                {rechargeHistory.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <FaCreditCard className={styles.emptyIcon} />
+                    <h3>No Recharge History</h3>
+                    <p>Your wallet recharge history will appear here</p>
+                    <button
+                      className={styles.rechargeNowBtn}
+                      onClick={() => setShowRechargeModal(true)}
+                    >
+                      <FaPlus /> Recharge Now
+                    </button>
+                  </div>
+                ) : (
+                  <div className={styles.rechargeHistory}>
+                    <div className={styles.historyTable}>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Payment ID</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rechargeHistory.map((transaction) => (
+                            <tr key={transaction.id}>
+                              <td>{formatDate(transaction.createdAt)}</td>
+                              <td className={styles.amountCell}>
+                                <span className={styles.creditAmount}>
+                                  +{formatCurrency(transaction.amount)}
+                                </span>
+                              </td>
+                              <td className={styles.paymentId}>
+                                {transaction.paymentId
+                                  ? transaction.paymentId.slice(-8)
+                                  : "N/A"}
+                              </td>
+                              <td>
+                                <span
+                                  className={`${styles.status} ${styles.completed}`}
+                                >
+                                  {transaction.status}
+                                </span>
+                              </td>
+                              <td className={styles.description}>
+                                {transaction.description}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Recharge Modal */}
+        <AnimatePresence>
+          {showRechargeModal && (
+            <motion.div
+              className={styles.modalOverlay}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowRechargeModal(false)}
+            >
+              <motion.div
+                className={styles.rechargeModal}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className={styles.modalHeader}>
+                  <h2>Recharge Wallet</h2>
+                  <button
+                    className={styles.closeButton}
+                    onClick={() => setShowRechargeModal(false)}
+                  >
+                    &times;
+                  </button>
                 </div>
-              )}
+
+                <div className={styles.userInfo}>
+                  <p>
+                    Recharging for: <strong>{user?.name}</strong>
+                  </p>
+                  <p>
+                    Current Balance:{" "}
+                    <strong>{formatCurrency(walletBalance)}</strong>
+                  </p>
+                </div>
+
+                <div className={styles.presetAmounts}>
+                  <h4>Quick Select</h4>
+                  <div className={styles.amountGrid}>
+                    {presetAmounts.map((preset) => (
+                      <button
+                        key={preset}
+                        className={`${styles.amountButton} ${
+                          selectedAmount === preset.toString()
+                            ? styles.selected
+                            : ""
+                        }`}
+                        onClick={() => handlePresetAmount(preset)}
+                      >
+                        ₹{preset}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.customAmount}>
+                  <h4>Custom Amount</h4>
+                  <div className={styles.amountInput}>
+                    <FaRupeeSign className={styles.inputIcon} />
+                    <input
+                      type="number"
+                      placeholder="Enter amount"
+                      value={rechargeAmount}
+                      onChange={(e) => handleCustomAmountChange(e.target.value)}
+                      min="1"
+                      step="1"
+                    />
+                  </div>
+                  <p className={styles.minAmount}>Minimum amount: ₹1</p>
+                </div>
+
+                {rechargeMessage && (
+                  <p className={styles.errorMessage}>{rechargeMessage}</p>
+                )}
+
+                <button
+                  className={styles.payButton}
+                  onClick={handleRecharge}
+                  disabled={rechargeLoading || !rechargeAmount}
+                >
+                  {rechargeLoading ? (
+                    <>
+                      <FaSpinner className={styles.buttonSpinner} />
+                      Processing...
+                    </>
+                  ) : (
+                    `Pay ₹${rechargeAmount || 0}`
+                  )}
+                </button>
+
+                <div className={styles.securityNote}>
+                  <FaCheckCircle />
+                  <span>Secure payment powered by Razorpay</span>
+                </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      {/* Recharge Modal */}
-      <AnimatePresence>
-        {showRechargeModal && (
-          <motion.div
-            className={styles.modalOverlay}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowRechargeModal(false)}
-          >
-            <motion.div
-              className={styles.rechargeModal}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className={styles.modalHeader}>
-                <h2>Recharge Wallet</h2>
-                <button
-                  className={styles.closeButton}
-                  onClick={() => setShowRechargeModal(false)}
-                >
-                  &times;
-                </button>
-              </div>
-
-              <div className={styles.userInfo}>
-                <p>
-                  Recharging for: <strong>{user?.name}</strong>
-                </p>
-                <p>
-                  Current Balance:{" "}
-                  <strong>{formatCurrency(walletBalance)}</strong>
-                </p>
-              </div>
-
-              <div className={styles.presetAmounts}>
-                <h4>Quick Select</h4>
-                <div className={styles.amountGrid}>
-                  {presetAmounts.map((preset) => (
-                    <button
-                      key={preset}
-                      className={`${styles.amountButton} ${
-                        selectedAmount === preset.toString()
-                          ? styles.selected
-                          : ""
-                      }`}
-                      onClick={() => handlePresetAmount(preset)}
-                    >
-                      ₹{preset}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.customAmount}>
-                <h4>Custom Amount</h4>
-                <div className={styles.amountInput}>
-                  <FaRupeeSign className={styles.inputIcon} />
-                  <input
-                    type="number"
-                    placeholder="Enter amount"
-                    value={rechargeAmount}
-                    onChange={(e) => handleCustomAmountChange(e.target.value)}
-                    min="1"
-                    step="1"
-                  />
-                </div>
-                <p className={styles.minAmount}>Minimum amount: ₹1</p>
-              </div>
-
-              {rechargeMessage && (
-                <p className={styles.errorMessage}>{rechargeMessage}</p>
-              )}
-
-              <button
-                className={styles.payButton}
-                onClick={handleRecharge}
-                disabled={rechargeLoading || !rechargeAmount}
-              >
-                {rechargeLoading ? (
-                  <>
-                    <FaSpinner className={styles.buttonSpinner} />
-                    Processing...
-                  </>
-                ) : (
-                  `Pay ₹${rechargeAmount || 0}`
-                )}
-              </button>
-
-              <div className={styles.securityNote}>
-                <FaCheckCircle />
-                <span>Secure payment powered by Razorpay</span>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    </>
   );
 }
 
@@ -805,7 +806,7 @@ const PaymentRequestCard = ({
           className={styles.messageButton}
           onClick={() =>
             window.open(
-              `/messages?conversation=${request.conversationId}`,
+              `/client-dashboard/messages?conversation=${request.conversationId}`,
               "_blank"
             )
           }

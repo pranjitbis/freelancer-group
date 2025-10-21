@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import crypto from "crypto";
+import hostingerEmailService from "@/lib/email";
+import { generateOTP, storeOTP } from "@/lib/temp-otp";
 
 const prisma = new PrismaClient();
 
@@ -10,52 +11,87 @@ export async function POST(request) {
     const { email } = body;
 
     if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Email address is required" },
+        { status: 400 }
+      );
     }
 
-    // Check if user exists
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    console.log("🔔 Password reset request for:", email);
 
+    // Check if user exists
+    let user;
+    try {
+      user = await prisma.user.findUnique({
+        where: { email: email.toLowerCase().trim() },
+      });
+    } catch (dbError) {
+      console.error("❌ Database error checking user:", dbError.message);
+      // For security, don't reveal database errors to user
+      user = null;
+    }
+
+    // For security, don't reveal if user exists
     if (!user) {
-      // Don't reveal whether email exists
+      console.log("❌ User not found (security):", email);
       return NextResponse.json({
         success: true,
-        message:
-          "If an account with that email exists, a reset link has been sent",
+        message: "If an account with that email exists, an OTP has been sent",
       });
     }
 
-    // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    console.log("✅ User found:", user.email);
 
-    // Store reset token
-    await prisma.passwordResetToken.create({
-      data: {
-        token: resetToken,
-        email,
-        expiresAt,
-      },
-    });
+    // Generate OTP
+    const otp = generateOTP();
 
-    // In a real application, you would send an email here
-    // For now, we'll just return the token (in production, remove this)
-    console.log("Password reset token:", resetToken);
+    // Store OTP in memory (temporary solution)
+    storeOTP(email, otp);
 
-    return NextResponse.json({
-      success: true,
-      message:
-        "If an account with that email exists, a reset link has been sent",
-      // Remove this in production:
-      resetToken:
-        process.env.NODE_ENV === "development" ? resetToken : undefined,
-    });
+    console.log("📝 OTP generated and stored in memory:", otp);
+
+    try {
+      // Send email using Hostinger service
+      console.log("🔄 Attempting to send email via Hostinger...");
+      const emailResult = await hostingerEmailService.sendOTP(email, otp);
+
+      console.log("🎉 Email sent successfully!");
+
+      const responseData = {
+        success: true,
+        message: "OTP has been sent to your email address",
+        debugOtp: otp, // Always return OTP for testing
+      };
+
+      // Add service-specific information
+      if (emailResult.service === "hostinger") {
+        responseData.message += " (Sent via Hostinger)";
+        responseData.service = "hostinger";
+      } else if (emailResult.previewUrl) {
+        responseData.previewUrl = emailResult.previewUrl;
+        responseData.message += " (Check Ethereal for preview)";
+        responseData.service = "ethereal";
+      }
+
+      return NextResponse.json(responseData);
+    } catch (emailError) {
+      console.error("💥 Email sending failed:", emailError.message);
+
+      // Return OTP for development even on failure
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Email service issue: ${emailError.message}`,
+          debugOtp: otp,
+          message: "Use OTP below for testing",
+        },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error("Forgot password error:", error);
     return NextResponse.json(
-      { error: "Failed to process request" },
+      { success: false, error: "An error occurred" },
       { status: 500 }
     );
   }

@@ -3,3 +3,10 @@ asia number one plathform
 fix the cliect page fix the propolse
 
 and make banner in find-work page
+
+Outgoing server (SMTP)
+
+smtp.hostinger.com
+
+465
+

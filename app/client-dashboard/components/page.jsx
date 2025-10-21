@@ -1,9 +1,33 @@
-// components/FreelancerDashboard.jsx
+"use client";
 import { motion } from "framer-motion";
 import { FiAward, FiUsers, FiGlobe, FiBriefcase } from "react-icons/fi";
 import styles from "./FreelanceBanner.module.css";
+import { useEffect, useState } from "react";
 
-const FreelancerDashboard = ({ user = { name: "testing" } }) => {
+const FreelancerDashboard = () => {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadDashboardData = async () => {
+    setIsLoading(true);
+    try {
+      const userResponse = await fetch("/api/auth/verify");
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        console.log("✅ User data loaded:", userData);
+        setUser(userData.user);
+      } else {
+        console.log("bhai problem hai");
+      }
+    } catch (error) {
+      console.error("❌ Error loading dashboard data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
   return (
     <div className={styles.container}>
       <motion.div
