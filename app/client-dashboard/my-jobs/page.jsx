@@ -269,13 +269,15 @@ export default function MyJobs() {
   }
 
   return (
+    <>
+      <Banner />
     <motion.div
       className={styles.myJobs}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <Banner />
+    
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h1>My Jobs</h1>
@@ -480,5 +482,6 @@ export default function MyJobs() {
         )}
       </div>
     </motion.div>
+    </>
   );
 }
