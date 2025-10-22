@@ -30,7 +30,7 @@ import {
   FiPieChart,
 } from "react-icons/fi";
 import styles from "./DashboardPage.module.css";
-
+import ProfessionalBanner from './components/page'
 export default function DashboardPage() {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [messages, setMessages] = useState([]);
@@ -543,50 +543,8 @@ export default function DashboardPage() {
     }
   };
 
-  // Professional Banner Component
-  const ProfessionalBanner = () => (
-    <motion.div
-      className={styles.professionalBanner}
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      <div className={styles.bannerContent}>
-        <div className={styles.bannerText}>
-          <h1 className={styles.bannerTitle}>
-            Welcome back, {user?.name || "Professional"}!
-          </h1>
-          <p className={styles.bannerSubtitle}>
-            Your freelance career is growing stronger. Here's your progress
-            today.
-          </p>
-        </div>
-        <div className={styles.bannerStats}>
-          <div className={styles.bannerStat}>
-            <FiUsers className={styles.statIcon} />
-            <div>
-              <span className={styles.statNumber}>50K+</span>
-              <span className={styles.statLabel}>Active Freelancers</span>
-            </div>
-          </div>
-          <div className={styles.bannerStat}>
-            <FiGlobe className={styles.statIcon} />
-            <div>
-              <span className={styles.statNumber}>120+</span>
-              <span className={styles.statLabel}>Countries</span>
-            </div>
-          </div>
-          <div className={styles.bannerStat}>
-            <FiBriefcase className={styles.statIcon} />
-            <div>
-              <span className={styles.statNumber}>25K+</span>
-              <span className={styles.statLabel}>Projects Completed</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
+  
+  
 
   // Render functions
   const renderDashboard = () => (

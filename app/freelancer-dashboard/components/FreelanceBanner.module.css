@@ -3,18 +3,32 @@
   width: 100%;
   position: relative;
   max-width: 2400px;
-  padding: 0 0rem;
+  padding: 0rem 0rem;
 }
 
 /* Professional Banner */
 .professionalBanner {
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   color: white;
-  padding: 0rem 2rem 1.5rem;
+  padding: 1rem 2rem 1rem;
   margin: 0rem 0 2.3rem;
   border-radius: 0rem 0rem 1rem 1rem;
   position: relative;
   overflow: hidden;
+}
+
+.logo img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.logo {
+  width: 80px;
+  height: 40px;
+  position: relative;
+  left: 100px;
+  bottom: 30px;
 }
 
 .professionalBanner::before {
@@ -51,7 +65,7 @@
   align-items: center;
   gap: 0.5rem;
   background: rgba(255, 255, 255, 0.1);
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.5rem;
   border-radius: 2rem;
   margin: 1rem;
   backdrop-filter: blur(10px);
@@ -61,7 +75,7 @@
 }
 
 .bannerBadge span {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   letter-spacing: 1px;
 }
 

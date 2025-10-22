@@ -18,7 +18,7 @@ import Link from "next/link";
 import styles from "./DashboardLayout.module.css";
 import { IoPricetags, IoSend } from "react-icons/io5";
 import { RiRefund2Line } from "react-icons/ri";
-
+import { MdOutlineContactSupport } from "react-icons/md";
 export default function DashboardLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -110,6 +110,13 @@ export default function DashboardLayout({ children }) {
       label: "Refunds",
       icon: <RiRefund2Line size={20} />,
       path: "/freelancer-dashboard/refunds",
+      bgColor: "#f0fdf4",
+    },
+    {
+      id: "Support",
+      label: "Support",
+      icon: <MdOutlineContactSupport size={20} />,
+      path: "/freelancer-dashboard/support",
       bgColor: "#f0fdf4",
     },
   ];

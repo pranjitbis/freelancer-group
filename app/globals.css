@@ -4,6 +4,20 @@ body {
   overflow-x: hidden;
 }
 
+.bpComposerFooter p a {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+.bpComposerFooter p {
+  display: none !important;
+  opacity: 0 !important;
+}
+.bpComposerFooter {
+  display: none !important;
+  opacity: 0 !important;
+}
+
 /* Smooth scrolling for the entire page */
 html {
   scroll-behavior: smooth;

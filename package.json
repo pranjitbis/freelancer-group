@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@botpress/webchat": "^3.2.11",
     "@prisma/client": "^6.16.2",
     "aos": "^2.3.4",
     "axios": "^1.12.2",

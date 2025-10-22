@@ -2,6 +2,8 @@
 import { motion } from "framer-motion";
 import { FiAward, FiUsers, FiGlobe, FiBriefcase } from "react-icons/fi";
 import styles from "./FreelanceBanner.module.css";
+import logo from "@/public/logo/Aroliya.png";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const FreelancerDashboard = () => {
@@ -38,21 +40,13 @@ const FreelancerDashboard = () => {
       >
         <div className={styles.bannerContent}>
           <div className={styles.bannerText}>
+            <div className={styles.logo}>
+              <Image src={logo} alt="err" />
+            </div>
             <div className={styles.bannerBadge}>
               <FiAward className={styles.badgeIcon} />
               <span>The #1 Freelancing Hub in Asia</span>
             </div>
-            <h1 className={styles.bannerTitle}>
-              Welcome back,{" "}
-              <span className={styles.userName}>
-                {user?.name || "Professional"}
-              </span>
-              !
-            </h1>
-            <p className={styles.bannerSubtitle}>
-              Your freelance career is growing stronger. Here's your progress
-              today.
-            </p>
           </div>
           <div className={styles.bannerStats}>
             <div className={styles.bannerStat}>
