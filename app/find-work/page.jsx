@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./FreelancerHub.module.css";
 import Nav from "../home/component/Nav/page";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSearch,
@@ -41,7 +42,7 @@ export default function FreelancerHub() {
     totalPages: 1,
     totalCount: 0,
   });
-  const [savedJobs, setSavedJobs] = useState(new Set());
+  const [savedJobs, setSavedJobs] = useState([]);
   const [user, setUser] = useState(null);
   const [exchangeRate, setExchangeRate] = useState(83);
   const [currency, setCurrency] = useState("usd");
@@ -133,163 +134,15 @@ export default function FreelancerHub() {
     },
   };
 
-  const bannerVariants = {
-    hidden: {
-      opacity: 0,
-      y: 50,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const badgeVariants = {
-    hidden: {
-      scale: 0,
-      rotate: -180,
-    },
-    visible: {
-      scale: 1,
-      rotate: 0,
-      transition: {
-        type: "spring",
-        stiffness: 200,
-        damping: 15,
-        delay: 0.3,
-      },
-    },
-  };
-
-  const statsVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.2,
-        delay: 0.5,
-      },
-    },
-  };
-
-  const statItemVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.8,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 150,
-      },
-    },
-  };
-
-  const searchVariants = {
-    focused: {
-      scale: 1.02,
-      boxShadow: "0 10px 40px rgba(59, 130, 246, 0.15)",
-      transition: {
-        type: "spring",
-        stiffness: 300,
-      },
-    },
-    unfocused: {
-      scale: 1,
-      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
-      transition: {
-        type: "spring",
-        stiffness: 300,
-      },
-    },
-  };
-
-  const filterVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        staggerChildren: 0.1,
-        delay: 0.8,
-      },
-    },
-  };
-
-  const loadingVariants = {
-    initial: {
-      opacity: 0,
-      scale: 0.8,
-    },
-    animate: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-      },
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.8,
-      transition: {
-        duration: 0.3,
-      },
-    },
-  };
-
-  const emptyStateVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.9,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-      },
-    },
-  };
-
-  const paginationVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
-
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
-      setUser(JSON.parse(userData));
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+      fetchSavedJobs(parsedUser.id);
     }
     fetchExchangeRate();
     fetchJobs();
-    loadSavedJobs();
   }, [filters, pagination.currentPage]);
 
   const fetchExchangeRate = async () => {
@@ -301,24 +154,6 @@ export default function FreelancerHub() {
     }
   };
 
-  const formatUSD = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatINR = (amount) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
   const fetchJobs = async () => {
     try {
       setLoading(true);
@@ -326,6 +161,7 @@ export default function FreelancerHub() {
         page: pagination.currentPage.toString(),
         limit: "12",
         ...filters,
+        ...(user && { userId: user.id.toString() }),
       });
 
       const response = await fetch(`/api/jobs?${queryParams}`);
@@ -345,9 +181,17 @@ export default function FreelancerHub() {
     }
   };
 
-  const loadSavedJobs = () => {
-    const saved = JSON.parse(localStorage.getItem("savedJobs") || "[]");
-    setSavedJobs(new Set(saved));
+  const fetchSavedJobs = async (userId) => {
+    try {
+      const response = await fetch(`/api/saved-jobs?userId=${userId}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setSavedJobs(data.savedJobs || []);
+      }
+    } catch (error) {
+      console.error("Error fetching saved jobs:", error);
+    }
   };
 
   const handleFilterChange = (key, value) => {
@@ -359,21 +203,85 @@ export default function FreelancerHub() {
     handleFilterChange("search", value);
   }, []);
 
-  const toggleSaveJob = (jobId) => {
-    const newSavedJobs = new Set(savedJobs);
-    if (newSavedJobs.has(jobId)) {
-      newSavedJobs.delete(jobId);
-    } else {
-      newSavedJobs.add(jobId);
+  const toggleSaveJob = async (jobId) => {
+    if (!user) {
+      alert("Please login to save jobs");
+      return;
     }
-    setSavedJobs(newSavedJobs);
-    localStorage.setItem("savedJobs", JSON.stringify([...newSavedJobs]));
+
+    try {
+      const isCurrentlySaved = savedJobs.some((sj) => sj.jobId === jobId);
+
+      if (isCurrentlySaved) {
+        // Remove from saved
+        const savedJobToRemove = savedJobs.find((sj) => sj.jobId === jobId);
+        const response = await fetch(
+          `/api/saved-jobs/${savedJobToRemove.id}?userId=${user.id}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (response.ok) {
+          setSavedJobs((prev) => prev.filter((sj) => sj.jobId !== jobId));
+          // Update jobs list
+          setJobs((prev) =>
+            prev.map((job) =>
+              job.id === jobId ? { ...job, isSaved: false } : job
+            )
+          );
+        }
+      } else {
+        // Add to saved
+        const response = await fetch("/api/saved-jobs", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            jobId: jobId,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setSavedJobs((prev) => [...prev, data.savedJob]);
+          // Update jobs list
+          setJobs((prev) =>
+            prev.map((job) =>
+              job.id === jobId ? { ...job, isSaved: true } : job
+            )
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling save job:", error);
+    }
   };
 
   const handleJobClick = (job) => {
     const username = job.user.name.toLowerCase().replace(/\s+/g, "-");
     const jobId = `JOB-${job.id.toString().padStart(6, "0")}`;
     router.push(`/find-work/${username}/${jobId}`);
+  };
+
+  const formatUSD = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatINR = (amount) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
   const convertToINR = (usdAmount) => {
@@ -396,7 +304,6 @@ export default function FreelancerHub() {
           display: inrFormatted,
           tooltip: usdFormatted,
         };
-      case "both":
       default:
         return {
           display: usdFormatted,
@@ -446,6 +353,10 @@ export default function FreelancerHub() {
     return words.slice(0, wordLimit).join(" ") + "...";
   };
 
+  const isJobSaved = (jobId) => {
+    return savedJobs.some((sj) => sj.jobId === jobId);
+  };
+
   return (
     <div className={styles.container}>
       <Nav />
@@ -453,17 +364,17 @@ export default function FreelancerHub() {
       {/* Professional Header Banner with Animations */}
       <motion.section
         className={styles.heroBanner}
-        variants={bannerVariants}
-        initial="hidden"
-        animate="visible"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
       >
         <div className={styles.bannerContent}>
           <div className={styles.bannerMain}>
             <motion.div
               className={styles.bannerBadge}
-              variants={badgeVariants}
-              initial="hidden"
-              animate="visible"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.3, type: "spring" }}
             >
               <IoBusiness className={styles.badgeIcon} />
               <span>Asia's Leading Platform</span>
@@ -490,16 +401,16 @@ export default function FreelancerHub() {
 
             <motion.div
               className={styles.bannerStats}
-              variants={statsVariants}
-              initial="hidden"
-              animate="visible"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.7 }}
             >
-              <motion.div className={styles.stat} variants={statItemVariants}>
+              <motion.div className={styles.stat}>
                 <div className={styles.statNumber}>50,000+</div>
                 <div className={styles.statLabel}>Professional Freelancers</div>
               </motion.div>
               <div className={styles.statDivider}></div>
-              <motion.div className={styles.stat} variants={statItemVariants}>
+              <motion.div className={styles.stat}>
                 <div className={styles.statNumber}>98%</div>
                 <div className={styles.statLabel}>Success Rate</div>
               </motion.div>
@@ -526,26 +437,20 @@ export default function FreelancerHub() {
       {/* Advanced Filter Section */}
       <motion.section
         className={styles.filterSection}
-        variants={filterVariants}
-        initial="hidden"
-        animate="visible"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9 }}
       >
         <div className={styles.filterContainer}>
-          <motion.div
-            className={styles.filterHeader}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-          >
+          <div className={styles.filterHeader}>
             <h2>Find Perfect Projects</h2>
             <p>Filter by your preferences and skills</p>
-          </motion.div>
+          </div>
 
           <div className={styles.searchRow}>
             <motion.div
               className={styles.searchBox}
-              variants={searchVariants}
-              animate={searchFocused ? "focused" : "unfocused"}
+              animate={searchFocused ? { scale: 1.02 } : { scale: 1 }}
               whileHover={{ scale: 1.01 }}
             >
               <FaSearch className={styles.searchIcon} />
@@ -560,12 +465,7 @@ export default function FreelancerHub() {
               />
             </motion.div>
 
-            <motion.div
-              className={styles.currencySelector}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1 }}
-            >
+            <div className={styles.currencySelector}>
               <span className={styles.selectorLabel}>Currency:</span>
               <div className={styles.currencyButtons}>
                 {currencyOptions.map((option, index) => {
@@ -589,7 +489,7 @@ export default function FreelancerHub() {
                   );
                 })}
               </div>
-            </motion.div>
+            </div>
           </div>
 
           <motion.div
@@ -667,6 +567,25 @@ export default function FreelancerHub() {
             <span className={styles.resultCount}>
               {pagination.totalCount} projects available
             </span>
+            {user && (
+              <Link href="/freelancer-dashboard/saved-jobs">
+                <motion.button
+                  className={styles.dashboardButton}
+                  onClick={() => router.push("/freelancer-dashboard")}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 }}
+                >
+                  <span>
+                    {" "}
+                    <FaHeart />
+                  </span>
+                  View Saved Jobs ({savedJobs.length})
+                </motion.button>
+              </Link>
+            )}
           </div>
         </motion.div>
 
@@ -675,10 +594,9 @@ export default function FreelancerHub() {
             <motion.div
               key="loading"
               className={styles.loadingState}
-              variants={loadingVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
             >
               <motion.div
                 className={styles.loadingSpinner}
@@ -704,7 +622,7 @@ export default function FreelancerHub() {
               <AnimatePresence>
                 {jobs.map((job) => {
                   const urgency = getUrgencyLevel(job.deadline);
-                  const isSaved = savedJobs.has(job.id);
+                  const isSaved = job.isSaved || isJobSaved(job.id);
                   const budget = formatBudget(job.budget);
                   const CategoryIcon =
                     categories.find((cat) => cat.value === job.category)
@@ -933,9 +851,8 @@ export default function FreelancerHub() {
         {pagination.totalPages > 1 && !loading && (
           <motion.div
             className={styles.pagination}
-            variants={paginationVariants}
-            initial="hidden"
-            animate="visible"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           >
             <motion.button
               disabled={pagination.currentPage === 1}
@@ -1003,9 +920,8 @@ export default function FreelancerHub() {
         {jobs.length === 0 && !loading && (
           <motion.div
             className={styles.emptyState}
-            variants={emptyStateVariants}
-            initial="hidden"
-            animate="visible"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
           >
             <motion.div
               className={styles.emptyIllustration}

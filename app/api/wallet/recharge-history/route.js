@@ -20,9 +20,11 @@ export async function GET(request) {
       where: {
         userId: parseInt(userId),
         type: "credit",
-        description: {
-          contains: "wallet recharge",
-        },
+        OR: [
+          { description: { contains: "wallet recharge" } },
+          { description: { contains: "Wallet Recharge" } },
+          { description: { contains: "recharge" } },
+        ],
       },
       orderBy: {
         createdAt: "desc",
@@ -34,7 +36,7 @@ export async function GET(request) {
       success: true,
       rechargeHistory: rechargeHistory.map((transaction) => ({
         id: transaction.id,
-        amount: transaction.amount,
+        amount: Number(transaction.amount) || 0, // Ensure amount is number
         type: transaction.type,
         status: transaction.status,
         description: transaction.description,

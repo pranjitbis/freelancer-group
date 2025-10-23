@@ -12,12 +12,17 @@ import {
   FaEye,
   FaDownload,
   FaRupeeSign,
+  FaDollarSign,
+  FaExchangeAlt,
+  FaCalculator,
   FaUser,
   FaProjectDiagram,
   FaCalendar,
   FaPlus,
   FaSpinner,
   FaCreditCard,
+  FaGlobe,
+  FaTimes,
 } from "react-icons/fa";
 
 export default function ClientPayments() {
@@ -34,9 +39,23 @@ export default function ClientPayments() {
   const [selectedAmount, setSelectedAmount] = useState("");
   const [rechargeLoading, setRechargeLoading] = useState(false);
   const [rechargeMessage, setRechargeMessage] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [currency, setCurrency] = useState("INR");
+  const [exchangeRate, setExchangeRate] = useState(83.5);
+  const [convertedAmount, setConvertedAmount] = useState(0);
+  const [converterAmount, setConverterAmount] = useState("");
+  const [converterFrom, setConverterFrom] = useState("INR");
+  const [converterTo, setConverterTo] = useState("USD");
+  const [converterResult, setConverterResult] = useState("");
+  const [converterLoading, setConverterLoading] = useState(false);
+  const [displayCurrency, setDisplayCurrency] = useState("INR"); // For displaying project prices
 
   const router = useRouter();
-  const presetAmounts = [500, 1000, 2000, 5000, 10000, 20000];
+  const presetAmounts = {
+    INR: [500, 1000, 2000, 5000, 10000, 20000],
+    USD: [10, 20, 50, 100, 200, 500],
+  };
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -49,8 +68,189 @@ export default function ClientPayments() {
       }
       fetchClientData(userObj.id);
       loadRazorpayScript();
+      fetchExchangeRate();
     }
   }, [router]);
+
+  useEffect(() => {
+    if (rechargeAmount && !isNaN(rechargeAmount)) {
+      const amount = parseFloat(rechargeAmount);
+      if (currency === "USD") {
+        setConvertedAmount(amount * exchangeRate);
+      } else {
+        setConvertedAmount(amount / exchangeRate);
+      }
+    } else {
+      setConvertedAmount(0);
+    }
+  }, [rechargeAmount, currency, exchangeRate]);
+
+  const fetchExchangeRate = async () => {
+    try {
+      const response = await fetch(
+        "https://api.exchangerate-api.com/v4/latest/USD"
+      );
+      const data = await response.json();
+      setExchangeRate(data.rates.INR || 83.5);
+    } catch (error) {
+      console.error("Error fetching exchange rate, using default:", error);
+      try {
+        const fallbackResponse = await fetch(
+          "https://api.frankfurter.app/latest?from=USD&to=INR"
+        );
+        const fallbackData = await fallbackResponse.json();
+        setExchangeRate(fallbackData.rates.INR || 83.5);
+      } catch (fallbackError) {
+        console.error("Fallback API also failed, using default rate");
+        setExchangeRate(83.5);
+      }
+    }
+  };
+
+  const convertCurrency = async (amount, from, to) => {
+    if (!amount || isNaN(amount)) return "";
+
+    const numericAmount = parseFloat(amount);
+    if (numericAmount <= 0) return "";
+
+    setConverterLoading(true);
+    try {
+      let rate;
+
+      if (from === to) {
+        return numericAmount.toFixed(2);
+      }
+
+      if (from === "USD" && to === "INR") {
+        rate = exchangeRate;
+      } else if (from === "INR" && to === "USD") {
+        rate = 1 / exchangeRate;
+      } else {
+        const response = await fetch(
+          `https://api.frankfurter.app/latest?from=${from}&to=${to}`
+        );
+        const data = await response.json();
+        rate = data.rates[to];
+      }
+
+      const result = (numericAmount * rate).toFixed(2);
+      setConverterLoading(false);
+      return result;
+    } catch (error) {
+      console.error("Error converting currency:", error);
+      let result;
+      if (from === "USD" && to === "INR") {
+        result = (numericAmount * exchangeRate).toFixed(2);
+      } else if (from === "INR" && to === "USD") {
+        result = (numericAmount / exchangeRate).toFixed(2);
+      } else {
+        result = numericAmount.toFixed(2);
+      }
+      setConverterLoading(false);
+      return result;
+    }
+  };
+
+  const convertProjectPrice = (amount, fromCurrency, toCurrency) => {
+    if (!amount || isNaN(amount)) return amount;
+
+    const numericAmount = parseFloat(amount);
+    if (numericAmount <= 0) return amount;
+
+    if (fromCurrency === toCurrency) {
+      return numericAmount;
+    }
+
+    if (fromCurrency === "USD" && toCurrency === "INR") {
+      return numericAmount * exchangeRate;
+    } else if (fromCurrency === "INR" && toCurrency === "USD") {
+      return numericAmount / exchangeRate;
+    }
+
+    return numericAmount;
+  };
+
+  // FIXED: Format currency function with proper symbols
+  const formatCurrency = (amount, curr = displayCurrency) => {
+    const numericAmount =
+      typeof amount === "string" ? parseFloat(amount) : amount;
+
+    if (curr === "INR") {
+      return `${numericAmount.toLocaleString("en-IN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })}`;
+    } else {
+      return `${numericAmount.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`;
+    }
+  };
+
+  // FIXED: Wallet balance display function
+  const formatWalletBalance = () => {
+    if (displayCurrency === "INR") {
+      return `₹${walletBalance.toLocaleString("en-IN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })}`;
+    } else {
+      const usdBalance = walletBalance / exchangeRate;
+      return `$${usdBalance.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`;
+    }
+  };
+
+  // FIXED: Get equivalent balance
+  const getEquivalentBalance = () => {
+    if (displayCurrency === "INR") {
+      const usdBalance = walletBalance / exchangeRate;
+      return `${usdBalance.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`;
+    } else {
+      return `${walletBalance.toLocaleString("en-IN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })}`;
+    }
+  };
+
+  const handleConverterChange = async (value, from, to) => {
+    setConverterAmount(value);
+
+    if (!value || isNaN(value)) {
+      setConverterResult("");
+      return;
+    }
+
+    const result = await convertCurrency(value, from, to);
+    setConverterResult(result);
+  };
+
+  const swapCurrencies = () => {
+    setConverterFrom(converterTo);
+    setConverterTo(converterFrom);
+    setConverterAmount(converterResult);
+    setConverterResult(converterAmount);
+  };
+
+  const toggleDisplayCurrency = () => {
+    setDisplayCurrency((prev) => (prev === "INR" ? "USD" : "INR"));
+  };
+
+  const showSuccessMessage = (message) => {
+    setSuccessMessage(message);
+    setShowSuccess(true);
+    setTimeout(() => {
+      setShowSuccess(false);
+      setSuccessMessage("");
+    }, 3000);
+  };
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -106,7 +306,11 @@ export default function ClientPayments() {
     }
 
     if (!rechargeAmount || rechargeAmount < 1) {
-      setRechargeMessage("Please enter a valid amount (minimum ₹1)");
+      setRechargeMessage(
+        `Please enter a valid amount (minimum ${
+          currency === "INR" ? "₹1" : "$1"
+        })`
+      );
       return;
     }
 
@@ -116,8 +320,12 @@ export default function ClientPayments() {
     try {
       await loadRazorpayScript();
 
-      // Convert rupees to paisa for Razorpay (1 rupee = 100 paisa)
-      const amountInPaisa = Math.round(parseFloat(rechargeAmount) * 100);
+      let amountInSmallestUnit;
+      if (currency === "INR") {
+        amountInSmallestUnit = Math.round(parseFloat(rechargeAmount) * 100);
+      } else {
+        amountInSmallestUnit = Math.round(parseFloat(rechargeAmount) * 100);
+      }
 
       const orderResponse = await fetch("/api/payments/client-payment", {
         method: "POST",
@@ -125,10 +333,10 @@ export default function ClientPayments() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: amountInPaisa, // Send amount in paisa
+          amount: amountInSmallestUnit,
           userId: user.id,
-          displayAmount: parseFloat(rechargeAmount), // Keep original amount for display
-          currency: "INR",
+          currency: currency,
+          displayAmount: parseFloat(rechargeAmount),
         }),
       });
 
@@ -138,19 +346,14 @@ export default function ClientPayments() {
         throw new Error(orderData.error);
       }
 
-      const paymentDetails = {
-        amount: parseFloat(rechargeAmount), // Original amount in rupees
-        userId: user.id,
-        currency: "INR",
-        planType: "wallet_recharge",
-      };
-
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: orderData.order.amount, // This should be in paisa from the API
+        amount: orderData.order.amount,
         currency: orderData.order.currency,
         name: "Freelance Platform",
-        description: `Wallet Recharge - ₹${rechargeAmount}`,
+        description: `Wallet Recharge - ${
+          currency === "INR" ? "₹" : "$"
+        }${rechargeAmount}`,
         order_id: orderData.order.id,
         handler: async function (response) {
           const verifyResponse = await fetch("/api/payments/verify", {
@@ -162,18 +365,21 @@ export default function ClientPayments() {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              amount: paymentDetails.amount, // Send original amount in rupees
-              userId: paymentDetails.userId,
-              currency: paymentDetails.currency,
-              planType: paymentDetails.planType,
+              amount: orderData.order.amount,
+              displayAmount: parseFloat(rechargeAmount),
+              userId: user.id,
+              currency: currency,
+              planType: "wallet_recharge",
             }),
           });
 
           const verifyData = await verifyResponse.json();
 
           if (verifyData.success) {
-            alert(
-              `Payment successful! ₹${rechargeAmount} added to your wallet.`
+            showSuccessMessage(
+              `Payment successful! ${
+                currency === "INR" ? "₹" : "$"
+              }${rechargeAmount} added to your wallet.`
             );
             setShowRechargeModal(false);
             setRechargeAmount("");
@@ -188,7 +394,7 @@ export default function ClientPayments() {
           email: user.email,
         },
         theme: {
-          color: "#667eea",
+          color: "#2563eb",
         },
         modal: {
           ondismiss: function () {
@@ -219,6 +425,13 @@ export default function ClientPayments() {
     setRechargeMessage("");
   };
 
+  const toggleCurrency = () => {
+    setCurrency((prev) => (prev === "INR" ? "USD" : "INR"));
+    setRechargeAmount("");
+    setSelectedAmount("");
+    setRechargeMessage("");
+  };
+
   const handleReleasePayment = async (paymentRequestId) => {
     if (!confirm("Are you sure you want to release this payment?")) return;
 
@@ -238,7 +451,7 @@ export default function ClientPayments() {
       const data = await response.json();
 
       if (data.success) {
-        alert("Payment released successfully!");
+        showSuccessMessage("Payment released successfully!");
         fetchClientData(user.id);
       } else {
         alert(data.error || "Failed to release payment");
@@ -272,7 +485,7 @@ export default function ClientPayments() {
       const data = await response.json();
 
       if (data.success) {
-        alert("Payment request rejected!");
+        showSuccessMessage("Payment request rejected successfully!");
         fetchClientData(user.id);
       } else {
         alert(data.error || "Failed to reject payment");
@@ -283,15 +496,6 @@ export default function ClientPayments() {
     } finally {
       setActionLoading(null);
     }
-  };
-
-  const formatCurrency = (amount, currency = "INR") => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(amount);
   };
 
   const formatDate = (dateString) => {
@@ -323,6 +527,25 @@ export default function ClientPayments() {
   return (
     <>
       <Banner />
+
+      {/* Success Notification */}
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            className={styles.successNotification}
+            initial={{ opacity: 0, y: -50, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.8 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <div className={styles.successContent}>
+              <FaCheckCircle className={styles.successIcon} />
+              <span>{successMessage}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.headerMain}>
@@ -330,21 +553,39 @@ export default function ClientPayments() {
             <p>Manage and release payments to freelancers</p>
           </div>
           <div className={styles.walletInfo}>
+            {/* FIXED: Wallet Balance Display */}
             <div className={styles.walletBalance}>
               <FaMoneyBillWave className={styles.walletIcon} />
-              <div>
+              <div className={styles.balanceContainer}>
                 <span className={styles.balanceLabel}>Wallet Balance</span>
-                <span className={styles.balanceAmount}>
-                  {formatCurrency(walletBalance)}
-                </span>
+                <div className={styles.balanceMain}>
+                  <span className={styles.balanceAmount}>
+                    {formatWalletBalance()}
+                  </span>
+                </div>
               </div>
             </div>
-            <button
-              className={styles.rechargeBtn}
-              onClick={() => setShowRechargeModal(true)}
-            >
-              <FaPlus /> Recharge Wallet
-            </button>
+            <div className={styles.headerActions}>
+              {/* Project Price Converter Toggle */}
+              <div className={styles.priceConverterToggle}>
+                <span className={styles.converterLabel}>Show prices in:</span>
+                <button
+                  className={styles.currencyDisplayToggle}
+                  onClick={toggleDisplayCurrency}
+                >
+                  <FaExchangeAlt className={styles.exchangeIcon} />
+                  {displayCurrency}
+                  <FaGlobe className={styles.globeIcon} />
+                </button>
+              </div>
+
+              <button
+                className={styles.rechargeBtn}
+                onClick={() => setShowRechargeModal(true)}
+              >
+                <FaPlus /> Recharge Wallet
+              </button>
+            </div>
           </div>
         </div>
 
@@ -417,6 +658,9 @@ export default function ClientPayments() {
                         formatCurrency={formatCurrency}
                         formatDate={formatDate}
                         type="pending"
+                        displayCurrency={displayCurrency}
+                        convertProjectPrice={convertProjectPrice}
+                        exchangeRate={exchangeRate}
                       />
                     ))}
                   </div>
@@ -449,6 +693,9 @@ export default function ClientPayments() {
                         formatCurrency={formatCurrency}
                         formatDate={formatDate}
                         type="approved"
+                        displayCurrency={displayCurrency}
+                        convertProjectPrice={convertProjectPrice}
+                        exchangeRate={exchangeRate}
                       />
                     ))}
                   </div>
@@ -477,59 +724,91 @@ export default function ClientPayments() {
                         <tr>
                           <th>Freelancer</th>
                           <th>Project</th>
-                          <th>Amount</th>
+                          <th>
+                            <div className={styles.amountHeader}>
+                              Amount
+                              <button
+                                className={styles.tableCurrencyToggle}
+                                onClick={toggleDisplayCurrency}
+                                title={`Show in ${
+                                  displayCurrency === "INR" ? "USD" : "INR"
+                                }`}
+                              >
+                                <FaExchangeAlt />
+                              </button>
+                            </div>
+                          </th>
                           <th>Released Date</th>
                           <th>Status</th>
                           <th>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {paymentHistory.map((request) => (
-                          <tr key={request.id}>
-                            <td>
-                              <div className={styles.userCell}>
-                                <div className={styles.avatar}>
-                                  {request.freelancerName?.charAt(0) || "F"}
+                        {paymentHistory.map((request) => {
+                          const convertedAmount = convertProjectPrice(
+                            request.amount,
+                            request.currency || "INR",
+                            displayCurrency
+                          );
+
+                          return (
+                            <tr key={request.id}>
+                              <td>
+                                <div className={styles.userCell}>
+                                  <div className={styles.avatar}>
+                                    {request.freelancerName?.charAt(0) || "F"}
+                                  </div>
+                                  <span>{request.freelancerName}</span>
                                 </div>
-                                <span>{request.freelancerName}</span>
-                              </div>
-                            </td>
-                            <td>{request.projectTitle}</td>
-                            <td className={styles.amountCell}>
-                              {formatCurrency(request.amount)}
-                            </td>
-                            <td>{formatDate(request.updatedAt)}</td>
-                            <td>
-                              <span
-                                className={`${styles.status} ${styles.completed}`}
-                              >
-                                Completed
-                              </span>
-                            </td>
-                            <td>
-                              <div className={styles.actions}>
-                                <button
-                                  className={styles.viewButton}
-                                  onClick={() =>
-                                    router.push(
-                                      `/messages?conversation=${request.conversationId}`
-                                    )
-                                  }
+                              </td>
+                              <td>{request.projectTitle}</td>
+                              <td className={styles.amountCell}>
+                                <div className={styles.amountWithConversion}>
+                                  <span className={styles.mainAmount}>
+                                    {formatCurrency(convertedAmount)}
+                                  </span>
+                                  {displayCurrency !==
+                                    (request.currency || "INR") && (
+                                    <span className={styles.originalAmount}>
+                                      {request.currency === "USD" ? "$" : "₹"}
+                                      {request.amount}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td>{formatDate(request.updatedAt)}</td>
+                              <td>
+                                <span
+                                  className={`${styles.status} ${styles.completed}`}
                                 >
-                                  <FaEye />
-                                </button>
-                                <button
-                                  className={styles.downloadButton}
-                                  onClick={() =>
-                                    alert("Invoice download coming soon!")
-                                  }
-                                >
-                                  <FaDownload />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                                  Completed
+                                </span>
+                              </td>
+                              <td>
+                                <div className={styles.actions}>
+                                  <button
+                                    className={styles.viewButton}
+                                    onClick={() =>
+                                      router.push(
+                                        `/messages?conversation=${request.conversationId}`
+                                      )
+                                    }
+                                  >
+                                    <FaEye />
+                                  </button>
+                                  <button
+                                    className={styles.downloadButton}
+                                    onClick={() =>
+                                      alert("Invoice download coming soon!")
+                                    }
+                                  >
+                                    <FaDownload />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -625,6 +904,15 @@ export default function ClientPayments() {
               >
                 <div className={styles.modalHeader}>
                   <h2>Recharge Wallet</h2>
+                  <div className={styles.currencyToggleContainer}>
+                    <button
+                      className={styles.currencyToggle}
+                      onClick={toggleCurrency}
+                    >
+                      <FaExchangeAlt className={styles.exchangeIcon} />
+                      {currency} <FaGlobe className={styles.globeIcon} />
+                    </button>
+                  </div>
                   <button
                     className={styles.closeButton}
                     onClick={() => setShowRechargeModal(false)}
@@ -638,15 +926,24 @@ export default function ClientPayments() {
                     Recharging for: <strong>{user?.name}</strong>
                   </p>
                   <p>
-                    Current Balance:{" "}
-                    <strong>{formatCurrency(walletBalance)}</strong>
+                    Current Balance: <strong>{formatWalletBalance()}</strong>
                   </p>
                 </div>
 
+                {/* Currency Conversion Display */}
+                {rechargeAmount && !isNaN(rechargeAmount) && (
+                  <div className={styles.conversionDisplay}>
+                    <div className={styles.conversionRate}>
+                      <FaExchangeAlt className={styles.conversionIcon} />
+                      <span>1 USD = {exchangeRate.toFixed(2)} INR</span>
+                    </div>
+                  </div>
+                )}
+
                 <div className={styles.presetAmounts}>
-                  <h4>Quick Select</h4>
+                  <h4>Quick Select ({currency})</h4>
                   <div className={styles.amountGrid}>
-                    {presetAmounts.map((preset) => (
+                    {presetAmounts[currency].map((preset) => (
                       <button
                         key={preset}
                         className={`${styles.amountButton} ${
@@ -656,7 +953,8 @@ export default function ClientPayments() {
                         }`}
                         onClick={() => handlePresetAmount(preset)}
                       >
-                        ₹{preset}
+                        {currency === "INR" ? "₹" : "$"}
+                        {preset}
                       </button>
                     ))}
                   </div>
@@ -665,17 +963,23 @@ export default function ClientPayments() {
                 <div className={styles.customAmount}>
                   <h4>Custom Amount</h4>
                   <div className={styles.amountInput}>
-                    <FaRupeeSign className={styles.inputIcon} />
+                    {currency === "INR" ? (
+                      <FaRupeeSign className={styles.inputIcon} />
+                    ) : (
+                      <FaDollarSign className={styles.inputIcon} />
+                    )}
                     <input
                       type="number"
-                      placeholder="Enter amount"
+                      placeholder={`Enter amount in ${currency}`}
                       value={rechargeAmount}
                       onChange={(e) => handleCustomAmountChange(e.target.value)}
                       min="1"
-                      step="1"
+                      step={currency === "INR" ? "1" : "0.01"}
                     />
                   </div>
-                  <p className={styles.minAmount}>Minimum amount: ₹1</p>
+                  <p className={styles.minAmount}>
+                    Minimum amount: {currency === "INR" ? "₹1" : "$1"}
+                  </p>
                 </div>
 
                 {rechargeMessage && (
@@ -693,7 +997,9 @@ export default function ClientPayments() {
                       Processing...
                     </>
                   ) : (
-                    `Pay ₹${rechargeAmount || 0}`
+                    `Pay ${currency === "INR" ? "₹" : "$"}${
+                      rechargeAmount || 0
+                    }`
                   )}
                 </button>
 
@@ -710,7 +1016,7 @@ export default function ClientPayments() {
   );
 }
 
-// Payment Request Card Component
+// Updated Payment Request Card Component with Price Conversion
 const PaymentRequestCard = ({
   request,
   onRelease,
@@ -719,9 +1025,19 @@ const PaymentRequestCard = ({
   formatCurrency,
   formatDate,
   type = "pending",
+  displayCurrency,
+  convertProjectPrice,
+  exchangeRate,
 }) => {
   const isPending = type === "pending";
   const isApproved = type === "approved";
+
+  // Convert the project price to display currency
+  const convertedAmount = convertProjectPrice(
+    request.amount,
+    request.currency || "INR",
+    displayCurrency
+  );
 
   return (
     <motion.div
@@ -753,9 +1069,15 @@ const PaymentRequestCard = ({
         </div>
 
         <div className={styles.paymentDetails}>
-          <div className={styles.amount}>
-            <FaRupeeSign className={styles.currencyIcon} />
-            {formatCurrency(request.amount)}
+          <div className={styles.amountWithConversion}>
+            <div className={styles.mainAmount}>
+              {displayCurrency === "USD" ? (
+                <FaDollarSign className={styles.currencyIcon} />
+              ) : (
+                <FaRupeeSign className={styles.currencyIcon} />
+              )}
+              {formatCurrency(convertedAmount, displayCurrency)}
+            </div>
           </div>
           {request.dueDate && (
             <div className={styles.dueDate}>

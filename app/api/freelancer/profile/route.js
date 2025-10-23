@@ -1,10 +1,114 @@
+// app/api/freelancer/profile/route.js
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth";
 
 const prisma = new PrismaClient();
 
-// GET - Get freelancer profile
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const {
+      userId,
+      title,
+      bio,
+      skills,
+      experience,
+      education,
+      hourlyRate,
+      location,
+      website,
+      github,
+      linkedin,
+      twitter,
+      portfolio,
+      available,
+      profileImage, // Handle profile image updates
+    } = body;
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if user exists
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(userId) },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Prepare update data
+    const updateData = {
+      ...(title !== undefined && { title }),
+      ...(bio !== undefined && { bio }),
+      ...(skills !== undefined && { skills }),
+      ...(experience !== undefined && { experience }),
+      ...(education !== undefined && { education }),
+      ...(hourlyRate !== undefined && { hourlyRate: parseFloat(hourlyRate) }),
+      ...(location !== undefined && { location }),
+      ...(website !== undefined && { website }),
+      ...(github !== undefined && { github }),
+      ...(linkedin !== undefined && { linkedin }),
+      ...(twitter !== undefined && { twitter }),
+      ...(portfolio !== undefined && { portfolio }),
+      ...(available !== undefined && { available }),
+      ...(profileImage !== undefined && { avatar: profileImage }),
+    };
+
+    // Check if profile exists
+    const existingProfile = await prisma.userProfile.findUnique({
+      where: { userId: parseInt(userId) },
+    });
+
+    let profile;
+    if (existingProfile) {
+      // Update existing profile
+      profile = await prisma.userProfile.update({
+        where: { userId: parseInt(userId) },
+        data: updateData,
+      });
+    } else {
+      // Create new profile
+      profile = await prisma.userProfile.create({
+        data: {
+          userId: parseInt(userId),
+          ...updateData,
+        },
+      });
+    }
+
+    // If profile image is provided, also update user's main avatar
+    if (profileImage) {
+      await prisma.user.update({
+        where: { id: parseInt(userId) },
+        data: { avatar: profileImage },
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      profile: profile,
+      message: "Profile updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Internal server error",
+        details: error.message,
+      },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -25,138 +129,38 @@ export async function GET(request) {
             id: true,
             name: true,
             email: true,
-            role: true,
-            createdAt: true,
+            avatar: true,
           },
         },
       },
     });
 
     if (!profile) {
-      // Return empty profile structure if not found
-      const user = await prisma.user.findUnique({
-        where: { id: parseInt(userId) },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          createdAt: true,
-        },
-      });
-
-      return NextResponse.json({
-        success: true,
-        profile: null,
-        user: user,
-      });
+      return NextResponse.json(
+        { success: true, profile: null },
+        { status: 200 }
+      );
     }
 
     return NextResponse.json({
       success: true,
-      profile: profile,
-      user: profile.user,
+      profile: {
+        ...profile,
+        // Include user's main avatar as fallback
+        avatar: profile.avatar || profile.user.avatar,
+      },
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
     return NextResponse.json(
-      { error: "Failed to fetch profile" },
+      {
+        success: false,
+        error: "Internal server error",
+        details: error.message,
+      },
       { status: 500 }
     );
-  }
-}
-
-// POST/PUT - Create or update freelancer profile
-export async function POST(request) {
-  try {
-    const body = await request.json();
-    const {
-      userId,
-      title,
-      bio,
-      skills,
-      experience,
-      education,
-      hourlyRate,
-      location,
-      website,
-      github,
-      linkedin,
-      twitter,
-      portfolio,
-      available,
-    } = body;
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
-    }
-
-    // Check if user exists and is a freelancer
-    const user = await prisma.user.findUnique({
-      where: { id: parseInt(userId) },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    if (user.role !== "freelancer") {
-      return NextResponse.json(
-        { error: "Only freelancers can update profiles" },
-        { status: 403 }
-      );
-    }
-
-    // Update or create profile
-    const profile = await prisma.userProfile.upsert({
-      where: { userId: parseInt(userId) },
-      update: {
-        title: title || null,
-        bio: bio || null,
-        skills: skills || null,
-        experience: experience || null,
-        education: education || null,
-        hourlyRate: hourlyRate ? parseFloat(hourlyRate) : null,
-        location: location || null,
-        website: website || null,
-        github: github || null,
-        linkedin: linkedin || null,
-        twitter: twitter || null,
-        portfolio: portfolio || null,
-        available: available !== undefined ? available : true,
-        updatedAt: new Date(),
-      },
-      create: {
-        userId: parseInt(userId),
-        title: title || null,
-        bio: bio || null,
-        skills: skills || null,
-        experience: experience || null,
-        education: education || null,
-        hourlyRate: hourlyRate ? parseFloat(hourlyRate) : null,
-        location: location || null,
-        website: website || null,
-        github: github || null,
-        linkedin: linkedin || null,
-        twitter: twitter || null,
-        portfolio: portfolio || null,
-        available: available !== undefined ? available : true,
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: "Profile updated successfully",
-      profile: profile,
-    });
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    return NextResponse.json(
-      { error: "Failed to update profile" },
-      { status: 500 }
-    );
+  } finally {
+    await prisma.$disconnect();
   }
 }

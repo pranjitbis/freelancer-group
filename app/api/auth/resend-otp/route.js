@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import hostingerEmailService from "@/lib/hostinger-email";
+import hostingerEmailService from "@/lib/email";
 
 const prisma = new PrismaClient();
 

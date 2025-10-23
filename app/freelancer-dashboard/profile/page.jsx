@@ -27,6 +27,7 @@ import {
 import styles from "./FreelancerProfile.module.css";
 
 export default function FreelancerProfilePage() {
+  const [profileImage, setProfileImage] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -281,6 +282,21 @@ export default function FreelancerProfilePage() {
       }
     }
   };
+
+  useEffect(() => {
+    if (currentUser?.id) {
+      const SaveImage = async () => {
+        const fethImage = await fetch(
+          `/api/freelancer/profile?userId=${currentUser.id}`
+        );
+
+        const data = await fethImage.json();
+        setProfileImage(data.profile.avatar);
+        console.log("Fetched profile data for image save:", data);
+      };
+      SaveImage();
+    }
+  }, [currentUser?.id]);
 
   const deleteResume = async () => {
     if (!confirm("Are you sure you want to delete your resume?")) return;
@@ -834,12 +850,8 @@ export default function FreelancerProfilePage() {
             <div className={styles.profilePreview}>
               <div className={styles.previewHeader}>
                 <div className={styles.previewAvatar}>
-                  {profile?.profileImage ? (
-                    <img
-                      src={profile.profileImage}
-                      alt="Profile"
-                      className={styles.previewImage}
-                    />
+                  {profileImage ? (
+                    <img src={profileImage} alt="Profile" />
                   ) : (
                     currentUser?.name?.charAt(0).toUpperCase()
                   )}

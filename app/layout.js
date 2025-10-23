@@ -1,6 +1,8 @@
+// app/layout.js
 import "./globals.css";
 import Script from "next/script";
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "";
 
 export const metadata = {
   title: "Aroliya - India's No. 1 Platform for Smart Online Services",
@@ -40,7 +42,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en-IN">
+    // suppressHydrationWarning helps ignore minor attribute differences added
+    // by browser extensions or other client-side DOM modifications.
+    <html lang="en-IN" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -84,33 +88,49 @@ export default function RootLayout({ children }) {
           property="business:contact_data:website"
           content="https://www.aroliya.com"
         />
+      </head>
 
-        {/* Google Analytics */}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_ID}', {
-              page_title: document.title,
-              page_location: window.location.href
-            });
-          `}
-        </Script>
+      {/* suppressHydrationWarning put on body to reduce hydration mismatch errors
+          caused by browser extensions that mutate the DOM before React hydrates. */}
+      <body suppressHydrationWarning>
+        <main>{children}</main>
 
-        {/* Razorpay */}
+        {/* Google Analytics - only load when GA_ID present */}
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                (function(){
+                  try {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    window.gtag = gtag;
+                    gtag('js', new Date());
+                    gtag('config', '${GA_ID}', {
+                      page_title: (typeof document !== 'undefined' && document.title) ? document.title : '',
+                      page_location: (typeof window !== 'undefined' && window.location ? window.location.href : '')
+                    });
+                  } catch (e) {
+                    // fail silently if any unexpected runtime error happens
+                    console.warn('GA init failed', e);
+                  }
+                })();
+              `}
+            </Script>
+          </>
+        )}
+
+        {/* Razorpay (keeps as-is) */}
         <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="beforeInteractive"
         />
-      </head>
-      <body>
-        <main>{children}</main>
 
+        {/* JSON-LD Structured Data */}
         <Script
           id="sitelinks-schema"
           type="application/ld+json"
@@ -130,7 +150,6 @@ export default function RootLayout({ children }) {
   `}
         </Script>
 
-        {/* Enhanced Structured Data for Site Links */}
         <Script
           id="organization-structured-data"
           type="application/ld+json"
@@ -169,16 +188,7 @@ export default function RootLayout({ children }) {
                 "AI Solutions",
                 "Web Development",
                 "Digital Marketing"
-              ],
-              "makesOffer": [{
-                "@type": "Offer",
-                "name": "Form Filling Services",
-                "description": "Professional form filling services for various applications"
-              }, {
-                "@type": "Offer",
-                "name": "Travel Bookings",
-                "description": "Flight and hotel booking services"
-              }]
+              ]
             }
           `}
         </Script>
@@ -212,7 +222,6 @@ export default function RootLayout({ children }) {
           `}
         </Script>
 
-        {/* Breadcrumb Structured Data */}
         <Script
           id="breadcrumb-schema"
           type="application/ld+json"
@@ -252,17 +261,22 @@ export default function RootLayout({ children }) {
   `}
         </Script>
 
+        {/* Additional GTM/Conversion snippet (keeps as-is but client-only) */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-17545732712"
           strategy="afterInteractive"
         />
         <Script id="gtag-init" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', 'AW-17545732712');
+            try {
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              window.gtag = gtag;
+              gtag('js', new Date());
+              gtag('config', 'AW-17545732712');
+            } catch (e) {
+              console.warn('GTag init failed', e);
+            }
           `}
         </Script>
       </body>

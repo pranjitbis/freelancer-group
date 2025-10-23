@@ -16,6 +16,7 @@ export async function POST(request) {
       userId,
       currency = "INR",
       amount,
+      displayAmount, // Add this to get the original display amount
     } = body;
 
     console.log("🔍 Verifying payment:", {
@@ -25,6 +26,7 @@ export async function POST(request) {
       userId,
       currency,
       amount,
+      displayAmount,
     });
 
     // Validate required fields
@@ -71,6 +73,7 @@ export async function POST(request) {
         userId,
         currency,
         amount,
+        displayAmount, // Pass displayAmount
       });
     } else {
       // Handle plan subscription
@@ -82,6 +85,7 @@ export async function POST(request) {
         userId,
         currency,
         amount,
+        displayAmount, // Pass displayAmount
       });
     }
   } catch (error) {
@@ -96,7 +100,7 @@ export async function POST(request) {
   }
 }
 
-// Handle wallet recharge
+// Handle wallet recharge - FIXED AMOUNT CONVERSION
 async function handleWalletRecharge(paymentData) {
   const {
     razorpay_payment_id,
@@ -105,11 +109,16 @@ async function handleWalletRecharge(paymentData) {
     userId,
     currency,
     amount,
+    displayAmount,
   } = paymentData;
 
   try {
-    // Convert amount to proper format (from cents/paisa to actual amount)
-    const actualAmount = parseFloat(amount) / 100;
+    // FIXED: Use displayAmount if available, otherwise convert from paisa
+    const actualAmount = displayAmount
+      ? parseFloat(displayAmount)
+      : parseFloat(amount) / 100;
+
+    console.log(`💰 Adding ${actualAmount} to wallet for user: ${userId}`);
 
     // Update user wallet balance
     const updatedUser = await prisma.user.update({
@@ -134,7 +143,12 @@ async function handleWalletRecharge(paymentData) {
       },
     });
 
-    console.log("✅ Wallet recharge successful for user:", userId);
+    console.log(
+      "✅ Wallet recharge successful for user:",
+      userId,
+      "New balance:",
+      updatedUser.wallet
+    );
 
     return NextResponse.json({
       success: true,
@@ -150,7 +164,7 @@ async function handleWalletRecharge(paymentData) {
   }
 }
 
-// Handle plan subscription - FIXED CONNECTS ISSUE
+// Handle plan subscription - FIXED AMOUNT CONVERSION
 async function handlePlanSubscription(paymentData) {
   const {
     razorpay_payment_id,
@@ -160,6 +174,7 @@ async function handlePlanSubscription(paymentData) {
     userId,
     currency,
     amount,
+    displayAmount,
   } = paymentData;
 
   // FIXED: Correct plan configuration with proper connects
@@ -178,25 +193,27 @@ async function handlePlanSubscription(paymentData) {
   expiresAt.setDate(expiresAt.getDate() + 30);
 
   try {
-    // Convert amount to proper format (from cents/paisa to actual amount)
-    const actualAmount = parseFloat(amount) / 100;
+    // FIXED: Use displayAmount if available, otherwise convert from paisa
+    const actualAmount = displayAmount
+      ? parseFloat(displayAmount)
+      : parseFloat(amount) / 100;
 
     console.log(
-      `🔄 Updating user plan to ${planType} with ${config.connects} connects`
+      `🔄 Updating user plan to ${planType} with ${config.connects} connects for ${actualAmount}`
     );
 
-    // Update user plan - FIXED: Use config.connects instead of hardcoded value
+    // Update user plan
     const userPlan = await prisma.userPlan.upsert({
       where: { userId: parseInt(userId) },
       update: {
         planType,
-        connects: config.connects, // FIXED: Use config.connects (15)
-        usedConnects: 0, // Reset used connects
+        connects: config.connects,
+        usedConnects: 0,
         expiresAt,
       },
       create: {
         planType,
-        connects: config.connects, // FIXED: Use config.connects (15)
+        connects: config.connects,
         usedConnects: 0,
         expiresAt,
         userId: parseInt(userId),
@@ -206,7 +223,7 @@ async function handlePlanSubscription(paymentData) {
     // Create subscription record
     const subscriptionData = {
       planType,
-      amount: actualAmount,
+      amount: actualAmount, // FIXED: Use actual amount
       status: "active",
       razorpayOrderId: razorpay_order_id,
       razorpayPaymentId: razorpay_payment_id,
@@ -222,11 +239,11 @@ async function handlePlanSubscription(paymentData) {
       data: subscriptionData,
     });
 
-    // Record connect transaction - FIXED: Use config.connects
+    // Record connect transaction
     await prisma.connectTransaction.create({
       data: {
         type: "purchase",
-        amount: config.connects, // FIXED: Use config.connects (15)
+        amount: config.connects,
         description: `Purchased ${planType} plan with ${config.connects} connects (${currency} ${actualAmount})`,
         userId: parseInt(userId),
       },
@@ -243,7 +260,7 @@ async function handlePlanSubscription(paymentData) {
       plan: userPlan,
       currency: currency,
       amount: actualAmount,
-      connects: config.connects, // FIXED: Return correct connects count
+      connects: config.connects,
     });
   } catch (error) {
     console.error("❌ Plan subscription error:", error);
@@ -270,9 +287,9 @@ async function handlePlanSubscriptionWithoutCurrency(paymentData) {
     planType,
     userId,
     amount,
+    displayAmount,
   } = paymentData;
 
-  // FIXED: Correct plan configuration
   const planConfig = {
     free: { connects: 10, price: 0 },
     premium: { connects: 15, price: 999 },
@@ -281,21 +298,25 @@ async function handlePlanSubscriptionWithoutCurrency(paymentData) {
   const config = planConfig[planType];
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30);
-  const actualAmount = parseFloat(amount) / 100;
+
+  // FIXED: Use displayAmount if available
+  const actualAmount = displayAmount
+    ? parseFloat(displayAmount)
+    : parseFloat(amount) / 100;
 
   try {
-    // Update user plan - FIXED: Use config.connects
+    // Update user plan
     const userPlan = await prisma.userPlan.upsert({
       where: { userId: parseInt(userId) },
       update: {
         planType,
-        connects: config.connects, // FIXED: Use config.connects (15)
+        connects: config.connects,
         usedConnects: 0,
         expiresAt,
       },
       create: {
         planType,
-        connects: config.connects, // FIXED: Use config.connects (15)
+        connects: config.connects,
         usedConnects: 0,
         expiresAt,
         userId: parseInt(userId),
@@ -306,7 +327,7 @@ async function handlePlanSubscriptionWithoutCurrency(paymentData) {
     await prisma.planSubscription.create({
       data: {
         planType,
-        amount: actualAmount,
+        amount: actualAmount, // FIXED: Use actual amount
         status: "active",
         razorpayOrderId: razorpay_order_id,
         razorpayPaymentId: razorpay_payment_id,
@@ -316,11 +337,11 @@ async function handlePlanSubscriptionWithoutCurrency(paymentData) {
       },
     });
 
-    // Record connect transaction - FIXED: Use config.connects
+    // Record connect transaction
     await prisma.connectTransaction.create({
       data: {
         type: "purchase",
-        amount: config.connects, // FIXED: Use config.connects (15)
+        amount: config.connects,
         description: `Purchased ${planType} plan with ${config.connects} connects`,
         userId: parseInt(userId),
       },
@@ -336,7 +357,7 @@ async function handlePlanSubscriptionWithoutCurrency(paymentData) {
       paymentId: razorpay_payment_id,
       plan: userPlan,
       amount: actualAmount,
-      connects: config.connects, // FIXED: Return correct connects count
+      connects: config.connects,
     });
   } catch (error) {
     console.error("❌ Plan subscription error (fallback):", error);

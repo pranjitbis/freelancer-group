@@ -49,15 +49,18 @@ export async function GET(request) {
       transactions.length
     );
 
+    // Ensure balance is treated as a proper number
+    const balance = Number(user.wallet) || 0;
+
     return NextResponse.json({
       success: true,
       wallet: {
-        balance: user.wallet,
+        balance: balance,
         userId: user.id,
         userName: user.name,
         transactions: transactions.map((transaction) => ({
           id: transaction.id,
-          amount: transaction.amount,
+          amount: Number(transaction.amount) || 0, // Ensure amount is number
           type: transaction.type,
           status: transaction.status,
           description: transaction.description,
@@ -71,6 +74,84 @@ export async function GET(request) {
     console.error("❌ Get wallet error:", error);
     return NextResponse.json(
       { error: "Failed to fetch wallet" },
+      { status: 500 }
+    );
+  }
+}
+
+// POST method to update wallet balance
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { userId, amount, type, description, paymentId, orderId } = body;
+
+    if (!userId || amount === undefined) {
+      return NextResponse.json(
+        { error: "User ID and amount are required" },
+        { status: 400 }
+      );
+    }
+
+    // Get current user to check existing balance
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(userId) },
+      select: { wallet: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const currentBalance = Number(user.wallet) || 0;
+    const transactionAmount = Number(amount);
+
+    let newBalance;
+    if (type === "credit") {
+      newBalance = currentBalance + transactionAmount;
+    } else if (type === "debit") {
+      newBalance = currentBalance - transactionAmount;
+    } else {
+      return NextResponse.json(
+        { error: "Invalid transaction type" },
+        { status: 400 }
+      );
+    }
+
+    // Update user wallet balance
+    const updatedUser = await prisma.user.update({
+      where: { id: parseInt(userId) },
+      data: { wallet: newBalance },
+    });
+
+    // Create transaction record
+    const transaction = await prisma.transaction.create({
+      data: {
+        amount: transactionAmount,
+        type: type,
+        status: "completed",
+        paymentId: paymentId,
+        orderId: orderId,
+        description: description || `${type} transaction`,
+        userId: parseInt(userId),
+      },
+    });
+
+    console.log(
+      `✅ Wallet ${type}: ${transactionAmount}, New balance: ${newBalance}`
+    );
+
+    return NextResponse.json({
+      success: true,
+      wallet: {
+        balance: newBalance,
+        transaction: transaction,
+      },
+      message: `Wallet ${type} successful`,
+    });
+  } catch (error) {
+    console.error("❌ Update wallet error:", error);
+    return NextResponse.json(
+      { error: "Failed to update wallet" },
       { status: 500 }
     );
   }

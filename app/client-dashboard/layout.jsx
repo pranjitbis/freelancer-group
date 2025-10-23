@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import styles from "./ClientDashboard.module.css";
+import { HiReceiptRefund } from "react-icons/hi";
 import {
   FaHome,
   FaPlus,
@@ -67,6 +68,12 @@ export default function ClientDashboardLayout({ children }) {
       label: "Profile",
       icon: <FaUserCog />,
       path: "/client-dashboard/profile",
+    },
+    {
+      id: "Hire-freelancer",
+      label: "Hire freelancer",
+      icon: <HiReceiptRefund />,
+      path: "/client-dashboard/hire-freelancer",
     },
     {
       id: "Refunds",

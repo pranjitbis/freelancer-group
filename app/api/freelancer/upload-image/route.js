@@ -1,12 +1,16 @@
+// app/api/freelancer/upload-image/route.js
 import { NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function POST(request) {
   try {
     const formData = await request.formData();
-    const file = formData.get("profileImage"); // Changed from 'image' to 'profileImage'
+    const file = formData.get("profileImage");
     const userId = formData.get("userId");
 
     console.log("Upload request received:", {
@@ -81,13 +85,15 @@ export async function POST(request) {
 
     console.log("File saved successfully:", imageUrl);
 
-    // Update user profile in database
+    // Update user profile in database using Prisma directly
     try {
       const updateResult = await updateUserProfileImage(userId, imageUrl);
 
       if (!updateResult.success) {
-        // Still return success for upload, but log the DB error
-        console.error("Database update failed:", updateResult.error);
+        return NextResponse.json(
+          { error: updateResult.error },
+          { status: 500 }
+        );
       }
 
       return NextResponse.json({
@@ -97,12 +103,10 @@ export async function POST(request) {
       });
     } catch (dbError) {
       console.error("Database error:", dbError);
-      // Still return success since file was uploaded
-      return NextResponse.json({
-        success: true,
-        imageUrl: imageUrl,
-        message: "Image uploaded but profile update failed",
-      });
+      return NextResponse.json(
+        { error: "Failed to update profile in database" },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error("Upload error:", error);
@@ -110,37 +114,54 @@ export async function POST(request) {
       { error: "Internal server error: " + error.message },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
 async function updateUserProfileImage(userId, imageUrl) {
   try {
-    // Update this with your actual database logic
     console.log(`Updating user ${userId} with image: ${imageUrl}`);
 
-    // Example with your database - replace with your actual implementation
-    const response = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/freelancer/profile`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: userId,
-          profileImage: imageUrl,
-        }),
-      }
-    );
+    // First, check if user has a profile
+    const existingProfile = await prisma.userProfile.findUnique({
+      where: { userId: parseInt(userId) },
+    });
 
-    if (response.ok) {
-      return { success: true };
+    if (existingProfile) {
+      // Update existing profile
+      await prisma.userProfile.update({
+        where: { userId: parseInt(userId) },
+        data: {
+          avatar: imageUrl,
+        },
+      });
     } else {
-      const errorData = await response.json();
-      return { success: false, error: errorData.error };
+      // Create new profile with image
+      await prisma.userProfile.create({
+        data: {
+          userId: parseInt(userId),
+          avatar: imageUrl,
+          title: "Freelancer",
+          bio: "Update your bio",
+          available: true,
+        },
+      });
     }
+
+    // Also update the user's main avatar field
+    await prisma.user.update({
+      where: { id: parseInt(userId) },
+      data: { avatar: imageUrl },
+    });
+
+    console.log("Database updated successfully");
+    return { success: true };
   } catch (error) {
     console.error("Database update error:", error);
-    return { success: false, error: "Database update failed" };
+    return {
+      success: false,
+      error: "Database update failed: " + error.message,
+    };
   }
 }

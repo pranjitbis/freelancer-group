@@ -11,7 +11,11 @@ import {
   FiLogOut,
   FiMenu,
   FiX,
+ 
 } from "react-icons/fi";
+import { FaRegSave } from "react-icons/fa"; 
+
+
 import { MdDashboard, MdWork } from "react-icons/md";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
@@ -110,6 +114,13 @@ export default function DashboardLayout({ children }) {
       label: "Refunds",
       icon: <RiRefund2Line size={20} />,
       path: "/freelancer-dashboard/refunds",
+      bgColor: "#f0fdf4",
+    },
+    {
+      id: "Save-Jobs",
+      label: "Save Jobs",
+      icon: <FaRegSave size={20} />,
+      path: "/freelancer-dashboard/save-jobs",
       bgColor: "#f0fdf4",
     },
     {

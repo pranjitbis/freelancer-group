@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ["socket.io"],
-  },
+  serverComponentsExternalPackages: ["socket.io"],
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,

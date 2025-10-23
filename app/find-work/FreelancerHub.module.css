@@ -802,3 +802,33 @@
     justify-content: center;
   }
 }
+.dashboardButton span {
+  margin: 0px 10px 0px 0px;
+  position: relative;
+  top: 2px;
+}
+
+.dashboardButton {
+  background: linear-gradient(135deg, #0078ff, #00c6ff);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 18px;
+  border: none;
+  margin: 0px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(0, 120, 255, 0.3);
+}
+
+.dashboardButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 120, 255, 0.4);
+  background: linear-gradient(135deg, #0066dd, #00aaff);
+}
+
+.dashboardButton:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px rgba(0, 120, 255, 0.25);
+}

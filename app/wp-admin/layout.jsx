@@ -10,6 +10,7 @@ import {
   FiSettings,
   FiMenu,
   FiXCircle,
+  FiLogOut,
   FiUser,
 } from "react-icons/fi";
 import { IoIosJournal, IoIosContact } from "react-icons/io";
@@ -23,6 +24,18 @@ export default function AdminLayout({ children }) {
 
   const isActive = (path) => {
     return pathname === path ? styles.active : "";
+  };
+
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem("user");
+      sessionStorage.removeItem("user");
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      router.push("/");
+    }
   };
 
   return (
@@ -132,6 +145,13 @@ export default function AdminLayout({ children }) {
         </nav>
 
         <div className={styles.sidebarFooter}>
+          <button
+            className={`${styles.sidebarButton} ${styles.logoutButton}`}
+            onClick={handleLogout}
+          >
+            <FiLogOut size={18} />
+            <span>Logout</span>
+          </button>
           <div className={styles.userProfile}>
             <div className={styles.userAvatar}>
               <FiUser />

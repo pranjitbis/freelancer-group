@@ -47,6 +47,7 @@ model User {
   // ✅ Refund relations
   clientRefunds     RefundRequest[] @relation("ClientRefunds")
   freelancerRefunds RefundRequest[] @relation("FreelancerRefunds")
+   savedJobs  SavedJob[]
 }
 
 model Transaction {
@@ -80,6 +81,7 @@ model UserProfile {
   linkedin    String?
   twitter     String?
   resumeUrl   String?
+  phone       String?  // Add this line
   available   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -107,6 +109,7 @@ model JobPost {
   proposals       Proposal[]
   messages        Message[]
   reviews         Review[]
+   savedJobs  SavedJob[]
 }
 
 model Proposal {
@@ -492,4 +495,19 @@ model OTP {
   createdAt DateTime @default(now())
 
   @@map("otps")
+}
+
+model SavedJob {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  jobId Int
+  job   JobPost @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@map("savedjob")
 }

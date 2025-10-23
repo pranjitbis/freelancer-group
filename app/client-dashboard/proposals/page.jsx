@@ -125,11 +125,12 @@ export default function ClientProposalsPage() {
     setSelectedProposal(proposal);
     setShowDetailsModal(true);
   };
-
   const handleProposalAction = async (proposalId, action) => {
     setActionLoading(proposalId);
 
     try {
+      console.log("Sending proposal action:", { proposalId, action });
+
       const response = await fetch("/api/proposals/action", {
         method: "POST",
         headers: {
@@ -141,7 +142,10 @@ export default function ClientProposalsPage() {
         }),
       });
 
+      console.log("Response status:", response.status);
+
       const data = await response.json();
+      console.log("Response data:", data);
 
       if (response.ok) {
         // Update local state
@@ -240,7 +244,7 @@ export default function ClientProposalsPage() {
 
   return (
     <>
-    <Banner />
+      <Banner />
       <div className={styles.container}>
         <motion.header
           className={styles.header}
