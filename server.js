@@ -44,8 +44,7 @@ app
         console.error("Server error:", err);
         process.exit(1);
       })
-      .listen(port, (err) => {
-        if (err) throw err;
+      .listen(port, () => {
         console.log(`> Ready on http://${hostname}:${port}`);
         console.log(`> Environment: ${dev ? "development" : "production"}`);
       });

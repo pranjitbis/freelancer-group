@@ -1,19 +1,36 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverComponentsExternalPackages: ["socket.io"],
+  compress: true,
+  poweredByHeader: false,
+  generateEtags: false,
 
-  experimental: {
-    // ✅ Disable the new "N" DevTools icon completely
-    showDevTools: false,
+  serverExternalPackages: ["socket.io"],
+
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
   },
 
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      net: false,
-      tls: false,
-      fs: false,
+  experimental: {
+    optimizeCss: true,
+  },
+
+  webpack: (config, { dev, isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        net: false,
+        tls: false,
+        fs: false,
+        dns: false,
+        child_process: false,
+      };
+    }
+
+    config.optimization = {
+      ...config.optimization,
+      minimize: !dev,
     };
+
     return config;
   },
 };
