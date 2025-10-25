@@ -157,10 +157,6 @@ export default function ClientRefundsPage() {
       <Banner />
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <button onClick={() => router.back()} className={styles.backButton}>
-            <FaArrowLeft />
-            Back to Dashboard
-          </button>
           <div className={styles.headerTitle}>
             <h1>Refund Management</h1>
             <p>Request and track refunds for your payments</p>

@@ -13,6 +13,60 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Add to your ClientProposals.module.css */
+
+.reviewButton {
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.reviewButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+.reviewedBadge {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Star rating styles */
+.star-rating {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.star {
+  color: #d1d5db;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.star.filled {
+  color: #f59e0b;
+}
+
+.star:hover {
+  color: #f59e0b;
+}
+
 .headerContent {
   display: flex;
   justify-content: between;
@@ -813,5 +867,728 @@
 
   .modalActions button {
     flex: 1;
+  }
+}
+/* Review Modal Styles */
+.reviewModalContent {
+  background: white;
+  border-radius: 20px;
+  padding: 0;
+  max-width: 580px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+  position: relative;
+}
+
+/* Header */
+.modalHeader {
+  background: #1f2937;
+  color: white;
+  padding: 1.75rem 2rem;
+  border-radius: 20px 20px 0 0;
+  position: relative;
+  border-bottom: 1px solid #374151;
+}
+
+.headerContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.headerIcon {
+  background: #374151;
+  border-radius: 12px;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #4b5563;
+}
+
+.starIcon {
+  font-size: 1.5rem;
+  color: #fbbf24;
+}
+
+.headerText h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.headerSubtitle {
+  margin: 0.5rem 0 0 0;
+  color: #d1d5db;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.closeButton {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 10px;
+  color: #9ca3af;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.closeButton:hover:not(:disabled) {
+  background: #4b5563;
+  color: white;
+  border-color: #6b7280;
+}
+
+/* Modal Body */
+.modalBody {
+  padding: 2rem;
+  background: #f9fafb;
+}
+
+/* Freelancer Card */
+.freelancerCard {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.freelancerAvatar {
+  position: relative;
+}
+
+.avatarWrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background: #3b82f6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  border: 2px solid #e5e7eb;
+}
+
+.verifiedBadge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: #10b981;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  border: 2px solid white;
+}
+
+.verifiedIcon {
+  font-size: 0.6rem;
+}
+
+.freelancerName {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.projectTitle {
+  margin: 0 0 0.75rem 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.projectIcon {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.projectTitle span {
+  color: #374151;
+  font-weight: 600;
+}
+
+.projectMeta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  background: #f8fafc;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.metaIcon {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* Rating Section */
+.ratingSection {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.sectionHeader {
+  margin-bottom: 1.5rem;
+}
+
+.ratingLabel {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.labelIcon {
+  color: #f59e0b;
+  font-size: 1rem;
+}
+
+.requiredStar {
+  color: #ef4444;
+  margin-left: 0.25rem;
+}
+
+.starContainer {
+  text-align: center;
+}
+
+.starRating {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.starButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.starButton:disabled {
+  cursor: not-allowed;
+}
+
+.star {
+  font-size: 3rem;
+  transition: all 0.3s ease;
+}
+
+.star.empty {
+  color: #e5e7eb;
+}
+
+.star.filled {
+  color: #f59e0b;
+}
+
+.ratingLabels {
+  margin-top: 1rem;
+}
+
+.placeholderText {
+  color: #9ca3af;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.pointerIcon {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.selectedRating {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.ratingDescription {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.ratingEmoji {
+  font-size: 1.25rem;
+  color: #f59e0b;
+}
+
+/* Comment Section */
+.commentSection {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.commentLabel {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.characterCounter {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.characterCount {
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.countIcon {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.characterCount.warning {
+  color: #f59e0b;
+}
+
+.characterCount.max {
+  color: #ef4444;
+}
+
+.textareaWrapper {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.commentTextarea {
+  width: 100%;
+  padding: 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  background: white;
+  min-height: 140px;
+}
+
+.commentTextarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.commentTextarea.maxLength {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.textareaDecoration {
+  margin-top: 0.5rem;
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.progressFill.warning {
+  background: #f59e0b;
+}
+
+.progressFill.max {
+  background: #ef4444;
+}
+
+.helpSection {
+  margin-top: 1rem;
+}
+
+.helpItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  color: #0369a1;
+  font-size: 0.875rem;
+}
+
+.helpIcon {
+  color: #0ea5e9;
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+/* Guidelines Card */
+.guidelinesCard {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.guidelinesHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.guidelinesHeader h4 {
+  margin: 0;
+  color: #92400e;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.guidelinesIcon {
+  color: #d97706;
+  font-size: 1.25rem;
+}
+
+.guidelinesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.guidelineItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.guidelineIconWrapper {
+  background: #fef3c7;
+  border-radius: 8px;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fde68a;
+}
+
+.guidelineIcon {
+  font-size: 0.9rem;
+  color: #d97706;
+}
+
+.guidelineItem strong {
+  display: block;
+  color: #92400e;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.guidelineItem p {
+  margin: 0;
+  color: #b45309;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Footer */
+.modalFooter {
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  padding: 1.5rem 2rem 2rem;
+  border-radius: 0 0 20px 20px;
+}
+
+.footerContent {
+  max-width: none;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cancelButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background: white;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.cancelIcon {
+  font-size: 0.9rem;
+}
+
+.submitGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ratingPreview {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+.previewContent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.previewStars {
+  display: flex;
+  gap: 0.125rem;
+}
+
+.previewStar {
+  font-size: 0.875rem;
+  color: #d1d5db;
+}
+
+.previewStar.filled {
+  color: #f59e0b;
+}
+
+.previewText {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.submitButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 2rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  position: relative;
+}
+
+.submitButton:not(.disabled):not(.loading):hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.submitButton.disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.submitButton.loading {
+  background: #059669;
+}
+
+.buttonSpinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+}
+
+.submitIcon {
+  font-size: 0.9rem;
+}
+
+.successIcon {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.footerNote {
+  padding: 1rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+}
+
+.noteContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.shieldIcon {
+  color: #16a34a;
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.noteContent strong {
+  display: block;
+  color: #166534;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.noteContent p {
+  margin: 0;
+  color: #15803d;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reviewModalContent {
+    margin: 1rem;
+    width: calc(100% - 2rem);
+  }
+  
+  .modalBody {
+    padding: 1.5rem;
+  }
+  
+  .modalHeader {
+    padding: 1.5rem;
+  }
+  
+  .modalHeader h2 {
+    font-size: 1.3rem;
+  }
+  
+  .freelancerCard {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .projectMeta {
+    justify-content: center;
+  }
+  
+  .guidelinesGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .submitGroup {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .star {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modalBody {
+    padding: 1rem;
+  }
+  
+  .modalFooter {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+  
+  .star {
+    font-size: 2rem;
+  }
+  
+  .ratingSection,
+  .commentSection {
+    padding: 1.25rem;
   }
 }

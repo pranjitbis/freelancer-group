@@ -654,7 +654,7 @@ input:checked + .slider:before {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1194px) {
   .container {
     padding: 1rem;
   }

@@ -10,6 +10,7 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   name      String
+  businessName String?
   email     String   @unique
   password  String
   role      String   @default("user")
@@ -44,10 +45,10 @@ model User {
   planSubscriptions PlanSubscription[]
   freelancerWallet  FreelancerWallet?
 
-  // ✅ Refund relations
+  // Refund relations
   clientRefunds     RefundRequest[] @relation("ClientRefunds")
   freelancerRefunds RefundRequest[] @relation("FreelancerRefunds")
-   savedJobs  SavedJob[]
+  savedJobs         SavedJob[]
 }
 
 model Transaction {
@@ -81,7 +82,7 @@ model UserProfile {
   linkedin    String?
   twitter     String?
   resumeUrl   String?
-  phone       String?  // Add this line
+  phone       String?
   available   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -109,7 +110,7 @@ model JobPost {
   proposals       Proposal[]
   messages        Message[]
   reviews         Review[]
-   savedJobs  SavedJob[]
+  savedJobs       SavedJob[]
 }
 
 model Proposal {
@@ -168,20 +169,34 @@ model Message {
   readBy          User[]    @relation("MessageReads")
 }
 
+// Add to your existing Review model
+// Update the Review model to fix the aspects field
 model Review {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   rating      Int
   comment     String?
-  createdAt   DateTime @default(now())
+  type        ReviewType @default(CLIENT_TO_FREELANCER)
+  aspects     String?    // Store as JSON string instead of String[]
+  createdAt   DateTime  @default(now())
 
   reviewerId  Int
-  reviewer    User     @relation("ReviewGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewer    User      @relation("ReviewGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
 
   revieweeId  Int
-  reviewee    User     @relation("ReviewReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
+  reviewee    User      @relation("ReviewReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
 
-  jobId       Int
-  job         JobPost  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId       Int?
+  job         JobPost?  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  projectId   Int?
+  project     Project?  @relation("ProjectReviews", fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, type])
+}
+
+enum ReviewType {
+  CLIENT_TO_FREELANCER
+  FREELANCER_TO_CLIENT
 }
 
 model formdata {
@@ -364,6 +379,7 @@ model Project {
   freelancer   User?   @relation("FreelancerProjects", fields: [freelancerId], references: [id], onDelete: Cascade)
 
   conversations Conversation[]
+  reviews       Review[] @relation("ProjectReviews")
 }
 
 model UserPlan {
@@ -490,7 +506,7 @@ model PasswordResetToken {
 model OTP {
   id        String   @id @default(cuid())
   otp       String
-  email     String
+  email     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
 

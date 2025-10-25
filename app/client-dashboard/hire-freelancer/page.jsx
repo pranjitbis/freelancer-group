@@ -16,7 +16,7 @@ import {
   FaEye,
   FaPaperPlane,
 } from "react-icons/fa";
-
+import Banner from "../components/page";
 export default function HireFreelancer() {
   const [freelancers, setFreelancers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,10 +79,9 @@ export default function HireFreelancer() {
       }
 
       const data = await response.json();
-      console.log("API Response:", data); 
+      console.log("API Response:", data);
       if (data.success) {
         const freelancersWithImages = data.freelancers.map((freelancer) => {
-
           const profileImage =
             freelancer.profileImage ||
             freelancer.avatar ||
@@ -177,23 +176,6 @@ export default function HireFreelancer() {
     }
   };
 
-  // REMOVED the problematic useEffect that was causing 400 errors
-  // useEffect(() => {
-  //   const fetchUserImage = async () => {
-  //     try {
-  //       const res = await fetch("/api/freelancer/profile");
-  //       if (!res.ok) {
-  //         throw new Error(`Failed to fetch: ${res.status}`);
-  //       }
-  //       const data = await res.json();
-  //       console.log("Fetched profile image data:", data);
-  //     } catch (error) {
-  //       console.error("Error fetching user image:", error);
-  //     }
-  //   };
-  //   fetchUserImage();
-  // }, []);
-
   const getExperienceLevel = (experience) => {
     if (!experience) return "Not specified";
     const exp = experience.toLowerCase();
@@ -248,7 +230,7 @@ export default function HireFreelancer() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
+      <Banner />
       <motion.section
         className={styles.header}
         initial={{ opacity: 0, y: -20 }}

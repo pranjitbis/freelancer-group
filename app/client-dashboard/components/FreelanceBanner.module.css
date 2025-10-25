@@ -57,10 +57,6 @@
   z-index: 2;
 }
 
-.bannerText {
-  flex: 1;
-}
-
 .bannerBadge {
   display: inline-flex;
   align-items: center;
@@ -367,7 +363,8 @@
     padding: 1.75rem 1rem;
   }
   .bannerText {
-    margin: 20px 0px;
+  position: relative;
+  right: 35px;
   }
 
   .container {
@@ -414,7 +411,7 @@
 
   .professionalBanner {
     padding: 1.5rem 0.875rem;
-    margin: 0.75rem 0;
+    margin: auto;
     border-radius: 0.625rem;
   }
 
@@ -437,16 +434,20 @@
   }
 
   .bannerStats {
-    flex-direction: column;
-    gap: 0.75rem;
-    position: relative;
-    left: 80px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    justify-items: center; /* Centers items horizontally */
   }
 
+  .bannerStats .bannerStat:nth-child(2) {
+    position: relative;
+    right: 70px;
+  }
   .bannerStat {
     flex: 1;
     width: 100%;
-    max-width: 200px;
+    max-width: 160px;
     flex-direction: row;
     text-align: left;
     padding: 0.75rem 1rem;

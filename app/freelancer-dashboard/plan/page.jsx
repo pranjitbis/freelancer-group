@@ -560,13 +560,10 @@ This is a computer-generated invoice and does not require a signature.
 
   return (
     <div className={styles.container}>
+      <Banner className={styles.banner} />
+
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <button onClick={() => router.back()} className={styles.backButton}>
-            <FaArrowLeft />
-            Back to Dashboard
-          </button>
-
           <div className={styles.headerControls}>
             {/* Invoice Download Button - Only show if user has premium plan */}
             {userPlan?.planType === "premium" && recentPurchase && (
@@ -593,7 +590,6 @@ This is a computer-generated invoice and does not require a signature.
           </div>
         </div>
       </header>
-      <Banner className={styles.banner}/>
       <main className={styles.main}>
         {/* Current Plan Status */}
         <section className={styles.currentPlanSection}>

@@ -14,14 +14,47 @@ import {
   FiX,
   FiMessageCircle,
   FiArrowLeft,
+  FiGlobe,
+  FiMenu,
+  FiChevronLeft,
 } from "react-icons/fi";
-import { FaEllipsisV, FaPaperclip, FaSmile } from "react-icons/fa";
+import {
+  FaEllipsisV,
+  FaPaperclip,
+  FaSmile,
+  FaRupeeSign,
+  FaWallet,
+} from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
 import styles from "./FreelancerMessages.module.css";
 
 // Generate unique ID for temporary messages
 const generateUniqueId = () => {
   return `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+};
+
+// Currency configuration
+const CURRENCIES = {
+  USD: {
+    symbol: "$",
+    code: "USD",
+    name: "US Dollar",
+    icon: FiDollarSign,
+    locale: "en-US",
+  },
+  INR: {
+    symbol: "₹",
+    code: "INR",
+    name: "Indian Rupee",
+    icon: FaRupeeSign,
+    locale: "en-IN",
+  },
+};
+
+// Exchange rates (you can fetch these from an API in production)
+const EXCHANGE_RATES = {
+  USD: 1,
+  INR: 83.5, // Example rate
 };
 
 export default function FreelancerMessagesPage() {
@@ -35,18 +68,24 @@ export default function FreelancerMessagesPage() {
   const [paymentRequestData, setPaymentRequestData] = useState({
     amount: "",
     description: "",
+    currency: "INR",
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState(null);
   const [error, setError] = useState("");
+  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(0);
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
+  const currencyDropdownRef = useRef(null);
 
   // Add refs to track state
   const isSendingRef = useRef(false);
   const paymentRequestInProgressRef = useRef(false);
-  const lastPaymentRequestIdRef = useRef(null); // Track the last payment request ID
+  const lastPaymentRequestIdRef = useRef(null);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -57,6 +96,34 @@ export default function FreelancerMessagesPage() {
 
   // Use custom socket hook
   const { socket, isConnected, error: socketError } = useSocket(currentUser.id);
+
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 1168;
+      setIsMobile(mobile);
+      setShowSidebar(!mobile);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Close currency dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        currencyDropdownRef.current &&
+        !currencyDropdownRef.current.contains(event.target)
+      ) {
+        setShowCurrencyDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Set socket error
   useEffect(() => {
@@ -75,6 +142,7 @@ export default function FreelancerMessagesPage() {
   useEffect(() => {
     if (currentUser.id) {
       loadConversations();
+      fetchWalletBalance();
     }
   }, [currentUser.id]);
 
@@ -82,7 +150,7 @@ export default function FreelancerMessagesPage() {
     scrollToBottom();
   }, [messages]);
 
-  // Socket event listeners - SIMPLIFIED to prevent duplicates
+  // Socket event listeners
   useEffect(() => {
     if (!socket) return;
 
@@ -93,7 +161,6 @@ export default function FreelancerMessagesPage() {
         activeConversation &&
         message.conversationId === activeConversation.id
       ) {
-        // CRITICAL FIX: Skip if this is our own payment request that we just sent
         if (
           message.messageType === "PAYMENT_REQUEST" &&
           message.senderId === currentUser.id &&
@@ -108,25 +175,20 @@ export default function FreelancerMessagesPage() {
 
         setMessages((prev) => {
           const messageExists = prev.some((msg) => msg.id === message.id);
-
           if (messageExists) {
-            console.log("🔄 Message already exists, updating:", message.id);
             return prev.map((msg) => (msg.id === message.id ? message : msg));
           } else {
-            console.log("➕ Adding new message from socket:", message.id);
             return [...prev, message];
           }
         });
         scrollToBottom();
       }
-
       updateConversationLastMessage(message.conversationId, message);
     };
 
     const handleMessageSent = (message) => {
       console.log("✅ Message sent confirmation:", message);
       isSendingRef.current = false;
-
       setMessages((prev) =>
         prev.map((msg) =>
           msg.tempId === message.tempId
@@ -141,7 +203,6 @@ export default function FreelancerMessagesPage() {
       console.error("❌ Message error:", errorData);
       setError(errorData.error);
       isSendingRef.current = false;
-
       setMessages((prev) =>
         prev.filter((msg) => msg.tempId !== errorData.tempId)
       );
@@ -164,12 +225,11 @@ export default function FreelancerMessagesPage() {
     const handlePaymentRequestUpdate = (data) => {
       console.log("💰 Payment request updated:", data);
       if (activeConversation) {
-        // Reload messages to get updated payment request status
         loadMessages(activeConversation.id);
       }
     };
 
-    // Remove any existing listeners first to prevent duplicates
+    // Remove any existing listeners first
     socket.off("receive_message");
     socket.off("message_sent");
     socket.off("message_error");
@@ -177,7 +237,7 @@ export default function FreelancerMessagesPage() {
     socket.off("user_stop_typing");
     socket.off("payment_request_updated");
 
-    // Add new listeners - REMOVED payment_request_created listener
+    // Add new listeners
     socket.on("receive_message", handleReceiveMessage);
     socket.on("message_sent", handleMessageSent);
     socket.on("message_error", handleMessageError);
@@ -204,9 +264,12 @@ export default function FreelancerMessagesPage() {
       if (targetConversation) {
         setActiveConversation(targetConversation);
         loadMessages(targetConversation.id);
+        if (isMobile) {
+          setShowSidebar(false);
+        }
       }
     }
-  }, [conversationParam, conversations]);
+  }, [conversationParam, conversations, isMobile]);
 
   // Join conversation room when active conversation changes
   useEffect(() => {
@@ -217,6 +280,19 @@ export default function FreelancerMessagesPage() {
       });
     }
   }, [socket, isConnected, activeConversation, currentUser.id]);
+
+  const fetchWalletBalance = async () => {
+    try {
+      const response = await fetch(`/api/wallet?userId=${currentUser.id}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setWalletBalance(data.wallet?.balance || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching wallet balance:", error);
+    }
+  };
 
   const loadConversations = async () => {
     setIsLoading(true);
@@ -229,7 +305,6 @@ export default function FreelancerMessagesPage() {
 
       if (data.success) {
         setConversations(data.conversations || []);
-
         if (
           data.conversations.length > 0 &&
           !activeConversation &&
@@ -259,15 +334,8 @@ export default function FreelancerMessagesPage() {
 
       if (data.success) {
         console.log("📩 Loaded messages:", data.messages);
-
-        // Reset the last payment request ID when loading new messages
         lastPaymentRequestIdRef.current = null;
-
         const uniqueMessages = removeDuplicateMessages(data.messages);
-        console.log(
-          "🔄 Unique messages after deduplication:",
-          uniqueMessages.length
-        );
         setMessages(uniqueMessages);
       } else {
         setError(data.error || "Failed to load messages");
@@ -280,13 +348,11 @@ export default function FreelancerMessagesPage() {
     }
   };
 
-  // Function to remove duplicate messages
   const removeDuplicateMessages = useCallback((messages) => {
     const seen = new Set();
     return messages.filter((message) => {
       const identifier = message.id;
       if (seen.has(identifier)) {
-        console.log("🚫 Removing duplicate message:", identifier);
         return false;
       }
       seen.add(identifier);
@@ -300,8 +366,18 @@ export default function FreelancerMessagesPage() {
     loadMessages(conversation.id);
     setShowPaymentRequest(false);
     setError("");
-    // Reset the last payment request ID when switching conversations
     lastPaymentRequestIdRef.current = null;
+
+    // On mobile, hide sidebar when conversation is selected
+    if (isMobile) {
+      setShowSidebar(false);
+    }
+  };
+
+  const handleBackToConversations = () => {
+    setShowSidebar(true);
+    setActiveConversation(null);
+    setMessages([]);
   };
 
   const handleSendMessage = async () => {
@@ -337,7 +413,6 @@ export default function FreelancerMessagesPage() {
     setMessages((prev) => {
       const messageExists = prev.some((msg) => msg.tempId === tempId);
       if (messageExists) {
-        console.log("🔄 Temp message already exists:", tempId);
         return prev;
       }
       return [...prev, tempMessage];
@@ -363,14 +438,6 @@ export default function FreelancerMessagesPage() {
 
     handleStopTyping();
   };
-  
-    if (isConnected) {
-      console.log("Connected");
-    } else {
-      console.log("not Connected");
-    }
-
-
 
   const handleTypingStart = () => {
     if (!socket || !isConnected || !activeConversation) return;
@@ -432,7 +499,53 @@ export default function FreelancerMessagesPage() {
     );
   };
 
-  // COMPLETELY FIXED: Payment request function
+  // Currency functions
+  const formatCurrency = (amount, currencyCode) => {
+    const currency = CURRENCIES[currencyCode];
+    return new Intl.NumberFormat(currency.locale, {
+      style: "currency",
+      currency: currencyCode,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  const getCurrencySymbol = (currencyCode) => {
+    return CURRENCIES[currencyCode]?.symbol || "$";
+  };
+
+  const getCurrencyIcon = (currencyCode) => {
+    const CurrencyIcon = CURRENCIES[currencyCode]?.icon || FiDollarSign;
+    return <CurrencyIcon className={styles.currencyIcon} />;
+  };
+
+  const convertAmount = (amount, fromCurrency, toCurrency) => {
+    const amountInUSD = amount / EXCHANGE_RATES[fromCurrency];
+    return amountInUSD * EXCHANGE_RATES[toCurrency];
+  };
+
+  const handleCurrencyChange = (currencyCode) => {
+    if (paymentRequestData.amount) {
+      const convertedAmount = convertAmount(
+        parseFloat(paymentRequestData.amount),
+        paymentRequestData.currency,
+        currencyCode
+      );
+      setPaymentRequestData((prev) => ({
+        ...prev,
+        currency: currencyCode,
+        amount: convertedAmount.toFixed(2),
+      }));
+    } else {
+      setPaymentRequestData((prev) => ({
+        ...prev,
+        currency: currencyCode,
+      }));
+    }
+    setShowCurrencyDropdown(false);
+  };
+
+  // Payment request function
   const handleCreatePaymentRequest = async () => {
     if (paymentRequestInProgressRef.current) {
       console.log("⏳ Payment request already in progress...");
@@ -462,6 +575,7 @@ export default function FreelancerMessagesPage() {
 
     try {
       console.log("🔄 Creating payment request...");
+      console.log("💰 Currency being sent:", paymentRequestData.currency);
 
       const response = await fetch("/api/payment-requests", {
         method: "POST",
@@ -471,6 +585,7 @@ export default function FreelancerMessagesPage() {
           freelancerId: currentUser.id,
           clientId: activeConversation.clientId,
           amount: parseFloat(paymentRequestData.amount),
+          currency: paymentRequestData.currency, // Make sure this is sent
           description: paymentRequestData.description,
         }),
       });
@@ -483,33 +598,27 @@ export default function FreelancerMessagesPage() {
           paymentMessage: data.paymentMessage,
         });
 
-        // CRITICAL FIX: Store the payment message ID to prevent duplicates from socket
+        // Verify currency in response
+        console.log("💰 Response currency:", data.paymentMessage.currency);
+
         lastPaymentRequestIdRef.current = data.paymentMessage.id;
 
-        // Add the payment message to the state
         setMessages((prev) => {
           const messageExists = prev.some(
             (msg) => msg.id === data.paymentMessage.id
           );
-
           if (messageExists) {
-            console.log("🔄 Payment message already exists, updating");
             return prev.map((msg) =>
               msg.id === data.paymentMessage.id ? data.paymentMessage : msg
             );
           }
-
-          // Add new payment message while preserving all existing messages
           return [...prev, data.paymentMessage];
         });
 
         scrollToBottom();
 
-        // Reset form and state
-        setPaymentRequestData({ amount: "", description: "" });
+        setPaymentRequestData({ amount: "", description: "", currency: "INR" });
         setShowPaymentRequest(false);
-
-        // Reload conversations to update the list
         await loadConversations();
 
         console.log("✅ Payment request completed successfully");
@@ -579,11 +688,9 @@ export default function FreelancerMessagesPage() {
     if (message.amount !== null && message.amount !== undefined) {
       return message.amount;
     }
-
     if (message.paymentRequest?.amount) {
       return message.paymentRequest.amount;
     }
-
     return 0;
   };
 
@@ -611,6 +718,23 @@ export default function FreelancerMessagesPage() {
 
   return (
     <div className={styles.freelancerMessages}>
+      {/* Connection Status */}
+      <div
+        className={`${styles.connectionStatus} ${
+          isConnected ? styles.connected : styles.disconnected
+        }`}
+      >
+        {isConnected ? "🟢 Connected" : "🔴 Disconnected"}
+        {!isConnected && (
+          <button
+            onClick={() => window.location.reload()}
+            className={styles.reconnectButton}
+          >
+            Reconnect
+          </button>
+        )}
+      </div>
+
       <div className={styles.container}>
         {/* Header */}
         <motion.div
@@ -622,12 +746,29 @@ export default function FreelancerMessagesPage() {
             <button onClick={() => router.back()} className={styles.backButton}>
               <FiArrowLeft />
             </button>
+
+            {/* Mobile menu button */}
+            {isMobile && (
+              <button
+                className={styles.menuButton}
+                onClick={() => setShowSidebar(!showSidebar)}
+              >
+                <FiMenu />
+              </button>
+            )}
+
             <div>
               <h1 className={styles.title}>Messages</h1>
               <p className={styles.subtitle}>Communicate with your clients</p>
             </div>
           </div>
           <div className={styles.headerStats}>
+            <div className={styles.walletInfo}>
+              <FaWallet className={styles.walletIcon} />
+              <span className={styles.walletBalance}>
+                ₹{walletBalance.toFixed(2)}
+              </span>
+            </div>
             <div className={styles.stat}>
               <span className={styles.statNumber}>{conversations.length}</span>
               <span className={styles.statLabel}>Active Projects</span>
@@ -648,93 +789,121 @@ export default function FreelancerMessagesPage() {
 
         <div className={styles.content}>
           {/* Conversations Sidebar */}
-          <div className={styles.sidebar}>
-            <div className={styles.sidebarHeader}>
-              <div className={styles.searchBox}>
-                <FiSearch className={styles.searchIcon} />
-                <input
-                  type="text"
-                  placeholder="Search conversations..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className={styles.searchInput}
-                />
-              </div>
-            </div>
+          <AnimatePresence>
+            {showSidebar && (
+              <motion.div
+                initial={{ x: isMobile ? -300 : 0, opacity: isMobile ? 0 : 1 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: isMobile ? -300 : 0, opacity: isMobile ? 0 : 1 }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className={`${styles.sidebar} ${
+                  !showSidebar ? styles.sidebarHidden : ""
+                }`}
+              >
+                <div className={styles.sidebarHeader}>
+                  <div className={styles.searchBox}>
+                    <FiSearch className={styles.searchIcon} />
+                    <input
+                      type="text"
+                      placeholder="Search conversations..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className={styles.searchInput}
+                    />
+                  </div>
+                </div>
 
-            <div className={styles.conversationsList}>
-              {isLoading && conversations.length === 0 ? (
-                <div className={styles.loadingState}>
-                  <div className={styles.spinner}></div>
-                  <p>Loading conversations...</p>
-                </div>
-              ) : filteredConversations.length > 0 ? (
-                filteredConversations.map((conversation) => (
-                  <motion.div
-                    key={`conversation-${conversation.id}`}
-                    className={`${styles.conversationItem} ${
-                      activeConversation?.id === conversation.id
-                        ? styles.active
-                        : ""
-                    }`}
-                    onClick={() => handleConversationSelect(conversation)}
-                    whileHover={{ scale: 1.02 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <div className={styles.conversationAvatar}>
-                      {getOtherUser(conversation)?.name?.charAt(0) || "C"}
+                <div className={styles.conversationsList}>
+                  {isLoading && conversations.length === 0 ? (
+                    <div className={styles.loadingState}>
+                      <div className={styles.spinner}></div>
+                      <p>Loading conversations...</p>
                     </div>
-                    <div className={styles.conversationInfo}>
-                      <div className={styles.conversationHeader}>
-                        <h4>{getOtherUser(conversation)?.name || "Client"}</h4>
-                        <span className={styles.time}>
-                          {conversation.messages[0] &&
-                            formatTime(conversation.messages[0].createdAt)}
-                        </span>
-                      </div>
-                      <p className={styles.lastMessage}>
-                        {conversation.messages[0]?.content || "No messages yet"}
-                      </p>
-                      {conversation.project && (
-                        <span className={styles.projectTag}>
-                          {conversation.project.title}
-                        </span>
-                      )}
-                      {hasAcceptedProposal(conversation) && (
-                        <span className={styles.acceptedBadge}>
-                          <FiCheckCircle size={12} />
-                          Project Accepted
-                        </span>
-                      )}
+                  ) : filteredConversations.length > 0 ? (
+                    filteredConversations.map((conversation) => (
+                      <motion.div
+                        key={`conversation-${conversation.id}`}
+                        className={`${styles.conversationItem} ${
+                          activeConversation?.id === conversation.id
+                            ? styles.active
+                            : ""
+                        }`}
+                        onClick={() => handleConversationSelect(conversation)}
+                        whileHover={{ scale: 1.02 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <div className={styles.conversationAvatar}>
+                          {getOtherUser(conversation)?.name?.charAt(0) || "C"}
+                        </div>
+                        <div className={styles.conversationInfo}>
+                          <div className={styles.conversationHeader}>
+                            <h4>
+                              {getOtherUser(conversation)?.name || "Client"}
+                            </h4>
+                            <span className={styles.time}>
+                              {conversation.messages[0] &&
+                                formatTime(conversation.messages[0].createdAt)}
+                            </span>
+                          </div>
+                          <p className={styles.lastMessage}>
+                            {conversation.messages[0]?.content ||
+                              "No messages yet"}
+                          </p>
+                          {conversation.project && (
+                            <span className={styles.projectTag}>
+                              {conversation.project.title}
+                            </span>
+                          )}
+                          {hasAcceptedProposal(conversation) && (
+                            <span className={styles.acceptedBadge}>
+                              <FiCheckCircle size={12} />
+                              Project Accepted
+                            </span>
+                          )}
+                        </div>
+                        {getUnreadCount(conversation) > 0 && (
+                          <div className={styles.unreadBadge}>
+                            {getUnreadCount(conversation)}
+                          </div>
+                        )}
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className={styles.noConversations}>
+                      <FiMessageCircle
+                        size={48}
+                        className={styles.noConversationsIcon}
+                      />
+                      <p>No active conversations</p>
+                      <span>
+                        Get your proposals accepted to see conversations here
+                      </span>
                     </div>
-                    {getUnreadCount(conversation) > 0 && (
-                      <div className={styles.unreadBadge}>
-                        {getUnreadCount(conversation)}
-                      </div>
-                    )}
-                  </motion.div>
-                ))
-              ) : (
-                <div className={styles.noConversations}>
-                  <FiMessageCircle
-                    size={48}
-                    className={styles.noConversationsIcon}
-                  />
-                  <p>No active conversations</p>
-                  <span>
-                    Get your proposals accepted to see conversations here
-                  </span>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Chat Area */}
-          <div className={styles.chatArea}>
+          <div
+            className={`${styles.chatArea} ${
+              !showSidebar ? styles.chatAreaFull : ""
+            }`}
+          >
             {activeConversation ? (
               <>
                 <div className={styles.chatHeader}>
                   <div className={styles.chatUserInfo}>
+                    {/* Mobile back button */}
+                    {isMobile && (
+                      <button
+                        className={styles.backToConversations}
+                        onClick={handleBackToConversations}
+                      >
+                        <FiChevronLeft />
+                      </button>
+                    )}
                     <div className={styles.chatAvatar}>
                       {getOtherUser(activeConversation)?.name?.charAt(0) || "C"}
                     </div>
@@ -788,23 +957,106 @@ export default function FreelancerMessagesPage() {
                           <FiX size={18} />
                         </button>
                       </div>
-                      <div className={styles.formGroup}>
-                        <label>Amount (₹)</label>
-                        <input
-                          type="number"
-                          value={paymentRequestData.amount}
-                          onChange={(e) =>
-                            setPaymentRequestData((prev) => ({
-                              ...prev,
-                              amount: e.target.value,
-                            }))
-                          }
-                          placeholder="Enter amount"
-                          min="1"
-                          step="0.01"
-                          disabled={isProcessing}
-                        />
+
+                      <div className={styles.currencySelector}>
+                        <label>Currency</label>
+                        <div
+                          className={styles.currencyDropdown}
+                          ref={currencyDropdownRef}
+                        >
+                          <button
+                            className={styles.currencyToggle}
+                            onClick={() =>
+                              setShowCurrencyDropdown(!showCurrencyDropdown)
+                            }
+                            type="button"
+                            disabled={isProcessing}
+                          >
+                            {getCurrencyIcon(paymentRequestData.currency)}
+                            <span>{paymentRequestData.currency}</span>
+                            <FiGlobe className={styles.globeIcon} />
+                          </button>
+
+                          <AnimatePresence>
+                            {showCurrencyDropdown && (
+                              <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className={styles.currencyOptions}
+                              >
+                                {Object.values(CURRENCIES).map((currency) => (
+                                  <button
+                                    key={currency.code}
+                                    className={`${styles.currencyOption} ${
+                                      paymentRequestData.currency ===
+                                      currency.code
+                                        ? styles.selected
+                                        : ""
+                                    }`}
+                                    onClick={() =>
+                                      handleCurrencyChange(currency.code)
+                                    }
+                                    type="button"
+                                  >
+                                    {getCurrencyIcon(currency.code)}
+                                    <span>
+                                      {currency.code} - {currency.name}
+                                    </span>
+                                  </button>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
                       </div>
+
+                      <div className={styles.formGroup}>
+                        <label>Amount ({paymentRequestData.currency})</label>
+                        <div className={styles.amountInputContainer}>
+                          <span className={styles.currencySymbol}>
+                            {getCurrencySymbol(paymentRequestData.currency)}
+                          </span>
+                          <input
+                            type="number"
+                            value={paymentRequestData.amount}
+                            onChange={(e) =>
+                              setPaymentRequestData((prev) => ({
+                                ...prev,
+                                amount: e.target.value,
+                              }))
+                            }
+                            placeholder="0.00"
+                            min="0.01"
+                            step="0.01"
+                            disabled={isProcessing}
+                            className={styles.amountInput}
+                          />
+                        </div>
+                        <div className={styles.currencyConversion}>
+                          {paymentRequestData.amount &&
+                            paymentRequestData.currency === "USD" && (
+                              <span>
+                                {formatCurrency(
+                                  parseFloat(paymentRequestData.amount) *
+                                    EXCHANGE_RATES.INR,
+                                  "INR"
+                                )}
+                              </span>
+                            )}
+                          {paymentRequestData.amount &&
+                            paymentRequestData.currency === "INR" && (
+                              <span>
+                                {formatCurrency(
+                                  parseFloat(paymentRequestData.amount) /
+                                    EXCHANGE_RATES.INR,
+                                  "USD"
+                                )}
+                              </span>
+                            )}
+                        </div>
+                      </div>
+
                       <div className={styles.formGroup}>
                         <label>Description</label>
                         <textarea
@@ -820,6 +1072,32 @@ export default function FreelancerMessagesPage() {
                           disabled={isProcessing}
                         />
                       </div>
+
+                      <div className={styles.paymentSummary}>
+                        <div className={styles.summaryItem}>
+                          <span>Amount:</span>
+                          <span>
+                            {paymentRequestData.amount
+                              ? formatCurrency(
+                                  parseFloat(paymentRequestData.amount),
+                                  paymentRequestData.currency
+                                )
+                              : formatCurrency(0, paymentRequestData.currency)}
+                          </span>
+                        </div>
+                        <div className={styles.summaryTotal}>
+                          <span>Total Request:</span>
+                          <span>
+                            {paymentRequestData.amount
+                              ? formatCurrency(
+                                  parseFloat(paymentRequestData.amount),
+                                  paymentRequestData.currency
+                                )
+                              : formatCurrency(0, paymentRequestData.currency)}
+                          </span>
+                        </div>
+                      </div>
+
                       <div className={styles.formActions}>
                         <button
                           className={styles.cancelButton}
@@ -837,7 +1115,9 @@ export default function FreelancerMessagesPage() {
                             !paymentRequestData.description
                           }
                         >
-                          {isProcessing ? "Sending..." : "Send Request"}
+                          {isProcessing
+                            ? "Sending..."
+                            : `Send ${paymentRequestData.currency} Request`}
                         </button>
                       </div>
                     </motion.div>
@@ -879,7 +1159,7 @@ export default function FreelancerMessagesPage() {
                         <div key={getMessageKey(message, index)}>
                           {showDate && (
                             <div className={styles.dateDivider}>
-                              {formatDate(message.createdAt)}
+                              <span>{formatDate(message.createdAt)}</span>
                             </div>
                           )}
 
@@ -912,9 +1192,7 @@ export default function FreelancerMessagesPage() {
                                   }`}
                                 >
                                   <div className={styles.paymentHeader}>
-                                    <FiDollarSign
-                                      className={styles.paymentIcon}
-                                    />
+                                    {getCurrencyIcon(message.currency || "USD")}
                                     <span>
                                       {isSent
                                         ? "Payment Request Sent"
@@ -923,9 +1201,12 @@ export default function FreelancerMessagesPage() {
                                   </div>
                                   <div className={styles.paymentDetails}>
                                     <div className={styles.paymentAmount}>
-                                      <strong>
-                                        ₹{getDisplayAmount(message).toFixed(2)}
-                                      </strong>
+                                      <div className={styles.amountPrimary}>
+                                        {formatCurrency(
+                                          getDisplayAmount(message),
+                                          message.currency || "USD"
+                                        )}
+                                      </div>
                                       <p>
                                         {message.content?.replace(
                                           "Payment Request: ",
@@ -1066,10 +1347,19 @@ export default function FreelancerMessagesPage() {
                     Choose a conversation from the sidebar to start messaging
                     with clients
                   </p>
+                  {isMobile && (
+                    <button
+                      className={styles.showConversationsButton}
+                      onClick={() => setShowSidebar(true)}
+                    >
+                      <FiMenu />
+                      Show Conversations
+                    </button>
+                  )}
                   <div className={styles.featureList}>
                     <div className={styles.featureItem}>
                       <FiDollarSign className={styles.featureIcon} />
-                      <span>Send payment requests</span>
+                      <span>Send payment requests in USD/INR</span>
                     </div>
                     <div className={styles.featureItem}>
                       <FiMessageCircle className={styles.featureIcon} />

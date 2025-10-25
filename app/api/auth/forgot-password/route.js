@@ -1,7 +1,8 @@
+// app\api\auth\forgot-password\route.js
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import hostingerEmailService from "@/lib/email";
-import { generateOTP, storeOTP } from "@/lib/temp-otp";
+import { generateOTP, storeOTP } from "@/lib/otp";
 
 const prisma = new PrismaClient();
 
@@ -45,10 +46,17 @@ export async function POST(request) {
     // Generate OTP
     const otp = generateOTP();
 
-    // Store OTP in memory (temporary solution)
-    storeOTP(email, otp);
+    // Store OTP in database
+    const stored = await storeOTP(email, otp);
 
-    console.log("📝 OTP generated and stored in memory:", otp);
+    if (!stored) {
+      return NextResponse.json(
+        { success: false, error: "Failed to generate OTP. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    console.log("📝 OTP generated and stored in database:", otp);
 
     try {
       // Send email using Hostinger service
@@ -60,7 +68,7 @@ export async function POST(request) {
       const responseData = {
         success: true,
         message: "OTP has been sent to your email address",
-        debugOtp: otp, // Always return OTP for testing
+        debugOtp: process.env.NODE_ENV === "development" ? otp : undefined, // Only return OTP in development
       };
 
       // Add service-specific information
@@ -82,7 +90,7 @@ export async function POST(request) {
         {
           success: false,
           error: `Email service issue: ${emailError.message}`,
-          debugOtp: otp,
+          debugOtp: process.env.NODE_ENV === "development" ? otp : undefined,
           message: "Use OTP below for testing",
         },
         { status: 500 }

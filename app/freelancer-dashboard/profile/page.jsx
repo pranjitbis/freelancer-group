@@ -36,7 +36,7 @@ export default function FreelancerProfilePage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [isEditing, setIsEditing] = useState(true); // Always in edit mode
+  const [isEditing, setIsEditing] = useState(true);
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
   const router = useRouter();
@@ -96,6 +96,8 @@ export default function FreelancerProfilePage() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Fetched profile data:", data);
+
         if (data.success) {
           setProfile(data.profile);
           if (data.profile) {
@@ -105,7 +107,7 @@ export default function FreelancerProfilePage() {
               skills: data.profile.skills || "",
               experience: data.profile.experience || "",
               education: data.profile.education || "",
-              hourlyRate: data.profile.hourlyRate || "",
+              hourlyRate: data.profile.hourlyRate?.toString() || "",
               location: data.profile.location || "",
               website: data.profile.website || "",
               github: data.profile.github || "",
@@ -114,8 +116,15 @@ export default function FreelancerProfilePage() {
               portfolio: data.profile.portfolio || "",
               available: data.profile.available !== false,
             });
+
+            if (data.profile.avatar || data.profile.user?.avatar) {
+              setProfileImage(data.profile.avatar || data.profile.user.avatar);
+            }
           }
         }
+      } else {
+        console.error("Failed to fetch profile:", response.status);
+        setError("Failed to load profile data");
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -139,23 +148,43 @@ export default function FreelancerProfilePage() {
     setSuccess("");
 
     try {
+      const submitData = {
+        userId: currentUser.id,
+        title: formData.title || null,
+        bio: formData.bio || null,
+        skills: formData.skills || null,
+        experience: formData.experience || null,
+        education: formData.education || null,
+        hourlyRate: formData.hourlyRate
+          ? parseFloat(formData.hourlyRate)
+          : null,
+        location: formData.location || null,
+        website: formData.website || null,
+        github: formData.github || null,
+        linkedin: formData.linkedin || null,
+        twitter: formData.twitter || null,
+        portfolio: formData.portfolio || null,
+        available: formData.available,
+        profileImage: profileImage || null,
+      };
+
+      console.log("Saving profile data:", submitData);
+
       const response = await fetch("/api/freelancer/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          userId: currentUser.id,
-          ...formData,
-        }),
+        body: JSON.stringify(submitData),
       });
 
       const data = await response.json();
+      console.log("Save response:", data);
 
       if (response.ok) {
         setSuccess("Profile updated successfully!");
         setProfile(data.profile);
-        fetchProfile();
+        await fetchProfile();
       } else {
         setError(data.error || "Failed to update profile");
       }
@@ -215,7 +244,6 @@ export default function FreelancerProfilePage() {
       size: file.size,
     });
 
-    // Validate file type
     const allowedTypes = [
       "image/jpeg",
       "image/jpg",
@@ -228,7 +256,6 @@ export default function FreelancerProfilePage() {
       return;
     }
 
-    // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
       setError("Image size should be less than 5MB");
       return;
@@ -259,13 +286,11 @@ export default function FreelancerProfilePage() {
 
       if (response.ok) {
         setSuccess("Profile image updated successfully!");
+        setProfileImage(data.imageUrl);
         setProfile((prev) => ({
           ...prev,
           profileImage: data.imageUrl,
-        }));
-        setFormData((prev) => ({
-          ...prev,
-          profileImage: data.imageUrl,
+          avatar: data.imageUrl,
         }));
       } else {
         throw new Error(
@@ -282,21 +307,6 @@ export default function FreelancerProfilePage() {
       }
     }
   };
-
-  useEffect(() => {
-    if (currentUser?.id) {
-      const SaveImage = async () => {
-        const fethImage = await fetch(
-          `/api/freelancer/profile?userId=${currentUser.id}`
-        );
-
-        const data = await fethImage.json();
-        setProfileImage(data.profile.avatar);
-        console.log("Fetched profile data for image save:", data);
-      };
-      SaveImage();
-    }
-  }, [currentUser?.id]);
 
   const deleteResume = async () => {
     if (!confirm("Are you sure you want to delete your resume?")) return;
@@ -345,9 +355,11 @@ export default function FreelancerProfilePage() {
 
       if (response.ok) {
         setSuccess("Profile image removed successfully!");
+        setProfileImage(null);
         setProfile((prev) => ({
           ...prev,
           profileImage: null,
+          avatar: null,
         }));
       }
     } catch (error) {
@@ -373,14 +385,32 @@ export default function FreelancerProfilePage() {
       formData.experience,
       formData.hourlyRate,
       profile?.resumeUrl,
-      profile?.profileImage,
+      profileImage,
     ];
 
     fields.forEach((field) => {
-      if (field) completed++;
+      if (field && field.toString().trim() !== "") completed++;
     });
 
     return Math.round((completed / fields.length) * 100);
+  };
+
+  // Fixed image error handler
+  const handleImageError = (e) => {
+    e.target.style.display = "none";
+    const nextSibling = e.target.nextElementSibling;
+    if (nextSibling) {
+      nextSibling.style.display = "flex";
+    }
+  };
+
+  // Fixed preview image error handler
+  const handlePreviewImageError = (e) => {
+    e.target.style.display = "none";
+    const nextSibling = e.target.nextElementSibling;
+    if (nextSibling) {
+      nextSibling.style.display = "flex";
+    }
   };
 
   if (loading) {
@@ -469,6 +499,11 @@ export default function FreelancerProfilePage() {
               <h2>
                 <FaUser /> Basic Information
               </h2>
+              <div className={styles.profileStatus}>
+                <span className={styles.completionRate}>
+                  {calculateProfileCompletion()}% Complete
+                </span>
+              </div>
             </div>
 
             <form onSubmit={handleSaveProfile} className={styles.profileForm}>
@@ -477,17 +512,19 @@ export default function FreelancerProfilePage() {
                 <label>Profile Image</label>
                 <div className={styles.imageUploadSection}>
                   <div className={styles.imagePreview}>
-                    {profile?.profileImage ? (
+                    {profileImage ? (
                       <>
                         <img
-                          src={profile.profileImage}
+                          src={profileImage}
                           alt="Profile"
                           className={styles.profileImage}
+                          onError={handleImageError}
                         />
                         <button
                           type="button"
                           onClick={deleteProfileImage}
                           className={styles.removeImageButton}
+                          style={{ display: "none" }}
                         >
                           <FaTrash />
                         </button>
@@ -515,9 +552,7 @@ export default function FreelancerProfilePage() {
                       ) : (
                         <>
                           <FaCamera />
-                          {profile?.profileImage
-                            ? "Change Image"
-                            : "Upload Image"}
+                          {profileImage ? "Change Image" : "Upload Image"}
                         </>
                       )}
                     </motion.button>
@@ -851,14 +886,20 @@ export default function FreelancerProfilePage() {
               <div className={styles.previewHeader}>
                 <div className={styles.previewAvatar}>
                   {profileImage ? (
-                    <img src={profileImage} alt="Profile" />
+                    <img
+                      src={profileImage}
+                      alt="Profile"
+                      onError={handlePreviewImageError}
+                    />
                   ) : (
-                    currentUser?.name?.charAt(0).toUpperCase()
+                    <div className={styles.previewAvatarPlaceholder}>
+                      {currentUser?.name?.charAt(0).toUpperCase() || "U"}
+                    </div>
                   )}
                 </div>
                 <div className={styles.previewInfo}>
                   <h4>{formData.title || "Your Professional Title"}</h4>
-                  <p>{currentUser?.name}</p>
+                  <p>{currentUser?.name || "User"}</p>
                   {formData.location && (
                     <div className={styles.previewLocation}>
                       <FaMapMarkerAlt />
@@ -938,7 +979,7 @@ export default function FreelancerProfilePage() {
                   {!formData.bio && <li>Write a compelling bio</li>}
                   {!formData.skills && <li>Add your skills</li>}
                   {!profile?.resumeUrl && <li>Upload your resume</li>}
-                  {!profile?.profileImage && <li>Add a profile image</li>}
+                  {!profileImage && <li>Add a profile image</li>}
                 </ul>
               </div>
             </div>

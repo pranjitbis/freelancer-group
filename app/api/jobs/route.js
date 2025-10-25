@@ -12,35 +12,49 @@ export async function GET(request) {
     const limit = parseInt(searchParams.get("limit")) || 12;
     const category = searchParams.get("category");
     const search = searchParams.get("search");
-    const minBudget = parseFloat(searchParams.get("minBudget"));
-    const maxBudget = parseFloat(searchParams.get("maxBudget"));
+    const minBudget = searchParams.get("minBudget");
+    const maxBudget = searchParams.get("maxBudget");
     const experienceLevel = searchParams.get("experienceLevel");
     const sortBy = searchParams.get("sortBy") || "createdAt";
 
     const skip = (page - 1) * limit;
 
-    // Build where clause
-    const where = {};
+    console.log("📥 API Request Params:", {
+      page,
+      limit,
+      skip,
+      category,
+      search,
+      minBudget,
+      maxBudget,
+      experienceLevel,
+      sortBy,
+    });
 
-    if (userId) {
-      where.userId = parseInt(userId);
-    }
+    // Build where clause
+    const where = {
+      status: "active",
+    };
+
+    // Remove userId filter from where clause since we want all active jobs
+    // Only use userId for saved jobs check later
 
     if (category && category !== "all") {
       where.category = category;
     }
 
-    if (search) {
+    if (search && search.trim() !== "") {
       where.OR = [
         {
           title: {
             contains: search,
-            // Remove mode: "insensitive" - Prisma handles case sensitivity based on database
+            mode: "insensitive",
           },
         },
         {
           description: {
             contains: search,
+            mode: "insensitive",
           },
         },
         {
@@ -53,18 +67,16 @@ export async function GET(request) {
 
     if (minBudget || maxBudget) {
       where.budget = {};
-      if (minBudget) where.budget.gte = minBudget;
-      if (maxBudget) where.budget.lte = maxBudget;
+      if (minBudget) where.budget.gte = parseFloat(minBudget);
+      if (maxBudget) where.budget.lte = parseFloat(maxBudget);
     }
 
     if (experienceLevel && experienceLevel !== "all") {
       where.experienceLevel = experienceLevel;
     }
 
-    where.status = "active";
-
     // Build orderBy
-    const orderBy = {};
+    let orderBy = {};
     if (sortBy === "budget") {
       orderBy.budget = "desc";
     } else if (sortBy === "deadline") {
@@ -73,41 +85,61 @@ export async function GET(request) {
       orderBy.createdAt = "desc";
     }
 
-    const [jobs, totalCount] = await Promise.all([
-      prisma.jobPost.findMany({
-        where,
-        include: {
-          _count: {
-            select: {
-              proposals: true,
-            },
+    console.log("🔍 Prisma Where Clause:", JSON.stringify(where, null, 2));
+    console.log("📊 Prisma OrderBy:", orderBy);
+
+    // Get total count first
+    const totalCount = await prisma.jobPost.count({ where });
+    console.log("📈 Total jobs count:", totalCount);
+
+    // Fetch jobs with related data
+    const jobs = await prisma.jobPost.findMany({
+      where,
+      include: {
+        _count: {
+          select: {
+            proposals: true,
           },
-          user: {
-            include: {
-              profile: {
-                select: {
-                  avatar: true,
-                  hourlyRate: true,
-                },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            profile: {
+              select: {
+                avatar: true,
               },
-              reviewsReceived: {
-                select: {
-                  rating: true,
-                },
+            },
+            reviewsReceived: {
+              select: {
+                rating: true,
               },
             },
           },
         },
-        orderBy,
-        skip,
-        take: limit,
-      }),
-      prisma.jobPost.count({ where }),
-    ]);
+        // Include saved jobs if userId is provided
+        ...(userId && {
+          savedJobs: {
+            where: {
+              userId: parseInt(userId),
+            },
+            select: {
+              id: true,
+            },
+          },
+        }),
+      },
+      orderBy,
+      skip,
+      take: limit,
+    });
 
-    // Calculate average ratings for clients
+    console.log("✅ Jobs found:", jobs.length);
+
+    // Calculate average ratings for clients and add isSaved flag
     const jobsWithClientRating = jobs.map((job) => {
-      const reviews = job.user.reviewsReceived;
+      const reviews = job.user.reviewsReceived || [];
       const avgRating =
         reviews.length > 0
           ? reviews.reduce((sum, review) => sum + review.rating, 0) /
@@ -124,9 +156,15 @@ export async function GET(request) {
         skills = [];
       }
 
+      // Check if job is saved by user
+      const isSaved = userId
+        ? job.savedJobs && job.savedJobs.length > 0
+        : false;
+
       return {
         ...job,
         skills,
+        isSaved,
         user: {
           ...job.user,
           avgRating: Math.round(avgRating * 10) / 10,
@@ -135,22 +173,34 @@ export async function GET(request) {
         createdAt: job.createdAt.toISOString(),
         updatedAt: job.updatedAt.toISOString(),
         deadline: job.deadline.toISOString(),
-        // Full description without any truncation
-        description: job.description,
+        // Remove savedJobs from response to avoid duplication
+        savedJobs: undefined,
       };
     });
 
-    return NextResponse.json({
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    const responseData = {
       success: true,
       jobs: jobsWithClientRating,
       pagination: {
         currentPage: page,
-        totalPages: Math.ceil(totalCount / limit),
+        totalPages,
         totalCount,
-        hasNext: page < Math.ceil(totalCount / limit),
-        hasPrev: page > 1,
+        hasNextPage,
+        hasPrevPage,
+        limit,
       },
+    };
+
+    console.log("📤 API Response:", {
+      jobsCount: jobsWithClientRating.length,
+      pagination: responseData.pagination,
     });
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("❌ Get jobs error:", error);
     return NextResponse.json(
@@ -158,6 +208,14 @@ export async function GET(request) {
         success: false,
         error: "Failed to fetch jobs",
         details: error.message,
+        jobs: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalCount: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
+        },
       },
       { status: 500 }
     );
@@ -178,6 +236,13 @@ export async function POST(request) {
       experienceLevel,
       userId,
     } = body;
+
+    console.log("📝 Creating job with data:", {
+      title,
+      category,
+      budget,
+      userId,
+    });
 
     // Validation
     if (
@@ -228,7 +293,7 @@ export async function POST(request) {
         title: title.trim(),
         description: description.trim(),
         category,
-        skills: JSON.stringify(skills),
+        skills: JSON.stringify(skills || []),
         budget: parseFloat(budget),
         deadline: new Date(deadline),
         experienceLevel: experienceLevel || "intermediate",
@@ -251,6 +316,8 @@ export async function POST(request) {
       },
     });
 
+    console.log("✅ Job created successfully:", job.id);
+
     // Parse skills for response
     let parsedSkills = [];
     try {
@@ -267,8 +334,6 @@ export async function POST(request) {
       createdAt: job.createdAt.toISOString(),
       updatedAt: job.updatedAt.toISOString(),
       deadline: job.deadline.toISOString(),
-      // Full description without any truncation
-      description: job.description,
     };
 
     return NextResponse.json(
@@ -330,6 +395,8 @@ export async function PUT(request) {
       );
     }
 
+    console.log("📝 Updating job:", jobId, "with data:", updateData);
+
     // Handle skills serialization if present
     if (updateData.skills && Array.isArray(updateData.skills)) {
       updateData.skills = JSON.stringify(updateData.skills);
@@ -349,6 +416,8 @@ export async function PUT(request) {
       },
     });
 
+    console.log("✅ Job updated successfully:", jobId);
+
     // Parse skills for response
     let parsedSkills = [];
     try {
@@ -365,8 +434,6 @@ export async function PUT(request) {
       createdAt: updatedJob.createdAt.toISOString(),
       updatedAt: updatedJob.updatedAt.toISOString(),
       deadline: updatedJob.deadline.toISOString(),
-      // Full description without any truncation
-      description: updatedJob.description,
     };
 
     return NextResponse.json({
@@ -414,9 +481,13 @@ export async function DELETE(request) {
       );
     }
 
+    console.log("🗑️ Deleting job:", jobId);
+
     await prisma.jobPost.delete({
       where: { id: parseInt(jobId) },
     });
+
+    console.log("✅ Job deleted successfully:", jobId);
 
     return NextResponse.json({
       success: true,

@@ -28,11 +28,11 @@ export async function POST(request) {
     const {
       conversationId,
       freelancerId,
-      clientId, // This is coming as undefined
+      clientId,
       amount,
       description,
       dueDate,
-      currency = "USD",
+      currency = "USD", // This comes from frontend
     } = body;
 
     console.log("📦 Creating payment request:", {
@@ -42,7 +42,7 @@ export async function POST(request) {
       amount,
       description,
       dueDate,
-      currency,
+      currency, // Log the currency from frontend
     });
 
     // Validate required fields
@@ -58,6 +58,14 @@ export async function POST(request) {
     if (isNaN(paymentAmount) || paymentAmount <= 0) {
       return NextResponse.json(
         { success: false, error: "Invalid amount" },
+        { status: 400 }
+      );
+    }
+
+    // Validate currency
+    if (!["USD", "INR"].includes(currency)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid currency. Use USD or INR" },
         { status: 400 }
       );
     }
@@ -116,14 +124,16 @@ export async function POST(request) {
       );
     }
 
-    // Use client's currency for the payment request
-    const clientCurrency = client?.currency || currency || "USD";
+    // Use the currency sent from the frontend (freelancer's selection)
+    const selectedCurrency = currency || "USD";
+
+    console.log("💰 Selected currency:", selectedCurrency);
 
     let paymentRequest;
     let paymentMessage;
 
     await prisma.$transaction(async (tx) => {
-      // Create payment request with currency
+      // Create payment request with the SELECTED currency
       paymentRequest = await tx.paymentRequest.create({
         data: {
           amount: paymentAmount,
@@ -136,30 +146,26 @@ export async function POST(request) {
           freelancerName: freelancer?.name || "Freelancer",
           projectTitle: conversation?.project?.title || "Project",
           status: "pending",
-          currency: clientCurrency,
+          currency: selectedCurrency, // Use selected currency here
         },
       });
 
       console.log("✅ Payment request created:", {
         id: paymentRequest.id,
         amount: paymentRequest.amount,
-        description: paymentRequest.description,
-        currency: paymentRequest.currency,
+        currency: paymentRequest.currency, // Should now be the selected currency
       });
 
-      // Create payment request message with currency
+      // Create payment request message with the SELECTED currency
       paymentMessage = await tx.message.create({
         data: {
-          content: `Payment Request: ${description} - Amount: ${formatCurrency(
-            paymentAmount,
-            clientCurrency
-          )}`,
+          content: `Payment Request: ${description}`,
           messageType: "PAYMENT_REQUEST",
           amount: paymentAmount,
           senderId: parseInt(freelancerId),
           conversationId: parseInt(conversationId),
           paymentRequestId: paymentRequest.id,
-          currency: clientCurrency,
+          currency: selectedCurrency, // Use selected currency here
         },
         include: {
           sender: {
@@ -180,7 +186,7 @@ export async function POST(request) {
       console.log("💬 Payment request message created:", {
         messageId: paymentMessage.id,
         amount: paymentMessage.amount,
-        currency: paymentMessage.currency,
+        currency: paymentMessage.currency, // Should now be the selected currency
         paymentRequestId: paymentMessage.paymentRequestId,
       });
     });
@@ -226,6 +232,7 @@ export async function POST(request) {
     );
   }
 }
+
 // Get payment requests for a user
 export async function GET(request) {
   try {

@@ -847,7 +847,6 @@ export default function FreelancerHub() {
           )}
         </AnimatePresence>
 
-        {/* Pagination */}
         {pagination.totalPages > 1 && !loading && (
           <motion.div
             className={styles.pagination}
@@ -870,32 +869,93 @@ export default function FreelancerHub() {
             </motion.button>
 
             <div className={styles.pageNumbers}>
-              {Array.from(
-                { length: Math.min(5, pagination.totalPages) },
-                (_, i) => {
-                  const page = i + 1;
-                  return (
-                    <motion.button
-                      key={page}
-                      onClick={() =>
-                        setPagination((prev) => ({
-                          ...prev,
-                          currentPage: page,
-                        }))
-                      }
-                      className={`${styles.pageButton} ${
-                        pagination.currentPage === page ? styles.active : ""
-                      }`}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      animate={{
-                        scale: pagination.currentPage === page ? 1.1 : 1,
-                      }}
-                    >
-                      {page}
-                    </motion.button>
-                  );
+              {/* Always show first page */}
+              <motion.button
+                key={1}
+                onClick={() =>
+                  setPagination((prev) => ({
+                    ...prev,
+                    currentPage: 1,
+                  }))
                 }
+                className={`${styles.pageButton} ${
+                  pagination.currentPage === 1 ? styles.active : ""
+                }`}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                animate={{
+                  scale: pagination.currentPage === 1 ? 1.1 : 1,
+                }}
+              >
+                1
+              </motion.button>
+
+              {/* Show ellipsis if needed */}
+              {pagination.currentPage > 3 && (
+                <span className={styles.pageEllipsis}>...</span>
+              )}
+
+              {/* Show pages around current page */}
+              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+                .filter(
+                  (page) =>
+                    page > 1 &&
+                    page < pagination.totalPages &&
+                    Math.abs(page - pagination.currentPage) <= 1
+                )
+                .map((page) => (
+                  <motion.button
+                    key={page}
+                    onClick={() =>
+                      setPagination((prev) => ({
+                        ...prev,
+                        currentPage: page,
+                      }))
+                    }
+                    className={`${styles.pageButton} ${
+                      pagination.currentPage === page ? styles.active : ""
+                    }`}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    animate={{
+                      scale: pagination.currentPage === page ? 1.1 : 1,
+                    }}
+                  >
+                    {page}
+                  </motion.button>
+                ))}
+
+              {/* Show ellipsis if needed */}
+              {pagination.currentPage < pagination.totalPages - 2 && (
+                <span className={styles.pageEllipsis}>...</span>
+              )}
+
+              {/* Always show last page if there's more than 1 page */}
+              {pagination.totalPages > 1 && (
+                <motion.button
+                  key={pagination.totalPages}
+                  onClick={() =>
+                    setPagination((prev) => ({
+                      ...prev,
+                      currentPage: pagination.totalPages,
+                    }))
+                  }
+                  className={`${styles.pageButton} ${
+                    pagination.currentPage === pagination.totalPages
+                      ? styles.active
+                      : ""
+                  }`}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  animate={{
+                    scale:
+                      pagination.currentPage === pagination.totalPages
+                        ? 1.1
+                        : 1,
+                  }}
+                >
+                  {pagination.totalPages}
+                </motion.button>
               )}
             </div>
 
@@ -912,63 +972,6 @@ export default function FreelancerHub() {
               whileTap={{ scale: 0.95 }}
             >
               Next
-            </motion.button>
-          </motion.div>
-        )}
-
-        {/* Empty State */}
-        {jobs.length === 0 && !loading && (
-          <motion.div
-            className={styles.emptyState}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-          >
-            <motion.div
-              className={styles.emptyIllustration}
-              animate={{
-                y: [0, -10, 0],
-                transition: {
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                },
-              }}
-            >
-              <FaBriefcase />
-            </motion.div>
-            <motion.h3
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              No projects matching your criteria
-            </motion.h3>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              Try adjusting your filters or search terms
-            </motion.p>
-            <motion.button
-              className={styles.resetButton}
-              onClick={() =>
-                setFilters({
-                  search: "",
-                  category: "all",
-                  minBudget: "",
-                  maxBudget: "",
-                  experienceLevel: "all",
-                  sortBy: "createdAt",
-                })
-              }
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              Reset Filters
             </motion.button>
           </motion.div>
         )}

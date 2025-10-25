@@ -1,8 +1,10 @@
 .myJobs {
   min-height: 100vh;
+  margin: 0px 1rem;
+  width: 100%;
   background: #f8fafc;
   padding: 2rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Header */
@@ -10,6 +12,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   margin-bottom: 2rem;
 }
 
@@ -51,6 +54,7 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
+  width: 46vw;
 }
 
 .statCard {
@@ -94,6 +98,8 @@
   gap: 1rem;
   margin-bottom: 2rem;
   align-items: center;
+  justify-content: center;
+  margin: auto;
 }
 
 .searchBox {
@@ -328,14 +334,36 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive Design */
+@media (max-width: 460px) {
+  .header p {
+    max-width: 300px;
+  }
+  .statsOverview {
+    grid-template-columns: 1fr;
+  }
+  .filtersSection {
+    position: relative;
+    right: 250px;
+  }
+}
 @media (max-width: 768px) {
   .myJobs {
     padding: 1rem;
+    margin: 2rem auto;
+  }
+
+  .jobCard {
+    margin: 1rem auto;
+    width: 89vw;
   }
 
   .header {
@@ -350,10 +378,14 @@
 
   .statsOverview {
     grid-template-columns: 1fr;
+    width: 82vw;
   }
 
   .filtersSection {
     flex-direction: column;
+    margin: auto;
+    align-items: center;
+    justify-content: center;
   }
 
   .searchBox {
@@ -362,6 +394,9 @@
 
   .jobsGrid {
     grid-template-columns: 1fr;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
   }
 
   .jobHeader {

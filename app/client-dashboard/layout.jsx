@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import styles from "./ClientDashboard.module.css";
 import { HiReceiptRefund } from "react-icons/hi";
+import { MdOutlineContactSupport } from "react-icons/md";
+
 import {
   FaHome,
   FaPlus,
@@ -46,28 +48,10 @@ export default function ClientDashboardLayout({ children }) {
       path: "/client-dashboard/my-jobs",
     },
     {
-      id: "Message",
-      label: "Message",
-      icon: <MdMessage />,
-      path: "/client-dashboard/messages",
-    },
-    {
       id: "proposals",
       label: "Proposals",
       icon: <FaComments />,
       path: "/client-dashboard/proposals",
-    },
-    {
-      id: "payments",
-      label: "Payments",
-      icon: <FaMoneyBillWave />,
-      path: "/client-dashboard/payments",
-    },
-    {
-      id: "profile",
-      label: "Profile",
-      icon: <FaUserCog />,
-      path: "/client-dashboard/profile",
     },
     {
       id: "Hire-freelancer",
@@ -75,12 +59,39 @@ export default function ClientDashboardLayout({ children }) {
       icon: <HiReceiptRefund />,
       path: "/client-dashboard/hire-freelancer",
     },
+
+    {
+      id: "Message",
+      label: "Message",
+      icon: <MdMessage />,
+      path: "/client-dashboard/messages",
+    },
+
+    {
+      id: "payments",
+      label: "Payment",
+      icon: <FaMoneyBillWave />,
+      path: "/client-dashboard/payments",
+    },
     {
       id: "Refunds",
-      label: "Refunds",
+      label: "Refund",
       icon: <RiRefund2Line size={20} />,
       path: "/client-dashboard/refunds",
       bgColor: "#f0fdf4",
+    },
+
+    {
+      id: "profile",
+      label: "Profile",
+      icon: <FaUserCog />,
+      path: "/client-dashboard/profile",
+    },
+    {
+      id: "Support",
+      label: "Support",
+      icon: <MdOutlineContactSupport />,
+      path: "/client-dashboard/profile",
     },
   ];
 

@@ -303,4 +303,194 @@
   text-decoration: underline;
 }
 
+/* Currency Toggle Styles */
+.currencyControls {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+  align-items: center;
+}
 
+.currencyToggle {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.currencyToggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.converterToggle {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.converterToggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Quick toggle button in stats */
+.quickToggle {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.quickToggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Original value display */
+.originalValue {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-top: 4px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.originalSmall {
+  display: block;
+  font-size: 0.7rem;
+  opacity: 0.6;
+  margin-top: 2px;
+  color: #6b7280;
+}
+
+/* Activity header */
+.activityHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.currencyToggleSmall {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.currencyToggleSmall:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+/* Amount display in activities */
+.amountMain {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Refresh rate button */
+.refreshRateButton {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.refreshRateButton:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.refreshRateButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Currency controls in stat cards */
+.statCard .currencyControls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+/* Enhanced stat card for currency */
+.statCard {
+  position: relative;
+}
+
+/* Performance card currency values */
+.performanceCard h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #1f2937;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .currencyControls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .currencyToggle,
+  .converterToggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .activityHeader {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .currencyToggleSmall {
+    align-self: flex-start;
+  }
+
+  .statCard .currencyControls {
+    position: static;
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+  }
+}

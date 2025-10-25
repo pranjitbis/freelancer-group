@@ -22,7 +22,7 @@ export async function POST(request) {
       twitter,
       portfolio,
       available,
-      profileImage, // Handle profile image updates
+      profileImage,
     } = body;
 
     if (!userId) {
@@ -41,23 +41,35 @@ export async function POST(request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Prepare update data
+    // Prepare update data - handle null/empty values properly
     const updateData = {
-      ...(title !== undefined && { title }),
-      ...(bio !== undefined && { bio }),
-      ...(skills !== undefined && { skills }),
-      ...(experience !== undefined && { experience }),
-      ...(education !== undefined && { education }),
-      ...(hourlyRate !== undefined && { hourlyRate: parseFloat(hourlyRate) }),
-      ...(location !== undefined && { location }),
-      ...(website !== undefined && { website }),
-      ...(github !== undefined && { github }),
-      ...(linkedin !== undefined && { linkedin }),
-      ...(twitter !== undefined && { twitter }),
-      ...(portfolio !== undefined && { portfolio }),
-      ...(available !== undefined && { available }),
-      ...(profileImage !== undefined && { avatar: profileImage }),
+      title: title || null,
+      bio: bio || null,
+      skills: skills || null,
+      experience: experience || null,
+      education: education || null,
+      location: location || null,
+      website: website || null,
+      github: github || null,
+      linkedin: linkedin || null,
+      twitter: twitter || null,
+      portfolio: portfolio || null,
+      available: available !== undefined ? available : true,
     };
+
+    // Handle hourly rate conversion
+    if (hourlyRate !== undefined && hourlyRate !== null && hourlyRate !== "") {
+      updateData.hourlyRate = parseFloat(hourlyRate);
+    } else {
+      updateData.hourlyRate = null;
+    }
+
+    // Handle profile image
+    if (profileImage !== undefined) {
+      updateData.avatar = profileImage || null;
+    }
+
+    console.log("Updating profile with data:", updateData);
 
     // Check if profile exists
     const existingProfile = await prisma.userProfile.findUnique({
@@ -82,16 +94,31 @@ export async function POST(request) {
     }
 
     // If profile image is provided, also update user's main avatar
-    if (profileImage) {
+    if (profileImage !== undefined) {
       await prisma.user.update({
         where: { id: parseInt(userId) },
         data: { avatar: profileImage },
       });
     }
 
+    // Fetch the complete updated profile
+    const updatedProfile = await prisma.userProfile.findUnique({
+      where: { userId: parseInt(userId) },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+
     return NextResponse.json({
       success: true,
-      profile: profile,
+      profile: updatedProfile,
       message: "Profile updated successfully",
     });
   } catch (error) {
@@ -142,13 +169,17 @@ export async function GET(request) {
       );
     }
 
+    // Ensure all fields are properly formatted
+    const formattedProfile = {
+      ...profile,
+      hourlyRate: profile.hourlyRate ? profile.hourlyRate.toString() : "",
+      // Use profile avatar or fallback to user avatar
+      avatar: profile.avatar || profile.user.avatar,
+    };
+
     return NextResponse.json({
       success: true,
-      profile: {
-        ...profile,
-        // Include user's main avatar as fallback
-        avatar: profile.avatar || profile.user.avatar,
-      },
+      profile: formattedProfile,
     });
   } catch (error) {
     console.error("Error fetching profile:", error);

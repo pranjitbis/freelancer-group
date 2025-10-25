@@ -1,19 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Disable Next.js dev indicators
+  devIndicators: false,
+
+  // Performance optimizations
   compress: true,
   poweredByHeader: false,
-  generateEtags: false,
 
+  // Socket.io configuration
   serverExternalPackages: ["socket.io"],
 
+  // Compiler optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
 
-  experimental: {
-    optimizeCss: true,
-  },
-
+  // Webpack configuration
   webpack: (config, { dev, isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -25,12 +27,6 @@ const nextConfig = {
         child_process: false,
       };
     }
-
-    config.optimization = {
-      ...config.optimization,
-      minimize: !dev,
-    };
-
     return config;
   },
 };

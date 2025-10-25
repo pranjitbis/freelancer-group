@@ -1,82 +1,128 @@
+// app\api\auth\reset-password\route.js
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { verifyOTP } from "@/lib/otp";
 
 const prisma = new PrismaClient();
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { email, otp, password } = body;
+    const { email, otp, newPassword } = body;
 
-    if (!email || !otp || !password) {
-      return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: "Password must be at least 6 characters long" },
-        { status: 400 }
-      );
-    }
-
-    // Verify OTP first
-    const otpRecord = await prisma.oTP.findFirst({
-      where: {
-        email,
-        otp,
-      },
+    console.log("🔔 Reset password request received:", {
+      email: email ? `${email.substring(0, 3)}...` : "missing",
+      otpLength: otp ? otp.length : "missing",
+      hasNewPassword: !!newPassword,
     });
 
-    if (!otpRecord) {
-      return NextResponse.json({ error: "Invalid OTP" }, { status: 400 });
-    }
-
-    // Check if OTP has expired
-    if (new Date() > new Date(otpRecord.expiresAt)) {
-      await prisma.oTP.delete({
-        where: { id: otpRecord.id },
+    // Validate all fields
+    if (!email || !otp || !newPassword) {
+      console.log("❌ Missing fields:", {
+        email: !email ? "MISSING" : "present",
+        otp: !otp ? "MISSING" : "present",
+        newPassword: !newPassword ? "MISSING" : "present",
       });
-
-      return NextResponse.json({ error: "OTP has expired" }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "All fields are required",
+          details: {
+            email: !email ? "Email is required" : "ok",
+            otp: !otp ? "OTP is required" : "ok",
+            newPassword: !newPassword ? "New password is required" : "ok",
+          },
+        },
+        { status: 400 }
+      );
     }
+
+    // Validate OTP format
+    if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+      console.log("❌ Invalid OTP format:", otp);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "OTP must be exactly 6 digits",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate password length
+    if (newPassword.length < 6) {
+      console.log("❌ Password too short:", newPassword.length);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Password must be at least 6 characters long",
+        },
+        { status: 400 }
+      );
+    }
+
+    console.log("🔍 Verifying OTP for:", email);
+
+    // Verify OTP
+    const otpVerification = await verifyOTP(email, otp);
+    console.log("📋 OTP verification result:", otpVerification);
+
+    if (!otpVerification.isValid) {
+      console.log("❌ OTP verification failed:", otpVerification.message);
+      return NextResponse.json(
+        {
+          success: false,
+          error: otpVerification.message,
+        },
+        { status: 400 }
+      );
+    }
+
+    console.log("✅ OTP verified successfully");
 
     // Find user
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { email: email.toLowerCase().trim() },
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      console.log("❌ User not found:", email);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "User not found",
+        },
+        { status: 404 }
+      );
     }
 
+    console.log("✅ User found:", user.email);
+
     // Hash new password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
 
     // Update user password
     await prisma.user.update({
-      where: { email },
-      data: {
-        password: hashedPassword,
-      },
+      where: { email: email.toLowerCase().trim() },
+      data: { password: hashedPassword },
     });
 
-    // Delete the used OTP
-    await prisma.oTP.delete({
-      where: { id: otpRecord.id },
-    });
+    console.log("🎉 Password reset successful for:", email);
 
     return NextResponse.json({
       success: true,
-      message: "Password reset successfully",
+      message:
+        "Password reset successfully! You can now login with your new password.",
     });
   } catch (error) {
-    console.error("Reset password error:", error);
+    console.error("💥 Reset password error:", error);
     return NextResponse.json(
-      { error: "Failed to reset password" },
+      {
+        success: false,
+        error: "An error occurred while resetting password",
+        details: error.message,
+      },
       { status: 500 }
     );
   }
