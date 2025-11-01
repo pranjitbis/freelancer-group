@@ -1,0 +1,693 @@
+/* DashboardLayout.module.css */
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+.container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Mobile Header */
+.mobileHeader {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 20px;
+  z-index: 1000;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobileHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mobileHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menuToggle {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.menuToggle:hover {
+  background-color: #f1f5f9;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background: rgb(26, 37, 57);
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 1000;
+  transition: width 0.3s ease;
+}
+
+.sidebarTablet {
+  width: 80px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+}
+
+.sidebarHeader {
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  color: #1e293b;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.logo:hover {
+  text-decoration: none;
+  color: #1e293b;
+}
+
+.logoText h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: #c4c4c4;
+}
+
+.logoText p {
+  font-size: 12px;
+  margin: 0;
+  color: #c4c4c4;
+}
+
+/* User Section */
+.userSection {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  transition: padding 0.3s ease;
+}
+
+.sidebarTablet .userSection {
+  padding: 20px;
+  justify-content: center;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.sidebarTablet .avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+}
+
+.avatarSmall {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.userInfo {
+  flex: 1;
+  transition: opacity 0.3s ease;
+}
+
+.sidebarTablet .userInfo {
+  display: none;
+}
+
+.userName {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #f0f0f0;
+}
+
+.userRole {
+  font-size: 14px;
+  margin: 0 0 8px 0;
+  color: #f0f0f0;
+}
+
+/* Navigation */
+.nav {
+  flex: 1;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: none;
+  color: #f0f0f0;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  text-align: left;
+  width: 100%;
+  text-decoration: none;
+  border: none;
+}
+
+.navItemTablet {
+  padding: 12px;
+  justify-content: center;
+}
+
+.navItem:hover {
+  background-color: #f8fafc;
+  color: #334155;
+  text-decoration: none;
+}
+
+.navItem.active {
+  background-color: #f1f5f9;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.navIcon {
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.navLabel {
+  font-size: 14px;
+  font-weight: inherit;
+  transition: opacity 0.3s ease;
+}
+
+.sidebarTablet .navLabel {
+  display: none;
+}
+
+.activeIndicator {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  background: #3b82f6;
+  border-radius: 2px 0 0 2px;
+}
+
+.activeIndicatorTablet {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: #3b82f6;
+  border-radius: 2px 0 0 2px;
+}
+
+/* Plan Badges */
+.freeBadge {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+}
+
+.premiumBadge {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #f59e0b;
+}
+
+.proBadge {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #3b82f6;
+}
+
+.businessBadge {
+  background: #f3e8ff;
+  color: #6b21a8;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #8b5cf6;
+}
+
+/* Upgrade Badge Styles */
+.upgradeBadgeContainer {
+  padding: 16px 2px 8px;
+}
+
+.upgradeBadge {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 1px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+}
+
+.upgradeBadge:hover {
+  background: #f59e0b;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Upgrade Button in Sidebar */
+.upgradeBtn {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 8px 1px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  max-width: 120px;
+  justify-content: center;
+  margin-top: 8px;
+  transition: all 0.3s ease;
+}
+
+.upgradeBtn:hover {
+  background: #f59e0b;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.upgradeBtnMobile {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s ease;
+}
+
+.upgradeBtnMobile:hover {
+  background: #f59e0b;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Sidebar Footer */
+.sidebarFooter {
+  padding: 20px 24px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: padding 0.3s ease;
+}
+
+.sidebarTablet .sidebarFooter {
+  padding: 16px;
+}
+
+.sidebarButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: #f0f0f0;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 6px;
+  font-size: 14px;
+  text-decoration: none;
+  width: 100%;
+}
+
+.sidebarButtonTablet {
+  padding: 12px;
+  justify-content: center;
+}
+
+.sidebarButton:hover {
+  background-color: #f8fafc;
+  color: #334155;
+  text-decoration: none;
+}
+
+.logoutButton {
+  color: #ececec;
+}
+
+.logoutButton:hover {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.mainTablet {
+  margin-left: 80px;
+}
+
+.mainMobile {
+  margin-left: 0;
+}
+
+.breadcrumbSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px 0;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumbSeparator {
+  color: #cbd5e1;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.content {
+  flex: 1;
+  padding: 0 32px 32px;
+}
+
+/* Loading */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 16px;
+  color: #64748b;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .mobileHeader {
+    display: flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .main {
+    margin-left: 80px;
+    padding-top: 64px;
+  }
+
+  .mainMobile {
+    margin-left: 0;
+  }
+
+  .breadcrumbSection {
+    padding: 20px 20px 0;
+  }
+
+  .content {
+    padding: 0 20px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 280px;
+  }
+
+  .sidebarTablet {
+    width: 280px;
+  }
+
+  .main {
+    margin-left: 0;
+  }
+
+  .mainTablet {
+    margin-left: 0;
+  }
+
+  .breadcrumbSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .headerActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .mobileHeaderRight .planDisplayMobile span {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+
+  .upgradeBadgeContainer {
+    padding: 12px 16px 8px;
+  }
+
+  .upgradeBadge {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .upgradeBtnMobile {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobileHeader {
+    padding: 0 16px;
+    height: 60px;
+  }
+
+  .breadcrumbSection {
+    padding: 16px 16px 0;
+  }
+
+  .content {
+    padding: 0 16px 16px;
+  }
+
+  .userSection {
+    padding: 20px;
+  }
+
+  .sidebarHeader {
+    padding: 20px;
+  }
+
+  .sidebarFooter {
+    padding: 16px 20px;
+  }
+
+  .avatarSmall {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .mobileHeaderRight {
+    gap: 6px;
+  }
+
+  .upgradeBtnMobile {
+    padding: 4px 6px;
+    font-size: 0;
+  }
+
+  .upgradeBtnMobile::after {
+    content: "↑";
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+  .upgradeBadge {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .upgradeBadgeContainer {
+    padding: 12px 16px 6px;
+  }
+}
+
+/* Tooltip for tablet mode */
+.navItemTablet {
+  position: relative;
+}
+
+.navItemTablet:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1e293b;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-left: 8px;
+}
+
+.sidebarButtonTablet {
+  position: relative;
+}
+
+.sidebarButtonTablet:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1e293b;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-left: 8px;
+}
+
+/* Tablet mode adjustments for upgrade button */
+.sidebarTablet .upgradeBtn {
+  padding: 6px;
+  font-size: 0;
+}
+
+.sidebarTablet .upgradeBtn::after {
+  content: "↑";
+  font-size: 12px;
+  font-weight: bold;
+}

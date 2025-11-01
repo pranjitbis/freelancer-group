@@ -1,0 +1,79 @@
+.applicationForm {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 16px;
+  max-width: 700px;
+  margin: 2rem auto;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+}
+
+.applicationForm h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #222;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 0.9rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fafafa;
+  transition: border-color 0.3s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  border-color: #0077ff;
+  outline: none;
+  background: #fff;
+}
+
+.submitBtn {
+  display: block;
+  width: 100%;
+  background: #0077ff;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.submitBtn:hover {
+  background: #005fcc;
+  transform: translateY(-2px);
+}
+
+.successMessage {
+  text-align: center;
+  background: #e6ffe9;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #4caf50;
+}
+
+.successMessage h3 {
+  color: #2e7d32;
+  margin-bottom: 0.5rem;
+}

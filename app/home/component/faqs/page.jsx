@@ -11,72 +11,99 @@ const FAQ = () => {
     setOpenQuestion(openQuestion === index ? null : index);
   };
 
+  const generalFAQs = [
+    {
+      question: "What is Aroliya?",
+      answer:
+        "Aroliya is a digital platform offering services like online form filling, virtual assistants, e-commerce support, travel & hotel booking, and a freelancer–client job portal.",
+    },
+    {
+      question: "Is Aroliya free to use?",
+      answer:
+        "Yes, browsing services is free. Charges apply only when you use a paid service or hire a freelancer.",
+    },
+    {
+      question: "How can I contact Aroliya support?",
+      answer:
+        "You can reach us via our website contact form, email, or WhatsApp for quick support.",
+    },
+    {
+      question: "Can I trust Aroliya with my personal data?",
+      answer:
+        "Yes. We follow strict privacy policies and secure servers to protect user data.",
+    },
+    {
+      question: "Do you provide services across India?",
+      answer:
+        "Yes, our services are available online to users from all over India.",
+    },
+  ];
+
   const clientFAQs = [
     {
-      question: "Can I track the status of my form request?",
+      question: "How can I hire a freelancer on Aroliya?",
       answer:
-        "Yes. After submission, you'll receive a Request ID. You can use it to check your status via email/WhatsApp updates.",
+        "Register as a client, post your project/job, and receive applications from freelancers. You can select the best match.",
     },
     {
-      question: "What e-commerce services do you provide?",
+      question: "How do payments work?",
       answer:
-        "We provide product listing, store setup (Shopify, WooCommerce, Amazon, Flipkart), order management, and marketing support.",
+        "Clients deposit project fees into Aroliya's escrow system. Funds are released to freelancers only after client approval.",
     },
     {
-      question: "How can I contact for support?",
+      question: "Can I post multiple jobs at once?",
       answer:
-        "You can reach us via email, phone, or WhatsApp. Visit our Contact Us page for details.",
+        "Yes, clients can post multiple jobs depending on their project needs.",
     },
     {
-      question: "Do you provide customer support after service completion?",
+      question: "How can I ensure the quality of freelancers?",
       answer:
-        "Yes, we provide limited post-service support for corrections, clarifications, or follow-ups.",
+        "Freelancers are rated and reviewed after each project. You can check profiles, ratings, and portfolios before hiring.",
     },
     {
-      question: "What types of forms can you help with?",
+      question: "Do I need to pay for posting a job?",
       answer:
-        "We assist with job applications, government forms, admission forms, exam registrations, and more.",
-    },
-    {
-      question: "How long does it take to complete a form request?",
-      answer:
-        "Most requests are completed within 24–48 hours, depending on the complexity and documents provided.",
+        "Basic job posting is free. Featured job postings and premium options are available at a small fee.",
     },
   ];
 
   const freelancerFAQs = [
     {
-      question: "How do I join as a freelancer?",
+      question: "How can I register as a freelancer on Aroliya?",
       answer:
-        "Click on the Freelancer tab and complete our registration process with your skills and portfolio.",
+        "Simply sign up through the 'Freelancer Registration' page and create your profile.",
     },
     {
-      question: "What skills are you looking for in freelancers?",
+      question: "Is there a membership fee?",
       answer:
-        "We're looking for experts in form filling, data entry, e-commerce management, virtual assistance, and more.",
+        "We offer Basic (Free) and Premium (Paid) memberships. Premium members get priority listing and more job opportunities.",
     },
     {
-      question: "How does the payment work for freelancers?",
+      question: "How do I get paid for my work?",
       answer:
-        "Freelancers receive payments based on completed projects, with transparent pricing and regular payouts.",
+        "Payments are managed through Aroliya's secure wallet. Clients deposit funds, and payments are released once the work is approved.",
     },
     {
-      question: "What support do you provide to freelancers?",
+      question: "Can freelancers apply for multiple jobs?",
       answer:
-        "We offer training, client matching, project management tools, and continuous support.",
+        "Yes, freelancers can apply for unlimited jobs (depending on their membership type).",
     },
     {
-      question: "Can I work remotely as a freelancer?",
-      answer: "Yes, all our freelance opportunities are remote and flexible.",
-    },
-    {
-      question: "How quickly will I get projects after registration?",
+      question: "What kind of jobs are available?",
       answer:
-        "Most freelancers start receiving projects within 1-2 weeks after profile verification.",
+        "Jobs related to form filling, virtual assistance, e-commerce solutions, travel booking support, content creation, data analysis, and more.",
     },
   ];
 
-  const currentFAQs = activeTab === "client" ? clientFAQs : freelancerFAQs;
+  // Determine which FAQs to show based on active tab
+  let currentFAQs = [];
+  if (activeTab === "general") {
+    currentFAQs = generalFAQs;
+  } else if (activeTab === "client") {
+    currentFAQs = clientFAQs;
+  } else {
+    currentFAQs = freelancerFAQs;
+  }
 
   return (
     <section className={styles.faqSection} id="faq">
@@ -92,6 +119,14 @@ const FAQ = () => {
 
         {/* Filter Tabs */}
         <div className={styles.tabs}>
+          <button
+            className={`${styles.tab} ${
+              activeTab === "general" ? styles.active : ""
+            }`}
+            onClick={() => setActiveTab("general")}
+          >
+            General
+          </button>
           <button
             className={`${styles.tab} ${
               activeTab === "client" ? styles.active : ""
@@ -129,10 +164,9 @@ const FAQ = () => {
         )}
 
         {/* FAQ Items */}
-        <div className={styles.faqGrid}>
+        <div className={styles.faqGrid} data-aos="zoom-out-up">
           {currentFAQs.map((faq, index) => (
             <div
-              data-aos="zoom-out-up"
               key={index}
               className={`${styles.faqItem} ${
                 openQuestion === index ? styles.active : ""

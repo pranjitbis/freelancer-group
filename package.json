@@ -3,25 +3,43 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "node server.js",
     "build": "next build --turbopack",
-    "start": "next start",
+    "start": "NODE_ENV=production node server.js",
     "lint": "eslint"
   },
   "dependencies": {
+    "@botpress/webchat": "^3.2.11",
+    "@prisma/client": "^6.16.2",
     "aos": "^2.3.4",
-    "framer-motion": "^12.23.12",
+    "axios": "^1.12.2",
+    "bcryptjs": "^3.0.2",
+    "compression": "^1.8.1",
+    "crypto-js": "^4.2.0",
+    "express": "^5.1.0",
+    "framer-motion": "^12.23.19",
     "gsap": "^3.13.0",
-    "next": "15.5.2",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "next": "^15.5.2",
+    "next-auth": "^4.24.11",
+    "next-sitemap": "^4.2.3",
+    "nextjs-google-analytics": "^2.3.7",
+    "nodemailer": "^6.10.1",
+    "razorpay": "^2.9.6",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-intersection-observer": "^9.16.0",
+    "recharts": "^3.3.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "swiper": "^11.2.10"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/socket.io": "^3.0.1",
     "eslint": "^9",
-    "eslint-config-next": "15.5.2"
+    "eslint-config-next": "15.5.2",
+    "prisma": "^6.16.2"
   }
 }

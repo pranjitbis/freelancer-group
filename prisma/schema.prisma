@@ -1,0 +1,619 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/*
+  Enums
+*/
+enum RefundStatus {
+  pending
+  approved
+  rejected
+  processed
+  cancelled
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  PAYMENT_REQUEST
+  PAYMENT_COMPLETED
+  PAYMENT_FAILED
+  SYSTEM
+  PROJECT_UPDATE
+}
+
+enum ReviewType {
+  CLIENT_TO_FREELANCER
+  FREELANCER_TO_CLIENT
+}
+
+// Add the missing enums
+enum ProposalStatus {
+  pending
+  accepted
+  rejected
+  cancelled
+}
+
+enum TransactionType {
+  DEBIT
+  CREDIT
+  REFUND
+  PAYOUT
+  CONNECT_USAGE 
+}
+
+/*
+  Models
+*/
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  status    String?  @default("active")
+  avatar    String?
+  wallet    Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  currency  String   @default("USD")
+  lastLogin DateTime? 
+  // Relations
+  profile              UserProfile?
+  jobPosts             JobPost[]
+  proposals            Proposal[]
+  sentMessages         Message[] @relation("MessageSender")
+  reviewsGiven         Review[] @relation("ReviewGiven")
+  reviewsReceived      Review[] @relation("ReviewReceived")
+  transactions         Transaction[]
+  clientConversations  Conversation[] @relation("ClientConversations")
+  freelancerConversations Conversation[] @relation("FreelancerConversations")
+  clientPaymentRequests PaymentRequest[] @relation("ClientPaymentRequests")
+  freelancerPaymentRequests PaymentRequest[] @relation("FreelancerPaymentRequests")
+  clientProjects       Project[] @relation("ClientProjects")
+  freelancerProjects   Project[] @relation("FreelancerProjects")
+  readMessages         Message[] @relation("MessageReads")
+  registrationMethod String @default("email")
+  userPlan             UserPlan?
+  connectTransactions  ConnectTransaction[]
+  planSubscriptions    PlanSubscription[]
+  freelancerWallet     FreelancerWallet?
+
+  clientRefunds        RefundRequest[] @relation("ClientRefunds")
+  freelancerRefunds    RefundRequest[] @relation("FreelancerRefunds")
+  savedJobs            SavedJob[]
+  sentContactRequests     ContactRequest[] @relation("ClientContactRequests")
+  receivedContactRequests ContactRequest[] @relation("FreelancerContactRequests")
+  
+  // Add relations for ClientToFreelancerProposal
+  sentProposals        ClientToFreelancerProposal[] @relation("ClientProposals")
+  receivedProposals    ClientToFreelancerProposal[] @relation("FreelancerProposals")
+}
+
+model ContactRequest {
+  id            Int      @id @default(autoincrement())
+  subject       String
+  message       String   @db.Text
+  projectDetails String? @db.Text
+  status        String   @default("pending") // pending, accepted, declined
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  clientId      Int
+  client        User     @relation("ClientContactRequests", fields: [clientId], references: [id], onDelete: Cascade)
+
+  freelancerId  Int
+  freelancer    User     @relation("FreelancerContactRequests", fields: [freelancerId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, freelancerId, createdAt])
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  type        String
+  status      String   @default("completed")
+  paymentId   String?
+  orderId     String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserProfile {
+  id          Int      @id @default(autoincrement())
+  bio         String?
+  skills      String?
+  experience  String?
+  education   String?
+  portfolio   String?
+  avatar      String?
+  phoneNumber String?
+  hourlyRate  Float?
+  title       String?
+  location    String?
+  website     String?
+  github      String?
+  linkedin    String?
+  twitter     String?
+  resumeUrl   String?
+  phone       String?
+  available   Boolean  @default(true)
+  panNumber   String?  // Add this line
+  gstNumber   String?  // Add this line
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model JobPost {
+  id              Int      @id @default(autoincrement())
+  title           String
+  description     String   @db.Text
+  category        String
+  skills          String
+  budget          Float
+  deadline        DateTime
+  experienceLevel String   @default("intermediate")
+  status          String   @default("active")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  proposals       Proposal[]
+  messages        Message[]
+  reviews         Review[]
+  savedJobs       SavedJob[]
+}
+
+model Proposal {
+  id               Int       @id @default(autoincrement())
+  coverLetter      String
+  bidAmount        Float
+  timeframe        Int
+  status           String    @default("pending")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  jobId            Int
+  job              JobPost   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  freelancerId     Int
+  freelancer       User      @relation(fields: [freelancerId], references: [id], onDelete: Cascade)
+
+  messages         Message[]
+  conversationId   Int?
+  conversation     Conversation? @relation(fields: [conversationId], references: [id])
+
+  connectTransactions ConnectTransaction[]
+
+  // ✅ Fixed: Added @unique constraint to make one-to-one relation valid
+  project          Project?  @relation("ProposalToProject")
+
+  @@unique([jobId, freelancerId])
+}
+
+model Message {
+  id              Int      @id @default(autoincrement())
+  content         String
+  messageType     MessageType @default(TEXT)
+  fileUrl         String?
+  amount          Float?
+  paymentStatus   String?
+  currency        String?  @default("USD")
+  createdAt       DateTime @default(now())
+
+  senderId        Int
+  sender          User    @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  jobId           Int?
+  job             JobPost? @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  proposalId      Int?
+  proposal        Proposal? @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  parentId        Int?
+  parent          Message? @relation("MessageReplies", fields: [parentId], references: [id])
+  replies         Message[] @relation("MessageReplies")
+
+  conversationId  Int?
+  conversation    Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  paymentRequestId Int?
+  paymentRequest   PaymentRequest? @relation(fields: [paymentRequestId], references: [id], onDelete: Cascade)
+
+  readBy          User[]    @relation("MessageReads")
+}
+
+model Review {
+  id            Int       @id @default(autoincrement())
+  rating        Int
+  comment       String?
+  type          ReviewType @default(CLIENT_TO_FREELANCER)
+  aspects       String?
+  wouldWorkAgain Boolean?  @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+
+  reviewerId    Int
+  reviewer      User      @relation("ReviewGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  revieweeId    Int
+  reviewee      User      @relation("ReviewReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
+
+  jobId         Int?
+  job           JobPost?  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  projectId     Int?
+  project       Project?  @relation("ProjectReviews", fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, type])
+}
+
+model FormData {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String
+  serviceCategory String?
+  message         String?
+  phone           String?
+  createdAt       DateTime @default(now())
+  status          String   @default("Pending")
+
+  @@map("formdata")
+}
+
+model JobApplication {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String
+  phone           String
+  serviceCategory String?
+  experience      String?
+  resumeUrl       String?
+  letter          String?
+  userId          Int?
+  createdAt       DateTime @default(now())
+  status          String   @default("Pending")
+
+  @@map("job")
+}
+
+model Order {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String
+  service         String?
+  paymentId       String?
+  status          String?  @default("Pending")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  userId          Int?
+  category        String?
+  duration        String?
+  experienceLevel String?
+  phone           String?
+  quantity        Int      @default(1)
+  requirements    String?
+  resume          String?
+  subcategory     String?
+  urgency         String?  @default("standard")
+
+  @@map("order")
+}
+
+model BankDetail {
+  id             Int      @id @default(autoincrement())
+  bankName       String
+  accountNumber  String
+  accountHolder  String
+  ifscCode       String
+  branch         String
+  isVerified     Boolean  @default(false)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  walletId       Int
+  wallet         FreelancerWallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  payoutRequests  PayoutRequest[]
+}
+
+model WalletTransaction {
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  type        String
+  description String
+  status      String   @default("completed")
+  createdAt   DateTime @default(now())
+
+  walletId    Int
+  wallet      FreelancerWallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+}
+
+model FreelancerWallet {
+  id        Int      @id @default(autoincrement())
+  balance   Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions   WalletTransaction[]
+  bankDetails    BankDetail[]
+  payoutRequests PayoutRequest[]
+}
+
+model PayoutRequest {
+  id           Int      @id @default(autoincrement())
+  amount       Float
+  status       String   @default("pending")
+  description  String?
+  adminNotes   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  walletId     Int
+  wallet       FreelancerWallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  bankDetailId Int
+  bankDetail   BankDetail @relation(fields: [bankDetailId], references: [id], onDelete: Cascade)
+}
+
+model VirtualAssistance {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  service   String?
+  message   String?
+  status    String   @default("Pending")
+  createdAt DateTime @default(now())
+}
+
+model Conversation {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  clientId      Int
+  client        User    @relation("ClientConversations", fields: [clientId], references: [id], onDelete: Cascade)
+
+  freelancerId  Int
+  freelancer    User    @relation("FreelancerConversations", fields: [freelancerId], references: [id], onDelete: Cascade)
+
+  projectId     Int?
+  project       Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  messages         Message[]
+  paymentRequests  PaymentRequest[]
+  proposals        Proposal[]
+  clientToFreelancerProposals ClientToFreelancerProposal[]
+
+  @@unique([clientId, freelancerId, projectId])
+}
+
+model PaymentRequest {
+  id                Int      @id @default(autoincrement())
+  amount            Float
+  description       String
+  status            String   @default("pending")
+  dueDate           DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  currency          String   @default("USD")
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  freelancerName    String?
+  clientName        String?
+  projectTitle      String?
+
+  conversationId    Int
+  conversation      Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  clientId          Int
+  client            User @relation("ClientPaymentRequests", fields: [clientId], references: [id], onDelete: Cascade)
+
+  freelancerId      Int
+  freelancer        User @relation("FreelancerPaymentRequests", fields: [freelancerId], references: [id], onDelete: Cascade)
+
+  messages          Message[]
+  refundRequests    RefundRequest[]
+}
+
+model Project {
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String
+  budget       Float
+  status       String   @default("active")
+  reviewStatus String?  @default("pending_reviews")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  completedAt  DateTime?
+  completedBy  String?  // Add this line to track who completed the project
+
+  proposalId   Int?     @unique
+  proposal     Proposal? @relation("ProposalToProject", fields: [proposalId], references: [id], onDelete: Cascade)
+
+  clientId     Int
+  client       User    @relation("ClientProjects", fields: [clientId], references: [id], onDelete: Cascade)
+  freelancerId Int?
+  freelancer   User?   @relation("FreelancerProjects", fields: [freelancerId], references: [id], onDelete: Cascade)
+
+  conversations Conversation[]
+  reviews        Review[] @relation("ProjectReviews")
+}
+
+model UserPlan {
+  id           Int      @id @default(autoincrement())
+  planType     String   @default("free")
+  connects     Int      @default(10)
+  usedConnects Int      @default(0)
+  expiresAt    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId       Int      @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("userplan")
+}
+
+model ClientToFreelancerProposal {
+  id          Int      @id @default(autoincrement())
+  projectTitle     String
+  projectDescription String
+  coverLetter   String
+  bidAmount     Float
+  timeframe     Int
+  status        ProposalStatus @default(pending)
+  
+  clientId     Int
+  client       User   @relation("ClientProposals", fields: [clientId], references: [id], onDelete: Cascade)
+  
+  freelancerId Int
+  freelancer   User   @relation("FreelancerProposals", fields: [freelancerId], references: [id], onDelete: Cascade)
+  
+  conversationId Int?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  connectTransactions ConnectTransaction[]
+
+  @@map("client_to_freelancer_proposals")
+}
+
+model ConnectTransaction {
+  id                              Int    @id @default(autoincrement())
+  type                            TransactionType
+  amount                          Int
+  description                     String
+  createdAt                       DateTime @default(now())
+  
+  // Relations
+  userId                          Int
+  user                            User    @relation(fields: [userId], references: [id])
+  
+  proposalId                      Int?
+  proposal                        Proposal? @relation(fields: [proposalId], references: [id])
+  
+  clientToFreelancerProposalId    Int?
+  clientToFreelancerProposal      ClientToFreelancerProposal? @relation(fields: [clientToFreelancerProposalId], references: [id])
+  
+  @@map("connect_transactions")
+}
+
+model RefundRequest {
+  id            Int      @id @default(autoincrement())
+  amount        Float
+  reason        String
+  description   String?
+  status        RefundStatus @default(pending)
+  adminNotes    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  paymentRequestId Int
+  paymentRequest   PaymentRequest @relation(fields: [paymentRequestId], references: [id], onDelete: Cascade)
+
+  clientId       Int
+  client         User @relation("ClientRefunds", fields: [clientId], references: [id], onDelete: Cascade)
+
+  freelancerId   Int
+  freelancer     User @relation("FreelancerRefunds", fields: [freelancerId], references: [id], onDelete: Cascade)
+
+  processedById  Int?
+  processedBy    Admin? @relation("AdminProcessedRefunds", fields: [processedById], references: [id])
+
+  @@map("refundrequest")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  status    String   @default("active")
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  processedRefunds RefundRequest[] @relation("AdminProcessedRefunds")
+
+  @@map("admin")
+}
+
+model PlanSubscription {
+  id          Int      @id @default(autoincrement())
+  planType    String
+  amount      Float
+  currency    String   @default("INR")
+  status      String   @default("active")
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  startsAt    DateTime @default(now())
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("plansubscription")
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  email     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("passwordresettoken")
+}
+
+model OTP {
+  id        String   @id @default(cuid())
+  otp       String
+  email     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("otps")
+}
+
+model SavedJob {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  jobId Int
+  job   JobPost @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@map("savedjob")
+}

@@ -19,15 +19,7 @@ export default function Testimonials() {
       rating: 5,
       company: "TechStart Inc.",
     },
-    {
-      image: three,
-      name: "Priya Sharma",
-      service: "E-Commerce Solutions",
-      description:
-        "Our store runs smoother with streamlined products, orders, and customer care—measurable gains in efficiency and growth.",
-      rating: 4.5,
-      company: "FashionHub",
-    },
+
     {
       image: four,
       name: "Arjun Patel",
@@ -39,7 +31,7 @@ export default function Testimonials() {
     },
     {
       image: five,
-      name: "Sneha Gupta",
+      name: "Rohit Gupta",
       service: "Data Visualization Services",
       description:
         "Clear, actionable dashboards that turn complex data into instant insights—better decisions in less time.",
@@ -57,7 +49,7 @@ export default function Testimonials() {
     },
     {
       image: two,
-      name: "Ananya Reddy",
+      name: "Anand Reddy",
       service: "Virtual Assistant Services",
       description:
         "Outstanding organizational skills and attention to detail. Made our daily operations seamless and efficient.",
@@ -114,7 +106,6 @@ export default function Testimonials() {
       <div className={styles.container}>
         {/* Header Section */}
         <div className={styles.header} data-aos="zoom-out-up">
-       
           <h2 className={styles.title}>What Our Clients Say</h2>
           <p className={styles.subtitle}>
             Trusted by professionals and businesses across India and worldwide
@@ -124,7 +115,7 @@ export default function Testimonials() {
         {/* Horizontal Scrolling Cards */}
         <div className={styles.scrollContainer}>
           <div className={styles.scrollWrapper}>
-            <div className={styles.horizontalScroll} >
+            <div className={styles.horizontalScroll}>
               {[...data, ...data].map((item, index) => (
                 <div key={index} className={styles.card}>
                   {/* Rating */}

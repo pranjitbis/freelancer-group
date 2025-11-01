@@ -1,0 +1,761 @@
+/* styles/Services.module.css */
+.container {
+  min-height: 100vh;
+  background: #0f0f23;
+  color: white;
+}
+
+.navbar {
+  background-color: rgb(209, 190, 190) !important;
+  position: relative;
+  z-index: 100;
+}
+
+/* Hero Section */
+.hero {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  position: relative;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+}
+
+.heroBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+      circle at 20% 80%,
+      rgba(102, 126, 234, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(118, 75, 162, 0.1) 0%,
+      transparent 50%
+    );
+}
+
+.heroContent {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  width: 100%;
+  z-index: 2;
+  position: relative;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #a8b2d1 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradientText {
+  background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+  background-size: 300% 300%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 4s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  color: #a8b2d1;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+}
+
+.highlight {
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.downloadCard {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 160px;
+  transition: all 0.3s ease;
+}
+
+.downloadCard button {
+  background: none;
+  cursor: pointer;
+  border: none;
+  color: rgb(171, 174, 177);
+  transition: 0.3s ease;
+}
+
+.downloadCard button:hover {
+  color: rgb(54, 87, 194);
+}
+
+.downloadCard:hover {
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+}
+
+.downloadIcon {
+  font-size: 2rem;
+  color: #667eea;
+}
+
+.downloadContent h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+/* Code Window */
+.heroVisual {
+  display: flex;
+  justify-content: center;
+  padding: 0px 10px;
+}
+
+.codeWindow {
+  background: #1e1e1e;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 100%;
+}
+
+.windowHeader {
+  background: #2d2d2d;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #404040;
+}
+
+.windowControls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.windowControls span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+
+.windowControls span:nth-child(2) {
+  background: #ffbd2e;
+}
+
+.windowControls span:nth-child(3) {
+  background: #28ca42;
+}
+
+.fileName {
+  color: #a8b2d1;
+  font-size: 0.875rem;
+  font-family: "Monaco", "Consolas", monospace;
+}
+
+.codeContent {
+  padding: 1.5rem;
+  background: #1e1e1e;
+}
+
+.codeContent pre {
+  margin: 0;
+  color: #d4d4d4;
+  font-family: "Monaco", "Consolas", monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Features Section */
+.features {
+  padding: 6rem 2rem;
+  background: #0f0f23;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.sectionHeader h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #ffffff 0%, #a8b2d1 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sectionHeader p {
+  font-size: 1.1rem;
+  color: #a8b2d1;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.featuresContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 3rem;
+}
+
+.featuresNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.featureTab {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #a8b2d1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.featureTab:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.3);
+  color: #667eea;
+}
+
+.featureTab.active {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.featureIcon {
+  font-size: 1.25rem;
+}
+
+.featureContent {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 2.5rem;
+}
+
+.featureDetail h3 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.featureDetail p {
+  color: #a8b2d1;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.highlights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.highlightItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #a8b2d1;
+}
+
+.checkIcon {
+  color: #48bb78;
+  font-size: 1rem;
+}
+
+/* Git Section */
+.gitSection {
+  padding: 6rem 2rem;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+}
+
+.gitContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.gitContent h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #ffffff 0%, #a8b2d1 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gitIcon {
+  font-size: 3rem;
+  color: #667eea;
+  margin-bottom: 1.5rem;
+}
+
+.gitContent p {
+  color: #a8b2d1;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.gitFeatures {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.gitFeature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #a8b2d1;
+}
+
+.gitFeature svg {
+  color: #48bb78;
+}
+
+/* Terminal */
+.terminal {
+  background: #1e1e1e;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.terminalHeader {
+  background: #2d2d2d;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #404040;
+}
+
+.terminalControls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.terminalControls span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+
+.terminalControls span:nth-child(2) {
+  background: #ffbd2e;
+}
+
+.terminalControls span:nth-child(3) {
+  background: #28ca42;
+}
+
+.terminalHeader span {
+  color: #a8b2d1;
+  font-size: 0.875rem;
+  font-family: "Monaco", "Consolas", monospace;
+}
+
+.terminalContent {
+  padding: 1.5rem;
+}
+
+.terminalContent pre {
+  margin: 0;
+  color: #d4d4d4;
+  font-family: "Monaco", "Consolas", monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Technologies Section */
+.technologiesSection {
+  padding: 6rem 2rem;
+  background: #0f0f23;
+}
+
+.techGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.techCard {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.techCard:hover {
+  border-color: rgba(102, 126, 234, 0.3);
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.techIcon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.techCard span {
+  color: #a8b2d1;
+  font-weight: 500;
+}
+
+/* Projects Section */
+.projectsSection {
+  padding: 6rem 2rem;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+}
+
+.projectsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.projectCard {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.projectCard:hover {
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: translateY(-5px);
+}
+
+.projectHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.projectHeader h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.25rem;
+}
+
+.projectStatus {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
+}
+
+.status {
+  background: rgba(72, 187, 120, 0.2);
+  color: #48bb78;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.revenue {
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.projectCard p {
+  color: #a8b2d1;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.projectTech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.techTag {
+  background: rgba(255, 255, 255, 0.1);
+  color: #a8b2d1;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.testimonials {
+  padding: 6rem 0rem;
+  background: #0f0f23;
+  overflow: hidden; /* hide overflow for smooth scroll */
+}
+
+.testimonialsGrid {
+  display: flex; /* make horizontal container */
+  overflow: hidden;
+}
+
+.testimonialsTrack {
+  display: flex; /* flex row for cards */
+  gap: 2rem;
+  animation: scrollLeft 70s linear infinite; /* continuous scroll */
+}
+
+.testimonialCard {
+  flex: 0 0 auto; /* keep width fixed */
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 2rem;
+  transition: 0.3s ease;
+
+  min-width: 300px; /* optional: fix minimum card width */
+}
+
+/* Keyframes for moving left */
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0); /* start at original position */
+  }
+  100% {
+    transform: translateX(-50%); /* move half track width for seamless loop */
+  }
+}
+
+.testimonialCard:hover {
+  margin-top: 20px;
+}
+.testimonialCard:hover ~ .testimonialsTrack,
+.testimonialsTrack:hover {
+  animation-play-state: paused;
+}
+.rating {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.rating .star {
+  color: #fbbf24;
+  font-size: 1rem;
+}
+
+.testimonialCard p {
+  color: #a8b2d1;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.author {
+  display: flex;
+  flex-direction: column;
+}
+
+.author strong {
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.author span {
+  color: #a8b2d1;
+  font-size: 0.875rem;
+}
+
+/* Final CTA */
+.finalCTA {
+  padding: 6rem 2rem;
+  background: rgb(1, 12, 22);
+  text-align: center;
+}
+
+.ctaContent {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ctaIcon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.ctaContent h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.ctaContent p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2.5rem;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+  .heroContent {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .downloadCard {
+    margin: auto;
+  }
+
+  .featuresContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .gitContainer {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .highlights {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 500px) {
+  .hero {
+    min-height: 110vh !important;
+  }
+}
+@media (max-width: 380px) {
+  .hero {
+    min-height: 130vh !important;
+  }
+  .heroVisual {
+    max-width: 322px !important;
+    margin: auto;
+  }
+}
+@media (max-width: 768px) {
+  .hero {
+    padding: 1rem;
+  }
+
+  .features,
+  .gitSection,
+  .technologiesSection,
+  .projectsSection,
+  .testimonials,
+  .finalCTA {
+    padding: 4rem 1rem;
+  }
+
+  .heroText h2 {
+    font-size: 1.9rem;
+    text-align: center;
+    margin: auto;
+  }
+
+  .heroContent {
+    margin: auto;
+    justify-content: center;
+  }
+  .heroVisual {
+    max-width: 772px;
+    margin: auto;
+  }
+
+  .heroText p {
+    font-size: 1rem;
+  }
+  .sectionHeader h2 {
+    font-size: 2rem;
+  }
+
+  .downloadCard {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .heroSubtitle {
+    text-align: center;
+    margin: 10px;
+  }
+}

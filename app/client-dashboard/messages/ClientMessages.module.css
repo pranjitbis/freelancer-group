@@ -1,0 +1,1434 @@
+/* ClientMessages.module.css */
+.clientMessages {
+  height: 100vh;
+  background-color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 4rem 0;
+}
+
+.connectionStatus {
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.connected {
+  background-color: #f0f9ff;
+  color: #0369a1;
+}
+
+.disconnected {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.reconnectButton {
+  margin-left: 8px;
+  padding: 2px 8px;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background-color: white;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.backButton,
+.menuButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.backButton:hover,
+.menuButton:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.walletInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.walletIcon {
+  color: #059669;
+}
+
+.walletBalance {
+  font-weight: 600;
+  color: #059669;
+}
+
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  margin: 0 20px 8px 20px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.errorIcon {
+  flex-shrink: 0;
+}
+
+.errorClose {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+.sidebarHidden {
+  transform: translateX(-100%);
+}
+
+.sidebarHeader {
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.searchBox {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.conversationsList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #64748b;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e2e8f0;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.conversationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.conversationItem:hover {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.conversationItem.active {
+  background-color: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.conversationAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background-color: #3b82f6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.conversationInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.conversationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.conversationHeader h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.time {
+  font-size: 12px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.lastMessage {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.projectTag {
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: #f1f5f9;
+  color: #475569;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.acceptedBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #059669;
+  font-weight: 500;
+}
+
+.unreadBadge {
+  background-color: #ef4444;
+  color: white;
+  border-radius: 8px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 16px;
+  text-align: center;
+}
+
+.noConversations {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #64748b;
+}
+
+.noConversationsIcon {
+  color: #cbd5e1;
+  margin-bottom: 16px;
+}
+
+.noConversations p {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  color: #475569;
+}
+
+.noConversations span {
+  font-size: 14px;
+}
+
+/* Chat Area Styles */
+.chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.chatAreaFull {
+  width: 100%;
+}
+
+.chatHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: white;
+  flex-shrink: 0;
+}
+
+.chatUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.backToConversations {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.backToConversations:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.chatAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background-color: #059669;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.chatUserInfo h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.userStatus {
+  margin: 2px 0 0 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.typingIndicator {
+  color: #3b82f6;
+  font-style: italic;
+}
+
+.chatActions {
+  display: flex;
+  gap: 8px;
+}
+
+.messagesContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #f8fafc;
+}
+
+.noMessages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #64748b;
+}
+
+.noMessagesIcon {
+  color: #cbd5e1;
+  margin-bottom: 16px;
+}
+
+.noMessages p {
+  margin: 0;
+  font-weight: 600;
+  color: #475569;
+}
+
+.dateDivider {
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+}
+
+.dateDivider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e2e8f0;
+  z-index: 1;
+}
+
+.dateDivider span {
+  background-color: #f8fafc;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  position: relative;
+  z-index: 2;
+}
+
+.messageWrapper {
+  display: flex;
+  margin-bottom: 16px;
+}
+
+.sentWrapper {
+  justify-content: flex-end;
+}
+
+.receivedWrapper {
+  justify-content: flex-start;
+}
+
+.messageAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background-color: #3b82f6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin: 0 8px;
+}
+
+.receivedWrapper .messageAvatar {
+  background-color: #059669;
+}
+
+.messageContentWrapper {
+  max-width: 70%;
+}
+
+.messageBubble {
+  padding: 12px 16px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.sent .messageBubble {
+  background-color: #3b82f6;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.received .messageBubble {
+  background-color: white;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-bottom-left-radius: 4px;
+}
+
+.messageBubble p {
+  margin: 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.messageMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  justify-content: flex-end;
+}
+
+.messageTime {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.sent .messageTime {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.received .messageTime {
+  color: #64748b;
+}
+
+.messageStatus {
+  display: flex;
+  align-items: center;
+}
+
+.sentIcon,
+.readIcon {
+  font-size: 12px;
+}
+
+.sentIcon {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.readIcon {
+  color: #34d399;
+}
+
+.systemMessage {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.systemMessage span {
+  background-color: #f1f5f9;
+  color: #64748b;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.paymentRequest {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  max-width: 400px;
+}
+
+.paymentHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.currencyIcon {
+  color: #059669;
+}
+
+.paymentDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.paymentAmount strong {
+  font-size: 18px;
+  color: #059669;
+}
+
+.currencyCode {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: normal;
+}
+
+.paymentAmount p {
+  margin: 4px 0 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.paymentActions {
+  display: flex;
+  gap: 8px;
+}
+
+.approveButton,
+.rejectButton {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.approveButton {
+  background-color: #059669;
+  color: white;
+}
+
+.approveButton:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+.rejectButton {
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.rejectButton:hover:not(:disabled) {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.approveButton:disabled,
+.rejectButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.paymentStatus {
+  text-align: center;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.pending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.approved {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.rejected {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.completed {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.paymentCompleted {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #d1fae5;
+  color: #059669;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.successIcon {
+  flex-shrink: 0;
+}
+
+.inputContainer {
+  padding: 16px 20px;
+  background-color: white;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.attachButton,
+.emojiButton,
+.sendButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.attachButton:hover,
+.emojiButton:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.messageInputContainer {
+  flex: 1;
+  position: relative;
+}
+
+.messageInput {
+  width: 100%;
+  padding: 12px 48px 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  background-color: #f8fafc;
+  font-size: 14px;
+  resize: none;
+  transition: all 0.2s;
+}
+
+.messageInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.emojiButton {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.sendButton {
+  background-color: #3b82f6;
+  color: white;
+  padding: 10px;
+}
+
+.sendButton:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.sendButton:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.noConversation {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc;
+}
+
+.noConversationContent {
+  text-align: center;
+  max-width: 400px;
+  padding: 40px;
+}
+
+.noConversationIcon {
+  color: #cbd5e1;
+  margin-bottom: 20px;
+}
+
+.noConversation h3 {
+  margin: 0 0 12px 0;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.noConversation p {
+  margin: 0 0 24px 0;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.showConversationsButton {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.showConversationsButton:hover {
+  background-color: #2563eb;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.paymentModal {
+  background-color: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 0 24px;
+  margin-bottom: 20px;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.walletInfoSection {
+  padding: 0 24px 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.currentBalance {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: #f0f9ff;
+  border-radius: 8px;
+  border: 1px solid #bae6fd;
+}
+
+.currentBalance div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.currentBalance span {
+  font-size: 12px;
+  color: #0369a1;
+}
+
+.currentBalance strong {
+  font-size: 18px;
+  color: #0369a1;
+  font-weight: 700;
+}
+
+.balanceNote {
+  margin: 12px 0 0 0;
+  font-size: 14px;
+  color: #64748b;
+  text-align: center;
+}
+
+.presetAmounts,
+.customAmount {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.presetAmounts h4,
+.customAmount h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.amountGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.amountButton {
+  padding: 12px 8px;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.amountButton:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.amountButton.selected {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.amountInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currencySymbol {
+  position: absolute;
+  left: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.amountInput input {
+  width: 100%;
+  padding: 12px 12px 12px 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.amountInput input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.minAmount {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.paymentActions {
+  padding: 24px;
+  display: flex;
+  gap: 12px;
+}
+
+.cancelButton,
+.payButton {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cancelButton {
+  background-color: white;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.cancelButton:hover {
+  background-color: #f8fafc;
+  color: #374151;
+}
+
+.payButton {
+  background-color: #059669;
+  color: white;
+}
+
+.payButton:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+.payButton:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.securityNote {
+  padding: 16px 24px 24px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748b;
+  border-top: 1px solid #f1f5f9;
+}
+
+.securityIcon {
+  color: #059669;
+}
+
+/* Responsive Design */
+@media (min-width: 1168px) {
+  .sidebar {
+    position: static;
+    max-width: 400px;
+    transform: none !important;
+  }
+
+  .chatArea {
+    width: calc(100% - 400px);
+  }
+
+  .chatAreaFull {
+    width: 100%;
+  }
+
+  .menuButton,
+  .backToConversations,
+  .showConversationsButton {
+    display: none;
+  }
+
+  .header {
+    padding: 16px 24px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .messagesContainer {
+    padding: 24px;
+  }
+
+  .inputContainer {
+    padding: 16px 24px;
+  }
+}
+
+@media (max-width: 1168px) {
+  .sidebar {
+    width: 100%;
+    max-width: none;
+  }
+
+  .chatArea {
+    width: 100%;
+  }
+
+  .messageContentWrapper {
+    max-width: 85%;
+  }
+
+  .amountGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .header {
+    padding: 12px 16px;
+  }
+
+  .messagesContainer {
+    padding: 16px;
+  }
+
+  .inputContainer {
+    padding: 12px 16px;
+  }
+
+  .paymentModal {
+    margin: 10px;
+  }
+
+  .modalHeader,
+  .walletInfoSection,
+  .presetAmounts,
+  .customAmount,
+  .paymentActions {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .conversationAvatar,
+  .chatAvatar {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .messageContentWrapper {
+    max-width: 90%;
+  }
+
+  .paymentRequest {
+    max-width: 100%;
+  }
+
+  .paymentActions {
+    flex-direction: column;
+  }
+
+  .amountGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* Add these styles to your existing ClientMessages.module.css */
+
+/* Wallet Section */
+.walletSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.walletInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.walletBalanceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.walletBalancePrimary {
+  font-weight: 600;
+  color: #059669;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.walletBalanceSecondary {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.currencyToggle {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.currencyToggle:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.refreshIcon {
+  color: #64748b;
+  animation: spin 1s linear infinite;
+}
+
+/* Payment Modal Currency Styles */
+.currencySelector {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.currencySelector h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.currencyOptions {
+  display: flex;
+  gap: 8px;
+}
+
+.currencyOption {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.currencyOption:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.currencyOption.selected {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.balanceAmounts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.balancePrimary {
+  font-size: 18px;
+  color: #0369a1;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.balanceSecondary {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.convertedAmount {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+  color: #059669;
+  font-weight: 500;
+  text-align: center;
+  padding: 8px;
+  background-color: #f0f9ff;
+  border-radius: 6px;
+  border: 1px solid #bae6fd;
+}
+
+/* Payment Request Amount Styles */
+.amountPrimary {
+  font-size: 18px;
+  color: #059669;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.amountSecondary {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .walletSection {
+    gap: 8px;
+  }
+
+  .walletInfo {
+    padding: 6px 10px;
+  }
+
+  .walletBalancePrimary {
+    font-size: 13px;
+  }
+
+  .walletBalanceSecondary {
+    font-size: 10px;
+  }
+
+  .currencyOptions {
+    flex-direction: column;
+  }
+
+  .balancePrimary {
+    font-size: 16px;
+  }
+
+  .balanceSecondary {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .walletSection {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .walletInfo {
+    padding: 4px 8px;
+  }
+
+  .amountPrimary {
+    font-size: 16px;
+  }
+
+  .amountSecondary {
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,19 @@
+fix the aliement in proposal page are client dashbord 
+send proposal add attechment in freelancer dashbord 
+
+
+
+
+///Today//// remove /s/  /saved-job/ 
+
+
+give the permistion in upload image in freelancer profile page 
+check the save job showing the 404 error in find work page
+find-work job not rederect to dashboord rederect to find-work page 
+mention 10% service fees in freelancer dasbord plan page
+review page free like compate the project then freelancer and client will be give the review. 
+
+
+Today
+
+main::: check the register  page are showing are no user found issus

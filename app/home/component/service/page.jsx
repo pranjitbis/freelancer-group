@@ -1,109 +1,143 @@
 import React from "react";
 import styles from "./Services.module.css";
 import Image from "next/image";
-import first from "../../../../public/icons/online-form-filling.png";
-import second from "../../../../public/icons/virtual-assistant.png";
-import third from "../../../../public/icons/Ecommerce.png";
-import fourth from "../../../../public/icons/online-booking.png";
-import DataVisualizationServices from "../../../../public/icons/data-analytics.png";
-import onlineBooking from "../../../../public/icons/online-booking.png";
-import MachineLearningSolutions from "../../../../public/icons/freelancer-3d.png";
+import { FaCheck, FaArrowRight } from "react-icons/fa";
+import Link from "next/link";
 
 const Services = () => {
   const services = [
-        {
-      image: MachineLearningSolutions,
-      title: "Freelancer Services Connect. Work. Earn",
+    {
+      image: "/icons/freelancer-3d.png",
+      title: "Freelancer Services",
       features: [
         "Access verified client projects",
-       "Work across diverse categories",
+        "Work across diverse categories",
         "Build long-term client relationships",
-        "Secure, on-time payments with escrow protection"
+        "Secure, on-time payments",
       ],
-      buttonText: "Resgister",
+      buttonText: "Join Platform",
+      stat: "5K+ Freelancers",
     },
     {
-      image: first,
+      image: "/icons/online-form-filling.png",
       title: "Online Form Filling",
       features: [
-        "Government Exam & Job Applications",
+        "Exam & Job Applications",
         "Education & Admission Forms",
         "Banking & Financial Forms",
-        "Travel & Other Services",
+        "Travel & Visa Applications",
       ],
-      buttonText: "Submit Request",
+      buttonText: "Start Submission",
+      stat: "10K+ Forms",
+      link: "/services/form-filling"
     },
     {
-      image: second,
-      title: "Virtual Assistant Services",
+      image: "/icons/virtual-assistant.png",
+      title: "Virtual Assistant",
       features: [
-        "Calendar booking and management",
-        "Email follow-ups and responses",
-        "Document formatting and editing",
-        "Data entry and organization",
+        "Calendar management & scheduling",
+        "Email management & correspondence",
+        "Document preparation & formatting",
+        "Data organization & entry",
       ],
-      buttonText: "Hire a VA",
+      buttonText: "Hire Assistant",
+      stat: "24/7 Support",
+      link: "/services/virtual-assistance",
     },
     {
-      image: third,
+      image: "/icons/Ecommerce.png",
       title: "E-Commerce Solutions",
       features: [
-        "Catalog & Product Management",
-        "Order & Inventory Management",
-        "Digital Marketing for Sellers",
-        "Customer Support Outsourcing",
+        "Product catalog management",
+        "Inventory & order processing",
+        "Digital marketing strategies",
+        "Customer support solutions",
       ],
-      buttonText: "Get Started",
+      buttonText: "Boost Sales",
+      stat: "500+ Stores",
+      link: "/services/e-eommerce-solutions",
     },
     {
-      image: fourth,
+      image: "/icons/travel-bookings1.jpg",
       title: "Travel & Hotel Booking",
       features: [
-        "Domestic & International flights",
-        "Train Tickets — Instant PNR updates and seat preferences",
-        "Bus Tickets — Verified operators and easy reschedules",
-        "Hotel Stays — Curated properties with secure booking",
+        "Domestic & international flights",
+        "Train tickets with real-time updates",
+        "Verified transportation partners",
+        "Premium accommodation options",
       ],
-      buttonText: "Book Now",
+      buttonText: "Plan Journey",
+      stat: "5K+ Travelers",
+      link: "/services/travel-bookings",
     },
     {
-      image: DataVisualizationServices,
-      title: "Data Visualization Services and ML",
+      image: "/icons/data-visualization.png",
+      title: "Data & AI Solutions",
       features: [
-        "Power BI, Tableau, Looker Studio dashboards",
-        "Custom Data Visualizations",
-        "Business Reporting",
-        "Real-time Data Monitoring",
+        "Interactive dashboard development",
+        "Custom data visualization",
+        "AI-powered analytics",
+        "Business intelligence reporting",
       ],
-      buttonText: "Data Visualization Services",
+      buttonText: "Get Insights",
+      stat: "AI Powered",
+      link: "/services/data-visualization",
     },
-
   ];
 
   return (
     <section className={styles.services} id="services">
       <div className={styles.container}>
-        <h1 className={styles.mainTitle}>Our Services</h1>
-    
+        {/* Header Section */}
+        <div className={styles.header}>
+          <h2 className={styles.title}>Our Services</h2>
+          <p className={styles.subtitle}>
+            Professional solutions designed to optimize operations and drive
+            business growth
+          </p>
+        </div>
 
-        <div className={styles.divider}></div>
-
+        {/* Services Grid */}
         <div className={styles.servicesGrid}>
           {services.map((service, index) => (
-            <div key={index} data-aos="fade-up" className={styles.serviceCard}>
-              <Image src={service.image} alt="err" />
-              <h2 className={styles.serviceTitle}>{service.title}</h2>
-              <p className={styles.serviceDescription}>{service.description}</p>
+            <div key={index} className={styles.serviceCard}>
+              {/* Service Image - Larger size with high quality */}
+              <div className={styles.imageContainer}>
+                <Image
+                  src={service.image}
+                  alt={service.title}
+                  width={140}
+                  height={140}
+                  className={styles.serviceImage}
+                  quality={100}
+                  priority={index < 3}
+                  unoptimized={true} // Bypass Next.js optimization for original quality
+                />
+              </div>
 
-              <ul className={styles.featuresList}>
-                {service.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className={styles.featureItem}>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+              {/* Service Content */}
+              <div className={styles.content}>
+                <div className={styles.headerSection}>
+                  <h3 className={styles.serviceTitle}>{service.title}</h3>
+                  <span className={styles.serviceStat}>{service.stat}</span>
+                </div>
 
-              <button className={styles.ctaButton}>{service.buttonText}</button>
+                <ul className={styles.featuresList}>
+                  {service.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className={styles.featureItem}>
+                      <FaCheck className={styles.checkIcon} />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link href={service.link || "#"} className={styles.serviceLink}>
+                  <button className={styles.ctaButton}>
+                    {service.buttonText}
+                    <FaArrowRight className={styles.arrowIcon} />
+                  </button>
+                </Link>
+              </div>
             </div>
           ))}
         </div>

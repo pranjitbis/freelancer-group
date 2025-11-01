@@ -1,78 +1,147 @@
-.trustedSection{
-  width: 100%;
-  background: #f8f8f8;
-  padding: 100px 20px ;
-  box-sizing: border-box;
+.trustedSection {
+  padding: 50px 0 0;
+  background: #f6faff;
+  position: relative;
+  overflow: hidden;
 }
 
 .trustedContainer {
-  max-width: 1200px;
   margin: 0 auto;
+}
+
+/* Header Section */
+.sectionHeader {
   text-align: center;
   margin-bottom: 60px;
 }
 
 .trustedTitle {
-  font-size: 36px;
+  font-size: 2.5rem;
   font-weight: 700;
-  color: #222;
-  letter-spacing: 0.5px;
-}
-
-.trustedSliderContainer {
-  position: relative;
-  height: 180px;
-  overflow: hidden;
-}
-
-.trustedSlider {
-  display: flex;
-  gap: 60px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  align-items: center;
-}
-
-.trustedLogoWrapper {
-  width: 200px;
-  height: 120px;
-  background: #f8f8f8;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s ease;
-}
-
-
-.trustedLogoWrapper:hover {
-  transform: scale(1.05);
-}
-
-.trustedLogo {
-  max-height: 80px;
-  max-width: 100%;
-  object-fit: contain;
-}
-
-.trustedNext {
-  max-width: 800px;
-  margin: 120px auto 0;
-  text-align: center;
+  color: #1e293b;
+  margin-bottom: 20px;
+  line-height: 1.2;
 }
 
 .trustedSubtitle {
-  font-size: 28px;
-  font-weight: 600;
-  color: #333;
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
 }
 
-.trustedText {
-  font-size: 18px;
-  color: #555;
-  margin-top: 18px;
-  line-height: 1.6;
+/* Trust Metrics */
+.trustMetrics {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.metricIcon {
+  color: #2563eb;
+  font-size: 1.1rem;
+}
+
+
+
+/* Logo Slider */
+.logoSliderContainer {
+  position: relative;
+  overflow: hidden;
+  padding: 40px 0;
+}
+
+.logoSlider {
+  display: flex;
+  gap: 60px;
+  align-items: center;
+  width: max-content;
+}
+
+.logoItem {
+  padding: 20px 30px;
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logoItem:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.companyLogo {
+  height: 70px;
+  width: auto;
+  transition: all 0.3s ease;
+}
+
+.logoItem:hover .companyLogo {
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .trustedSection {
+    padding: 60px 0;
+  }
+
+  .trustedTitle {
+    font-size: 2rem;
+  }
+
+  .trustedSubtitle {
+    font-size: 1rem;
+  }
+
+  .trustMetrics {
+    gap: 20px;
+  }
+
+  .metric {
+    font-size: 0.9rem;
+  }
+
+  .logoSlider {
+    gap: 40px;
+  }
+
+  .logoItem {
+    padding: 15px 25px;
+  }
+
+  .companyLogo {
+    height: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .trustedTitle {
+    font-size: 1.8rem;
+  }
+
+  .trustMetrics {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .logoSlider {
+    gap: 30px;
+  }
+
+  .logoItem {
+    padding: 12px 20px;
+  }
+
+  .companyLogo {
+    height: 25px;
+  }
 }

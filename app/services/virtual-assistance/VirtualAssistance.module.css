@@ -1,0 +1,651 @@
+/* VirtualAssistance.module.css */
+.container {
+  margin: 0 auto;
+  scroll-behavior: smooth;
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 8%;
+  position: relative;
+  bottom: 70px;
+}
+
+.heroContent {
+  width: 90%;
+  max-width: 710px;
+  padding-right: 40px;
+  margin: 0px 130px;
+}
+
+.heroTitle {
+  font-size: 3.2rem;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-weight: 700;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroDescription {
+  font-size: 1.3rem;
+  color: #5a6b7c;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.heroCta {
+  display: flex;
+  gap: 15px;
+}
+
+.ctaButton,
+.primaryButton {
+  padding: 16px 32px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
+}
+
+.ctaButton:hover,
+.primaryButton:hover {
+  background: #2980b9;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
+}
+
+.secondaryButton {
+  padding: 16px 32px;
+  background: white;
+  color: #3498db;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.secondaryButton:hover {
+  background: #f8f9fa;
+  transform: translateY(-3px);
+}
+
+.heroImage {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.graphicElement {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+}
+
+.graphicElement img {
+  width: 100%;
+  max-width: 660px;
+  height: auto;
+}
+
+/* Section Styles */
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.sectionSubtitle {
+  font-size: 1.2rem;
+  color: #5a6b7c;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Services Section */
+.services {
+  padding: 80px 10px 0;
+  background-color: #f8f9fa;
+  border-radius: 20px;
+  margin: 0px 0 0;
+  position: relative;
+  z-index: 1;
+  bottom: 120px;
+}
+
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  padding: 60px;
+  align-items: center;
+}
+
+.serviceCard {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  text-align: center;
+  border-top: 5px solid #3498db;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.serviceCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.serviceIcon {
+  margin-bottom: 20px;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.serviceIcon img {
+  width: 100%;
+  max-width: 200px;
+  height: 200px;
+}
+
+.serviceTitle {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.serviceDescription {
+  color: #5a6b7c;
+  margin-bottom: 20px;
+}
+
+.serviceFeatures {
+  list-style: none;
+  text-align: left;
+  margin: 30px 0;
+}
+
+.serviceFeature img {
+  width: 15px;
+  height: 15px;
+}
+
+.TickMark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.serviceFeature {
+  padding: 12px 0;
+  color: #5a6b7c;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.serviceFeature:last-child {
+  border-bottom: none;
+}
+
+.serviceButton {
+  padding: 12px 25px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.serviceButton:hover {
+  background: #2980b9;
+}
+
+/* Process Section */
+.process {
+  background-color: white;
+  z-index: 2;
+  padding: 40px 20px 20px;
+}
+
+.processSteps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.processStep {
+  text-align: center;
+  padding: 30px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.processStep:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stepNumber {
+  width: 60px;
+  height: 60px;
+  background: #99aebd;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 auto 20px;
+}
+
+.stepTitle {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.stepDescription {
+  color: #5a6b7c;
+}
+
+/* Pricing Section */
+.pricing {
+  padding: 50px 0 30px;
+  background-color: #f8f9fa;
+  border-radius: 20px;
+  align-items: center;
+}
+
+.pricingPlans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 50px 20px 0;
+  align-items: center;
+}
+
+.planCard {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  text-align: center;
+  position: relative;
+}
+
+.planCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.recommended {
+  border: 2px solid #3498db;
+  transform: scale(1.05);
+}
+
+.recommended:hover {
+  transform: scale(1.05) translateY(-5px);
+}
+
+.recommendedBadge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #3498db;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.planName {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.planPrice {
+  margin-bottom: 20px;
+}
+
+.price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #3498db;
+}
+
+.period {
+  color: #5a6b7c;
+  font-size: 1rem;
+}
+
+.planDescription {
+  color: #5a6b7c;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.planFeatures {
+  list-style: none;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.planFeature {
+  padding: 10px 0;
+  color: #5a6b7c;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.planFeature img {
+  width: 15px;
+  height: 15px;
+}
+
+.planFeature:last-child {
+  border-bottom: none;
+}
+
+.authorAvatar {
+  width: 50px;
+  height: 50px;
+  background: #3498db;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.authorInfo h4 {
+  margin-bottom: 5px;
+  color: #2c3e50;
+}
+
+.authorInfo p {
+  color: #5a6b7c;
+  font-size: 0.9rem;
+}
+
+/* Contact Section */
+.contact {
+  background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+  color: white;
+  padding: 20px;
+  margin: 72px 0 0px;
+}
+
+.contactContainer {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.contactContent {
+  text-align: center;
+}
+
+.contactTitle {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.contactDescription {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  opacity: 0.9;
+}
+
+.contactForm {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.formRow {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.formGroup {
+  flex: 1;
+  min-width: 250px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.submitButton {
+  width: 100%;
+  padding: 18px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.submitButton:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+.successMessage {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.successMessage h3 {
+  color: #27ae60;
+  margin-bottom: 15px;
+}
+
+/* Animation Classes */
+.fadeInUp {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fadeIn {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1571px) {
+  .hero {
+    display: flex;
+    gap: 0px !important;
+  }
+}
+
+@media (max-width: 1299px) {
+  .hero {
+    bottom: 0;
+    padding: 120px 0;
+  }
+  .graphicElement {
+    max-width: 400px;
+  }
+  .services {
+    z-index: 1;
+    bottom: 20px;
+  }
+}
+@media (max-width: 1255px) {
+  .hero {
+    flex-direction: column;
+    margin: 130px 0;
+  }
+
+  .heroContent {
+    text-align: center;
+  }
+
+  .heroCta {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  .graphicElement img {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 140px 0;
+  }
+
+  .process {
+    position: relative;
+    bottom: 143px;
+    background-color: white;
+    z-index: 2;
+    padding: 40px 20px 30px;
+  }
+
+  .heroContent {
+    padding-right: 0;
+    margin-bottom: 40px;
+  }
+
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .heroDescription {
+    font-size: 1.1rem;
+  }
+
+  .heroCta {
+    justify-content: center;
+  }
+
+  .sectionTitle {
+    font-size: 2rem;
+  }
+
+  .pricingPlans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    margin: auto;
+    justify-content: center;
+  }
+
+  .recommended {
+    transform: scale(1);
+  }
+
+  .recommended:hover {
+    transform: translateY(-5px);
+  }
+
+  .contactForm {
+    padding: 25px;
+  }
+}
+
+@media (max-width: 1300px) {
+  .hero {
+    margin: -69px 0;
+  }
+}
+@media (max-width: 400px) {
+  .ctaButton,
+  .primaryButton {
+    padding: 16px 32px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+  .servicesGrid {
+    padding: 10px;
+  }
+
+  .secondaryButton {
+    font-size: 1rem;
+  }
+  .graphicElement {
+    height: 300px;
+  }
+
+  .graphicElement img {
+    height: 400px;
+  }
+}

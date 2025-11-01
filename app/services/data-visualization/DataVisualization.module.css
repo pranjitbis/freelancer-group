@@ -1,0 +1,492 @@
+/* DataVisualization.module.css */
+
+/* Reusable button styles */
+.btnPrimary {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btnPrimary:hover {
+  background: #1e40af;
+}
+
+.btnOutline {
+  background: transparent;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  padding: 10px 26px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btnOutline:hover {
+  background: #2563eb;
+  color: #fff;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(135deg, #f9fafb, #eef2ff);
+}
+
+/* Industries Section */
+.industries {
+  padding: 40px 20px;
+  background: #f9fafb;
+}
+
+.industriesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.industryCard {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: left;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.industryCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+.industryIcon {
+  font-size: 2rem;
+  color: #2563eb;
+  margin-bottom: 35px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.industryCard h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.industryList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.industryList li {
+  font-size: 0.95rem;
+  text-align: center;
+  justify-content: center;
+  color: #4b5563;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.industryList li::before {
+  content: "✔";
+  color: #16a34a;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.heroContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0px 130px;
+}
+
+.heroText h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.heroText p {
+  font-size: 1.1rem;
+  color: #4b5563;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  width: 100%;
+  max-width: 500px;
+}
+
+.heroBtns {
+  display: flex;
+  gap: 15px;
+}
+
+.heroImage {
+  flex: 1;
+  text-align: right;
+  margin: 0;
+}
+
+.heroImage img {
+  max-width: 500px;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* Section Headings */
+.sectionHead {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 50px auto;
+}
+
+.sectionHead h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.sectionHead p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+/* Features */
+.features {
+  padding: 80px 20px;
+  background: #ffffff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 70px;
+  padding: 0px 20px;
+}
+
+.grids {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 70px;
+  padding: 0px 20px;
+}
+
+.card {
+  background: #f5f5f5;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.116);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.icon {
+  font-size: 2.7rem;
+  color: #ffffff;
+  background-color: rgb(52, 159, 221);
+  width: 100px;
+  height: 68px;
+  border-radius: 10px;
+  padding: 10px 25px;
+  margin-bottom: 25px;
+}
+
+.card h3 {
+  margin-bottom: 10px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #263a66;
+}
+
+.card p {
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Use Cases */
+.useCases {
+  padding: 80px 20px;
+  background: #f1f5f9;
+}
+
+.caseList {
+  max-width: 700px;
+  margin: 0 auto;
+  list-style: none;
+  padding: 0;
+}
+
+.caseList li {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+/* Pricing */
+.pricing {
+  padding: 30px 40px;
+  background: #f8f8f8;
+  margin: 10px auto;
+}
+
+.priceCard {
+  background: #f9fafb;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.priceCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin: 15px 0;
+}
+
+.priceCard ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.priceCard li {
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+/* Testimonials */
+.testimonials {
+  padding: 4rem 0rem;
+  background: #f9f9f9;
+  overflow: hidden;
+  position: relative;
+}
+
+.sectionHead h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #222;
+  font-weight: 700;
+}
+
+/* Slider wrapper */
+.slider {
+  width: 100%;
+}
+
+/* Track for auto-scroll */
+.slideTrack {
+  display: flex;
+  gap: 1rem;
+  width: calc(300px * 40); /* card width * total slides (adjust as needed) */
+  animation: scroll 75s linear infinite;
+}
+
+/* Individual testimonial card */
+.testimonial {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  width: 600px;
+  flex-shrink: 0;
+}
+
+.testimonial:hover {
+  transform: translateY(-6px);
+}
+
+.testimonial p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.testimonial h4 {
+  font-size: 0.95rem;
+  color: #0070f3;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Auto-scroll animation */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-300px * 20)); /* move half the total width */
+  }
+}
+
+/* Responsive */
+@media (max-width: 1110) {
+  .hero {
+    padding: 70px 0;
+  }
+}
+@media (max-width: 1024px) {
+  .slideTrack {
+    width: calc(260px * 40);
+    animation: scroll 50s linear infinite;
+  }
+  .testimonial {
+    width: 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  .slideTrack {
+    width: calc(220px * 40);
+    animation: scroll 60s linear infinite;
+  }
+  .testimonial {
+    width: 220px;
+    padding: 1.5rem;
+  }
+  .testimonial p {
+    font-size: 0.9rem;
+  }
+  .testimonial h4 {
+    font-size: 0.85rem;
+  }
+}
+
+/* CTA */
+.cta {
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  text-align: center;
+  border-radius: 12px;
+  margin: 60px auto;
+  max-width: 1000px;
+}
+
+.cta h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.cta p {
+  margin-bottom: 25px;
+  font-size: 1.1rem;
+}
+
+.cta .btnPrimary {
+  background: #fff;
+  color: #2563eb;
+}
+
+.cta .btnPrimary:hover {
+  background: #f1f5f9;
+}
+
+@media (max-width: 400px) {
+  .sectionHead p {
+    color: #6b7280;
+    font-size: 0.8rem;
+  }
+  .pricing {
+    padding: 80px 0px;
+    background: #f8f8f8;
+    margin: 0px auto;
+  }
+  .sectionHead {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 50px auto;
+  }
+}
+@media (max-width: 1168px) {
+  .heroContent {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .heroContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0px 30px;
+  }
+
+  .heroText {
+    position: relative;
+    top: 340px;
+  }
+
+  .heroImage {
+    width: 100%;
+    max-width: 310px;
+  }
+
+  .heroImage {
+    position: relative;
+    bottom: 250px;
+  }
+
+  .heroBtns {
+    display: flex;
+    justify-content: center;
+  }
+}
+@media (max-width: 1068px) {
+  .heroContent {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .heroText h1 {
+    font-size: 2.2rem;
+  }
+
+  .heroImage img {
+    max-width: 100%;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta {
+    margin: 40px 20px;
+    padding: 60px 20px;
+  }
+}

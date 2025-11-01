@@ -1,24 +1,13 @@
 "use client";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import styles from "./TrustedCompanies.module.css";
+import { FaAward, FaStar, FaRocket } from "react-icons/fa";
 
 const companies = [
   {
-    name: "Google",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-  },
-  {
     name: "Microsoft",
     logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg",
-  },
-  {
-    name: "Amazon",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-  },
-  {
-    name: "Netflix",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
   },
   {
     name: "Apple",
@@ -27,10 +16,6 @@ const companies = [
   {
     name: "Spotify",
     logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
-  },
-  {
-    name: "Facebook",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
   },
   {
     name: "Instagram",
@@ -45,15 +30,6 @@ const companies = [
     logo: "https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg",
   },
   {
-    name: "YouTube",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg",
-  },
-  
-  {
-    name: "Samsung",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
-  },
-  {
     name: "Tesla",
     logo: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg",
   },
@@ -61,52 +37,49 @@ const companies = [
     name: "IBM",
     logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg",
   },
-  {
-    name: "Cisco",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/6/64/Cisco_logo_blue_2016.svg",
-  },
 ];
 
 export default function TrustedCompanies() {
   const ref = useRef(null);
 
-  // Track scroll
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
 
-  // Transform scroll progress to horizontal movement
-  const rawX = useTransform(scrollYProgress, [0, 2], ["0%", "-80%"]);
-
-  // Make movement smooth with spring
-  const x = useSpring(rawX, {
-    stiffness: 80,
-    damping: 20,
-    mass: 0.5,
-  });
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-50%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
 
   return (
     <section ref={ref} className={styles.trustedSection}>
-      <div className={styles.trustedContainer}>
-        <h2 className={styles.trustedTitle}>Trusted By Leading Companies</h2>
-      </div>
+      <motion.div className={styles.trustedContainer} style={{ opacity }}>
+        {/* Header Section */}
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.trustedTitle}>
+            Brands Our Freelancers Get Inspired By{" "}
+          </h2>
 
-      {/* Smooth Scroll-driven horizontal slider */}
-      <div className={styles.trustedSliderContainer}>
-        <motion.div style={{ x }} className={styles.trustedSlider}>
-          {companies.map((company, index) => (
-            <div key={index} className={styles.trustedLogoWrapper}>
-              <img
-                src={company.logo}
-                alt={company.name}
-                className={styles.trustedLogo}
-              />
-            </div>
-          ))}
-        </motion.div>
-      </div>
+          <p className={styles.trustedSubtitle}>
+            Our freelancers have delivered exceptional work for world-renowned
+            companies
+          </p>
+        </div>
 
+        {/* Logo Slider */}
+        <div className={styles.logoSliderContainer}>
+          <motion.div style={{ x }} className={styles.logoSlider}>
+            {[...companies, ...companies].map((company, index) => (
+              <div key={`${company.name}-${index}`} className={styles.logoItem}>
+                <img
+                  src={company.logo}
+                  alt={company.name}
+                  className={styles.companyLogo}
+                />
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </motion.div>
     </section>
   );
 }
