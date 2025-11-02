@@ -1,99 +1,41 @@
-import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient();
-
-// GET all users
-export async function GET() {
+export async function GET(request) {
   try {
-    const users = await prisma.user.findMany({
-      include: {
-        profile: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const { searchParams } = new URL(request.url);
+    const userType = searchParams.get("userType") || "user";
 
-    // Format the response with proper registration method detection
-    const formattedUsers = users.map((user) => {
-      // Detect registration method more accurately
-      let registrationMethod = user.registrationMethod;
+    // Validate environment variables
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      console.error("GOOGLE_CLIENT_ID is missing");
+      return NextResponse.redirect("/login?error=Auth configuration error");
+    }
 
-      // If no explicit registration method, detect based on password
-      if (!registrationMethod) {
-        if (
-          user.password === "google_oauth" ||
-          user.password === "" ||
-          !user.password
-        ) {
-          registrationMethod = "google";
-        } else {
-          registrationMethod = "email";
-        }
-      }
+    if (!process.env.NEXTAUTH_URL) {
+      console.error("NEXTAUTH_URL is missing");
+      return NextResponse.redirect("/login?error=Auth configuration error");
+    }
 
-      // Update user in database if registration method is missing
-      if (!user.registrationMethod) {
-        // You can optionally update the user here, but be careful with concurrent requests
-        console.log(
-          `Updating registration method for ${user.email} to ${registrationMethod}`
-        );
-      }
+    // Use EXACT redirect URI that matches Google Console
+    const redirectUri = "http://localhost:3000/api/auth/google/callback";
 
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        status: user.status || "active",
-        avatar: user.avatar,
-        registrationMethod: registrationMethod,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        lastLogin: user.lastLogin,
-        profile: user.profile
-          ? {
-              id: user.profile.id,
-              phoneNumber: user.profile.phoneNumber,
-              title: user.profile.title,
-              bio: user.profile.bio,
-              location: user.profile.location,
-              available: user.profile.available,
-              experience: user.profile.experience,
-              skills: user.profile.skills,
-              hourlyRate: user.profile.hourlyRate,
-            }
-          : null,
-      };
-    });
+    console.log("Using redirect URI:", redirectUri);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        users: formattedUsers,
-        total: users.length,
-      }),
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams(
       {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        redirect_uri: redirectUri,
+        response_type: "code",
+        scope: "openid profile email",
+        access_type: "offline",
+        prompt: "consent",
+        state: JSON.stringify({ userType }),
       }
-    );
+    )}`;
+
+    return NextResponse.redirect(googleAuthUrl);
   } catch (error) {
-    console.error("Error fetching users:", error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: "Failed to fetch users",
-        message: error.message,
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    console.error("Google auth initiation error:", error);
+    return NextResponse.redirect("/login?error=Auth configuration error");
   }
 }

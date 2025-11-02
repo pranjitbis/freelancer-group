@@ -144,7 +144,7 @@ export async function GET(request) {
         email: user.email,
         role: user.role,
         name: user.name,
-        registrationMethod: user.registrationMethod, // Include in token
+        registrationMethod: user.registrationMethod,
       },
       process.env.NEXTAUTH_SECRET,
       { expiresIn: "30d" }
