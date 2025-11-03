@@ -22,21 +22,15 @@ import {
   FaCheckCircle,
   FaHourglassHalf,
   FaChartLine,
-  FaDownload,
-  FaFilePdf,
-  FaIdCard,
-  FaReceipt,
-  FaGraduationCap,
-  FaMapMarkerAlt,
-  FaExternalLinkAlt,
+  FaEdit,
+  FaTrash,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import styles from "./FreelancerProposals.module.css";
 
-export default function ClientProposalsPage() {
+export default function FreelancerProposalsPage() {
   const [currentUser, setCurrentUser] = useState(null);
-  const [receivedProposals, setReceivedProposals] = useState([]);
-  const [sentProposals, setSentProposals] = useState([]);
-  const [activeSection, setActiveSection] = useState("received");
+  const [proposals, setProposals] = useState([]);
   const [filteredProposals, setFilteredProposals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,8 +38,13 @@ export default function ClientProposalsPage() {
   const [selectedProposal, setSelectedProposal] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
-  const [downloadLoading, setDownloadLoading] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    accepted: 0,
+    rejected: 0,
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -54,13 +53,11 @@ export default function ClientProposalsPage() {
 
   useEffect(() => {
     filterProposals();
-  }, [
-    receivedProposals,
-    sentProposals,
-    activeSection,
-    searchTerm,
-    filterStatus,
-  ]);
+  }, [proposals, searchTerm, filterStatus]);
+
+  useEffect(() => {
+    calculateStats();
+  }, [proposals]);
 
   const fetchCurrentUser = async () => {
     try {
@@ -69,8 +66,8 @@ export default function ClientProposalsPage() {
         const data = await response.json();
         if (data.success && data.user) {
           setCurrentUser(data.user);
-          if (data.user.role === "client") {
-            await fetchClientProposals(data.user.id);
+          if (data.user.role === "freelancer") {
+            await fetchFreelancerProposals(data.user.id);
           } else {
             router.push("/unauthorized");
           }
@@ -86,32 +83,23 @@ export default function ClientProposalsPage() {
     }
   };
 
-  const fetchClientProposals = async (userId) => {
+  const fetchFreelancerProposals = async (userId) => {
     try {
       setLoading(true);
-      console.log("🔄 Fetching proposals for user:", userId);
+      console.log("🔄 Fetching proposals for freelancer:", userId);
 
-      const receivedResponse = await fetch(
-        `/api/proposals/client?userId=${userId}&includeProfile=true`
-      );
-      const sentResponse = await fetch(
-        `/api/proposals/client-to-freelancer?userId=${userId}&includeProfile=true`
+      const response = await fetch(
+        `/api/proposals/freelancer?userId=${userId}&includeJob=true`
       );
 
-      if (receivedResponse.ok) {
-        const receivedData = await receivedResponse.json();
-        console.log("📥 Received proposals:", receivedData);
-        if (receivedData.success) {
-          setReceivedProposals(receivedData.proposals || []);
+      if (response.ok) {
+        const data = await response.json();
+        console.log("📥 Freelancer proposals:", data);
+        if (data.success) {
+          setProposals(data.proposals || []);
         }
-      }
-
-      if (sentResponse.ok) {
-        const sentData = await sentResponse.json();
-        console.log("📤 Sent proposals:", sentData);
-        if (sentData.success) {
-          setSentProposals(sentData.proposals || []);
-        }
+      } else {
+        console.error("Failed to fetch proposals");
       }
     } catch (error) {
       console.error("❌ Error fetching proposals:", error);
@@ -121,8 +109,6 @@ export default function ClientProposalsPage() {
   };
 
   const filterProposals = () => {
-    const proposals =
-      activeSection === "received" ? receivedProposals : sentProposals;
     let filtered = proposals;
 
     if (filterStatus !== "all") {
@@ -137,19 +123,13 @@ export default function ClientProposalsPage() {
           proposal.job?.title
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          proposal.freelancer?.name
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          proposal.client?.name
+          proposal.job?.category
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
           proposal.coverLetter
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          proposal.projectTitle
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          proposal.freelancer?.profile?.skills
+          proposal.client?.name
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase())
       );
@@ -158,148 +138,71 @@ export default function ClientProposalsPage() {
     setFilteredProposals(filtered);
   };
 
+  const calculateStats = () => {
+    const stats = {
+      total: proposals.length,
+      pending: proposals.filter((p) => p.status === "pending").length,
+      accepted: proposals.filter((p) => p.status === "accepted").length,
+      rejected: proposals.filter((p) => p.status === "rejected").length,
+    };
+    setStats(stats);
+  };
+
   const handleViewDetails = (proposal) => {
     setSelectedProposal(proposal);
     setShowDetailsModal(true);
   };
 
-  const handleProposalAction = async (proposalId, action) => {
+  const handleWithdrawProposal = async (proposalId) => {
+    if (
+      !confirm(
+        "Are you sure you want to withdraw this proposal? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
     setActionLoading(proposalId);
     try {
-      const response = await fetch("/api/proposals/action", {
+      const response = await fetch("/api/proposals/withdraw", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           proposalId,
-          action,
-          type: activeSection === "received" ? "received" : "sent",
+          freelancerId: currentUser.id,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        if (activeSection === "received") {
-          setReceivedProposals((prev) =>
-            prev.map((p) =>
-              p.id === proposalId ? { ...p, status: action } : p
-            )
-          );
-        } else {
-          setSentProposals((prev) =>
-            prev.map((p) =>
-              p.id === proposalId ? { ...p, status: action } : p
-            )
-          );
-        }
-
-        if (selectedProposal && selectedProposal.id === proposalId) {
-          setSelectedProposal((prev) => ({ ...prev, status: action }));
-        }
-
-        setSuccessMessage(`Proposal ${action} successfully!`);
+        setProposals((prev) => prev.filter((p) => p.id !== proposalId));
+        setSuccessMessage("Proposal withdrawn successfully!");
         setTimeout(() => setSuccessMessage(""), 3000);
-        await fetchClientProposals(currentUser.id);
       } else {
-        alert(data.error || "Failed to update proposal");
+        alert(data.error || "Failed to withdraw proposal");
       }
     } catch (error) {
       console.error("Network Error:", error);
-      alert("Failed to update proposal. Please check your connection.");
+      alert("Failed to withdraw proposal. Please check your connection.");
     } finally {
       setActionLoading(null);
     }
   };
 
-  const handleDownloadResume = async (
-    resumeUrl,
-    freelancerName,
-    proposalId = null
-  ) => {
-    if (proposalId) {
-      setDownloadLoading(proposalId);
-    }
-
-    try {
-      console.log("📥 Starting resume download:", {
-        resumeUrl,
-        freelancerName,
-      });
-
-      // Check if it's a relative URL and convert to absolute
-      let downloadUrl = resumeUrl;
-      if (resumeUrl.startsWith("/")) {
-        downloadUrl = `${window.location.origin}${resumeUrl}`;
-      }
-
-      console.log("📥 Download URL:", downloadUrl);
-
-      // Fetch the resume file
-      const response = await fetch(downloadUrl);
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch resume: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const blob = await response.blob();
-      console.log("📥 Blob size:", blob.size);
-
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-
-      // Create filename from freelancer name
-      const fileName = `${freelancerName.replace(/\s+/g, "_")}_Resume.pdf`;
-      link.download = fileName;
-
-      // Trigger download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Clean up
-      window.URL.revokeObjectURL(url);
-
-      setSuccessMessage(`Resume downloaded successfully!`);
-      setTimeout(() => setSuccessMessage(""), 3000);
-    } catch (error) {
-      console.error("❌ Error downloading resume:", error);
-      alert("Failed to download resume. Please try again.");
-    } finally {
-      if (proposalId) {
-        setDownloadLoading(null);
-      }
-    }
-  };
-
-  const handleViewResume = (resumeUrl) => {
-    // Open resume in new tab
-    let viewUrl = resumeUrl;
-    if (resumeUrl.startsWith("/")) {
-      viewUrl = `${window.location.origin}${resumeUrl}`;
-    }
-    window.open(viewUrl, "_blank");
-  };
-
   const handleSendMessage = async (proposal) => {
     try {
-      const freelancerId =
-        activeSection === "received"
-          ? proposal.freelancerId
-          : proposal.freelancer.id;
-
       const conversationResponse = await fetch("/api/conversations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          clientId: currentUser.id,
-          freelancerId: freelancerId,
+          clientId: proposal.job?.userId,
+          freelancerId: currentUser.id,
+          jobId: proposal.jobId,
         }),
       });
 
@@ -307,7 +210,7 @@ export default function ClientProposalsPage() {
 
       if (conversationData.success) {
         router.push(
-          `/messages?conversation=${conversationData.conversation.id}`
+          `/freelancer-dashboard/messages?conversation=${conversationData.conversation.id}`
         );
       } else {
         throw new Error(
@@ -328,8 +231,8 @@ export default function ClientProposalsPage() {
         return <FaCheckCircle style={{ color: "#10b981" }} />;
       case "rejected":
         return <FaTimes style={{ color: "#ef4444" }} />;
-      case "completed":
-        return <FaCheck style={{ color: "#3b82f6" }} />;
+      case "withdrawn":
+        return <FaExclamationTriangle style={{ color: "#6b7280" }} />;
       default:
         return <FaHourglassHalf style={{ color: "#6b7280" }} />;
     }
@@ -340,7 +243,7 @@ export default function ClientProposalsPage() {
       pending: { color: "#f59e0b", label: "Under Review", bgColor: "#fffbeb" },
       accepted: { color: "#10b981", label: "Accepted", bgColor: "#ecfdf5" },
       rejected: { color: "#ef4444", label: "Rejected", bgColor: "#fef2f2" },
-      completed: { color: "#3b82f6", label: "Completed", bgColor: "#eff6ff" },
+      withdrawn: { color: "#6b7280", label: "Withdrawn", bgColor: "#f9fafb" },
     };
 
     const config = statusConfig[status] || {
@@ -364,21 +267,15 @@ export default function ClientProposalsPage() {
     );
   };
 
-  const getSkillsArray = (skills) => {
-    if (!skills) return [];
-    if (Array.isArray(skills)) return skills;
-    if (typeof skills === "string")
-      return skills.split(",").map((skill) => skill.trim());
-    return [];
-  };
+  const getTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
 
-  const calculateSavings = (jobBudget, bidAmount) => {
-    const savings = jobBudget - bidAmount;
-    return savings > 0 ? savings : 0;
-  };
-
-  const hasResume = (proposal) => {
-    return proposal.freelancer?.profile?.resumeUrl;
+    if (diffInHours < 1) return "Just now";
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    return `${Math.floor(diffInHours / 168)}w ago`;
   };
 
   const renderProposalCard = (proposal, index) => (
@@ -396,169 +293,65 @@ export default function ClientProposalsPage() {
       <div className={styles.proposalHeader}>
         <div className={styles.jobInfo}>
           <h3 className={styles.jobTitle}>
-            {activeSection === "received"
-              ? proposal.job?.title || "Unknown Job"
-              : proposal.projectTitle || "Custom Project"}
+            {proposal.job?.title || "Unknown Job"}
           </h3>
           <div className={styles.metaInfo}>
-            <span className={styles.budget}>
-              Budget: ${proposal.bidAmount?.toLocaleString()}
+            <span className={styles.client}>
+              <FaUser /> {proposal.client?.name || "Client"}
             </span>
-            {activeSection === "received" && proposal.job?.category && (
+            {proposal.job?.category && (
               <span className={styles.category}>{proposal.job.category}</span>
             )}
+            <span className={styles.timeAgo}>
+              {getTimeAgo(proposal.createdAt)}
+            </span>
           </div>
         </div>
         <div className={styles.headerRight}>
-          {hasResume(proposal) && (
-            <div className={styles.resumeBadge}>
-              <FaFilePdf />
-              Resume Available
-            </div>
-          )}
           {getStatusBadge(proposal.status)}
         </div>
       </div>
 
       <div className={styles.proposalDetails}>
-        {/* Freelancer/Client Info */}
-        <div className={styles.freelancerInfo}>
-          <div className={styles.freelancerHeader}>
-            <div className={styles.avatar}>
-              {activeSection === "received"
-                ? proposal.freelancer?.name?.charAt(0).toUpperCase()
-                : proposal.freelancer?.name?.charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <div className={styles.freelancerName}>
-                {activeSection === "received"
-                  ? proposal.freelancer?.name
-                  : proposal.freelancer?.name}
-              </div>
-              <div className={styles.freelancerTitle}>
-                {activeSection === "received" ? "Freelancer" : "Professional"}
-              </div>
-            </div>
+        {/* Job Budget vs Your Bid */}
+        <div className={styles.bidComparison}>
+          <div className={styles.bidItem}>
+            <FaDollarSign className={styles.bidIcon} />
+            <span>Job Budget: ${proposal.job?.budget?.toLocaleString()}</span>
           </div>
-
-          {activeSection === "received" && proposal.freelancer?.profile && (
-            <div className={styles.freelancerDetailsEnhanced}>
-              {proposal.freelancer.profile.title && (
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Title:</span>
-                  <span className={styles.detailValue}>
-                    {proposal.freelancer.profile.title}
-                  </span>
-                </div>
-              )}
-              {proposal.freelancer.profile.hourlyRate && (
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Rate:</span>
-                  <span className={styles.detailValue}>
-                    ${proposal.freelancer.profile.hourlyRate}/hr
-                  </span>
-                </div>
-              )}
-              {proposal.freelancer.profile.location && (
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Location:</span>
-                  <span className={styles.detailValue}>
-                    {proposal.freelancer.profile.location}
-                  </span>
-                </div>
-              )}
-
-              {/* Resume Availability with Download Button */}
-              <div className={styles.resumeInfo}>
-                {hasResume(proposal) ? (
-                  <div className={styles.resumeAvailableSection}>
-                    <FaFilePdf className={styles.resumeIcon} />
-                    <div className={styles.resumeText}>
-                      <span className={styles.resumeAvailable}>
-                        Professional Resume Available
-                      </span>
-                      <span className={styles.resumeHint}>
-                        Download to review full qualifications
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className={styles.resumeNotAvailable}>
-                    <FaFileAlt />
-                    <span>No Resume Uploaded</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Proposal Details */}
-        <div className={styles.proposalInfo}>
-          <div className={styles.bidInfo}>
-            <div className={styles.bidItem}>
-              <FaDollarSign className={styles.bidIcon} />
-              <span>Bid: ${proposal.bidAmount?.toLocaleString()}</span>
-            </div>
-            <div className={styles.bidItem}>
-              <FaClock className={styles.bidIcon} />
-              <span>Timeline: {proposal.timeframe} days</span>
-            </div>
-            {activeSection === "received" &&
-              proposal.job?.budget &&
-              calculateSavings(proposal.job.budget, proposal.bidAmount) > 0 && (
-                <div className={styles.savings}>
-                  You save: $
-                  {calculateSavings(
-                    proposal.job.budget,
-                    proposal.bidAmount
-                  ).toLocaleString()}
-                </div>
-              )}
+          <div className={styles.bidItem}>
+            <FaDollarSign className={styles.bidIcon} />
+            <span>Your Bid: ${proposal.bidAmount?.toLocaleString()}</span>
           </div>
-
-          {/* Skills */}
-          {activeSection === "received" &&
-            proposal.freelancer?.profile?.skills && (
-              <div className={styles.skillsSection}>
-                <strong>Skills:</strong>
-                <div className={styles.skillsList}>
-                  {getSkillsArray(proposal.freelancer.profile.skills)
-                    .slice(0, 4)
-                    .map((skill, index) => (
-                      <span key={index} className={styles.skillTag}>
-                        {skill}
-                      </span>
-                    ))}
-                  {getSkillsArray(proposal.freelancer.profile.skills).length >
-                    4 && (
-                    <span className={styles.moreSkills}>
-                      +
-                      {getSkillsArray(proposal.freelancer.profile.skills)
-                        .length - 4}{" "}
-                      more
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-
-          {/* Cover Letter Preview */}
-          <div className={styles.coverLetterPreview}>
-            <p>{proposal.coverLetter?.substring(0, 120)}...</p>
+          <div className={styles.bidItem}>
+            <FaClock className={styles.bidIcon} />
+            <span>Timeline: {proposal.timeframe} days</span>
           </div>
         </div>
+
+        {/* Cover Letter Preview */}
+        <div className={styles.coverLetterPreview}>
+          <p>{proposal.coverLetter?.substring(0, 150)}...</p>
+        </div>
+
+        {/* Job Description Preview */}
+        {proposal.job?.description && (
+          <div className={styles.jobDescriptionPreview}>
+            <strong>Job Description:</strong>
+            <p>{proposal.job.description.substring(0, 100)}...</p>
+          </div>
+        )}
       </div>
 
       <div className={styles.proposalFooter}>
         <div className={styles.proposalMeta}>
           <span className={styles.submittedDate}>
             <FaCalendar />
-            {activeSection === "received" ? "Received: " : "Sent: "}
-            {new Date(proposal.createdAt).toLocaleDateString()}
+            Submitted: {new Date(proposal.createdAt).toLocaleDateString()}
           </span>
         </div>
         <div className={styles.proposalActions}>
+          {/* Only show View Details button */}
           <motion.button
             onClick={() => handleViewDetails(proposal)}
             className={styles.viewButton}
@@ -567,101 +360,6 @@ export default function ClientProposalsPage() {
           >
             <FaEye /> View Details
           </motion.button>
-
-          <motion.button
-            onClick={() => handleSendMessage(proposal)}
-            className={styles.messageButton}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FaEnvelope /> Message
-          </motion.button>
-
-          {/* Resume Actions */}
-          {activeSection === "received" && hasResume(proposal) && (
-            <div className={styles.resumeActions}>
-              <motion.button
-                onClick={() =>
-                  handleViewResume(proposal.freelancer.profile.resumeUrl)
-                }
-                className={styles.viewResumeBtn}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FaExternalLinkAlt /> View Resume
-              </motion.button>
-              <motion.button
-                onClick={() =>
-                  handleDownloadResume(
-                    proposal.freelancer.profile.resumeUrl,
-                    proposal.freelancer.name,
-                    proposal.id
-                  )
-                }
-                disabled={downloadLoading === proposal.id}
-                className={styles.downloadBtn}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {downloadLoading === proposal.id ? (
-                  <div className={styles.actionSpinner} />
-                ) : (
-                  <FaDownload />
-                )}
-                Download Resume
-              </motion.button>
-            </div>
-          )}
-
-          {proposal.status === "pending" && activeSection === "received" && (
-            <div className={styles.actionButtons}>
-              <motion.button
-                onClick={() => handleProposalAction(proposal.id, "accepted")}
-                disabled={actionLoading === proposal.id}
-                className={styles.acceptButton}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {actionLoading === proposal.id ? (
-                  <div className={styles.actionSpinner} />
-                ) : (
-                  <FaCheck />
-                )}
-                Accept
-              </motion.button>
-              <motion.button
-                onClick={() => handleProposalAction(proposal.id, "rejected")}
-                disabled={actionLoading === proposal.id}
-                className={styles.rejectButton}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {actionLoading === proposal.id ? (
-                  <div className={styles.actionSpinner} />
-                ) : (
-                  <FaTimes />
-                )}
-                Reject
-              </motion.button>
-            </div>
-          )}
-
-          {proposal.status === "accepted" && (
-            <motion.button
-              onClick={() => handleProposalAction(proposal.id, "completed")}
-              disabled={actionLoading === proposal.id}
-              className={styles.completeButton}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {actionLoading === proposal.id ? (
-                <div className={styles.actionSpinner} />
-              ) : (
-                <FaCheckCircle />
-              )}
-              Complete
-            </motion.button>
-          )}
         </div>
       </div>
     </motion.div>
@@ -671,7 +369,7 @@ export default function ClientProposalsPage() {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.spinner}></div>
-        <p>Loading proposals...</p>
+        <p>Loading your proposals...</p>
       </div>
     );
   }
@@ -689,75 +387,37 @@ export default function ClientProposalsPage() {
           <div className={styles.headerContent}>
             <div className={styles.headerMain}>
               <div className={styles.headerTitle}>
-                <h1>Proposals Management</h1>
+                <h1>My Proposals</h1>
                 <button
-                  onClick={() => router.push("/client-dashboard/analytics")}
-                  className={styles.analyticsButton}
+                  onClick={() => router.push("/find-work")}
+                  className={styles.findWorkButton}
                 >
-                  <FaChartLine />
-                  View Analytics
+                  <FaSearch />
+                  Find New Work
                 </button>
               </div>
-              <p>Manage proposals you've received and sent to freelancers</p>
+              <p>Manage and track your job proposals</p>
             </div>
             <div className={styles.stats}>
               <div className={styles.stat}>
-                <span className={styles.statNumber}>
-                  {receivedProposals.length + sentProposals.length}
-                </span>
+                <span className={styles.statNumber}>{stats.total}</span>
                 <span className={styles.statLabel}>Total Proposals</span>
               </div>
               <div className={styles.stat}>
-                <span className={styles.statNumber}>
-                  {
-                    receivedProposals.filter((p) => p.status === "pending")
-                      .length
-                  }
-                </span>
-                <span className={styles.statLabel}>Pending Review</span>
+                <span className={styles.statNumber}>{stats.pending}</span>
+                <span className={styles.statLabel}>Under Review</span>
               </div>
               <div className={styles.stat}>
-                <span className={styles.statNumber}>
-                  {receivedProposals.filter((p) => p.status === "accepted")
-                    .length +
-                    sentProposals.filter((p) => p.status === "accepted").length}
-                </span>
-                <span className={styles.statLabel}>Active Projects</span>
+                <span className={styles.statNumber}>{stats.accepted}</span>
+                <span className={styles.statLabel}>Accepted</span>
+              </div>
+              <div className={styles.stat}>
+                <span className={styles.statNumber}>{stats.rejected}</span>
+                <span className={styles.statLabel}>Not Selected</span>
               </div>
             </div>
           </div>
         </motion.header>
-
-        {/* Section Tabs */}
-        <motion.div
-          className={styles.sectionTabs}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <button
-            className={`${styles.sectionTab} ${
-              activeSection === "received" ? styles.active : ""
-            }`}
-            onClick={() => setActiveSection("received")}
-          >
-            <FaUser />
-            Proposals Received
-            <span className={styles.tabCount}>
-              ({receivedProposals.length})
-            </span>
-          </button>
-          <button
-            className={`${styles.sectionTab} ${
-              activeSection === "sent" ? styles.active : ""
-            }`}
-            onClick={() => setActiveSection("sent")}
-          >
-            <FaPaperPlane />
-            Proposals Sent
-            <span className={styles.tabCount}>({sentProposals.length})</span>
-          </button>
-        </motion.div>
 
         <AnimatePresence>
           {successMessage && (
@@ -783,11 +443,7 @@ export default function ClientProposalsPage() {
             <FaSearch className={styles.searchIcon} />
             <input
               type="text"
-              placeholder={
-                activeSection === "received"
-                  ? "Search by job title, freelancer name, or skills..."
-                  : "Search by project title or freelancer name..."
-              }
+              placeholder="Search by job title, client name, or skills..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={styles.searchInput}
@@ -800,11 +456,10 @@ export default function ClientProposalsPage() {
               onChange={(e) => setFilterStatus(e.target.value)}
               className={styles.filterSelect}
             >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
+              <option value="all">All Proposals</option>
+              <option value="pending">Under Review</option>
               <option value="accepted">Accepted</option>
-              <option value="rejected">Rejected</option>
-              <option value="completed">Completed</option>
+              <option value="rejected">Not Selected</option>
             </select>
           </div>
         </motion.div>
@@ -817,36 +472,22 @@ export default function ClientProposalsPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              <FaFileAlt className={styles.emptyIcon} />
-              <h3>
-                {activeSection === "received"
-                  ? "No proposals received yet"
-                  : "No proposals sent yet"}
-              </h3>
+              <FaPaperPlane className={styles.emptyIcon} />
+              <h3>No proposals sent yet</h3>
               <p>
                 {searchTerm || filterStatus !== "all"
                   ? "Try adjusting your search or filters"
-                  : activeSection === "received"
-                  ? "You haven't received any proposals for your job posts yet."
-                  : "You haven't sent any proposals to freelancers yet."}
+                  : "You haven't sent any proposals to clients yet. Start by browsing available jobs."}
               </p>
               {!searchTerm && filterStatus === "all" && (
                 <div className={styles.emptyActions}>
-                  {activeSection === "received" ? (
-                    <button
-                      onClick={() => router.push("/client-dashboard/post-job")}
-                      className={styles.postJobButton}
-                    >
-                      Post a New Job
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => router.push("/hire-freelancer")}
-                      className={styles.postJobButton}
-                    >
-                      Browse Freelancers
-                    </button>
-                  )}
+                  <button
+                    onClick={() => router.push("/find-work")}
+                    className={styles.findWorkButton}
+                  >
+                    <FaSearch />
+                    Browse Available Jobs
+                  </button>
                 </div>
               )}
             </motion.div>
@@ -864,13 +505,7 @@ export default function ClientProposalsPage() {
           {showDetailsModal && selectedProposal && (
             <ProposalDetailsModal
               proposal={selectedProposal}
-              activeSection={activeSection}
               onClose={() => setShowDetailsModal(false)}
-              onAction={handleProposalAction}
-              actionLoading={actionLoading}
-              onDownloadResume={handleDownloadResume}
-              onViewResume={handleViewResume}
-              downloadLoading={downloadLoading}
             />
           )}
         </AnimatePresence>
@@ -879,33 +514,14 @@ export default function ClientProposalsPage() {
   );
 }
 
-// Enhanced Modal Component with Download Button
-function ProposalDetailsModal({
-  proposal,
-  activeSection,
-  onClose,
-  onAction,
-  actionLoading,
-  onDownloadResume,
-  onViewResume,
-  downloadLoading,
-}) {
-  const [resumeLoading, setResumeLoading] = useState(false);
-
-  const getSkillsArray = (skills) => {
-    if (!skills) return [];
-    if (Array.isArray(skills)) return skills;
-    if (typeof skills === "string")
-      return skills.split(",").map((skill) => skill.trim());
-    return [];
-  };
-
+// Modal Component for Proposal Details - Simplified without action buttons
+function ProposalDetailsModal({ proposal, onClose }) {
   const getStatusBadge = (status) => {
     const statusConfig = {
       pending: { color: "#f59e0b", label: "Under Review", bgColor: "#fffbeb" },
       accepted: { color: "#10b981", label: "Accepted", bgColor: "#ecfdf5" },
-      rejected: { color: "#ef4444", label: "Rejected", bgColor: "#fef2f2" },
-      completed: { color: "#3b82f6", label: "Completed", bgColor: "#eff6ff" },
+      rejected: { color: "#ef4444", label: "Not Selected", bgColor: "#fef2f2" },
+      withdrawn: { color: "#6b7280", label: "Withdrawn", bgColor: "#f9fafb" },
     };
 
     const config = statusConfig[status] || {
@@ -926,33 +542,11 @@ function ProposalDetailsModal({
         {status === "pending" && <FaHourglassHalf />}
         {status === "accepted" && <FaCheckCircle />}
         {status === "rejected" && <FaTimes />}
-        {status === "completed" && <FaCheck />}
+        {status === "withdrawn" && <FaExclamationTriangle />}
         {config.label}
       </span>
     );
   };
-
-  const handleDownloadClick = async () => {
-    if (proposal.freelancer?.profile?.resumeUrl) {
-      setResumeLoading(true);
-      try {
-        await onDownloadResume(
-          proposal.freelancer.profile.resumeUrl,
-          proposal.freelancer.name
-        );
-      } finally {
-        setResumeLoading(false);
-      }
-    }
-  };
-
-  const handleViewClick = () => {
-    if (proposal.freelancer?.profile?.resumeUrl) {
-      onViewResume(proposal.freelancer.profile.resumeUrl);
-    }
-  };
-
-  const hasResume = proposal.freelancer?.profile?.resumeUrl;
 
   return (
     <motion.div
@@ -977,20 +571,28 @@ function ProposalDetailsModal({
         </div>
 
         <div className={styles.modalBody}>
-          {/* Project Information */}
+          {/* Job Information */}
           <div className={styles.detailSection}>
             <h3>
-              <FaBriefcase /> Project Information
+              <FaBriefcase /> Job Information
             </h3>
             <div className={styles.detailGrid}>
               <div className={styles.detailItem}>
-                <strong>Project Title:</strong>{" "}
-                {activeSection === "received"
-                  ? proposal.job?.title || "Unknown Job"
-                  : proposal.projectTitle || "Custom Project"}
+                <strong>Job Title:</strong> {proposal.job?.title}
               </div>
               <div className={styles.detailItem}>
-                <strong>Budget:</strong> ${proposal.bidAmount?.toLocaleString()}
+                <strong>Client:</strong> {proposal.client?.name}
+              </div>
+              <div className={styles.detailItem}>
+                <strong>Category:</strong> {proposal.job?.category}
+              </div>
+              <div className={styles.detailItem}>
+                <strong>Job Budget:</strong> $
+                {proposal.job?.budget?.toLocaleString()}
+              </div>
+              <div className={styles.detailItem}>
+                <strong>Your Bid:</strong> $
+                {proposal.bidAmount?.toLocaleString()}
               </div>
               <div className={styles.detailItem}>
                 <strong>Timeline:</strong> {proposal.timeframe} days
@@ -998,220 +600,54 @@ function ProposalDetailsModal({
               <div className={styles.detailItem}>
                 <strong>Status:</strong> {getStatusBadge(proposal.status)}
               </div>
+              <div className={styles.detailItem}>
+                <strong>Submitted:</strong>{" "}
+                {new Date(proposal.createdAt).toLocaleString()}
+              </div>
             </div>
-            {(proposal.job?.description || proposal.projectDescription) && (
+          </div>
+
+          {/* Job Description */}
+          {proposal.job?.description && (
+            <div className={styles.detailSection}>
+              <h3>Job Description</h3>
               <div className={styles.jobDescription}>
-                <strong>Project Description:</strong>
-                <p>
-                  {proposal.job?.description || proposal.projectDescription}
-                </p>
+                <p>{proposal.job.description}</p>
               </div>
-            )}
-          </div>
-
-          {/* Freelancer Information */}
-          <div className={styles.detailSection}>
-            <h3>
-              <FaUser />{" "}
-              {activeSection === "received" ? "Freelancer" : "Professional"}{" "}
-              Information
-            </h3>
-            <div className={styles.freelancerModalInfo}>
-              <div className={styles.freelancerHeader}>
-                <div className={styles.avatarLarge}>
-                  {proposal.freelancer?.name?.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <h4>{proposal.freelancer?.name}</h4>
-                  <p>{proposal.freelancer?.email}</p>
-                </div>
-              </div>
-
-              {proposal.freelancer?.profile && (
-                <>
-                  <div className={styles.freelancerDetailsGrid}>
-                    {proposal.freelancer.profile.title && (
-                      <div className={styles.detailItem}>
-                        <strong>Professional Title:</strong>{" "}
-                        {proposal.freelancer.profile.title}
-                      </div>
-                    )}
-                    {proposal.freelancer.profile.hourlyRate && (
-                      <div className={styles.detailItem}>
-                        <strong>Hourly Rate:</strong> $
-                        {proposal.freelancer.profile.hourlyRate}/hr
-                      </div>
-                    )}
-                    {proposal.freelancer.profile.location && (
-                      <div className={styles.detailItem}>
-                        <strong>Location:</strong>{" "}
-                        {proposal.freelancer.profile.location}
-                      </div>
-                    )}
-                    {proposal.freelancer.profile.experience && (
-                      <div className={styles.detailItem}>
-                        <strong>Experience:</strong>{" "}
-                        {proposal.freelancer.profile.experience}
-                      </div>
-                    )}
-                    {proposal.freelancer.profile.education && (
-                      <div className={styles.detailItem}>
-                        <strong>Education:</strong>{" "}
-                        {proposal.freelancer.profile.education}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Tax Information */}
-                  {(proposal.freelancer.profile.panNumber ||
-                    proposal.freelancer.profile.gstNumber) && (
-                    <div className={styles.taxInfoSection}>
-                      <h5>Tax Information</h5>
-                      <div className={styles.taxDetails}>
-                        {proposal.freelancer.profile.panNumber && (
-                          <div className={styles.taxDetail}>
-                            <FaIdCard />
-                            <span>
-                              PAN: {proposal.freelancer.profile.panNumber}
-                            </span>
-                          </div>
-                        )}
-                        {proposal.freelancer.profile.gstNumber && (
-                          <div className={styles.taxDetail}>
-                            <FaReceipt />
-                            <span>
-                              GST: {proposal.freelancer.profile.gstNumber}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Skills */}
-                  {proposal.freelancer.profile.skills && (
-                    <div className={styles.skillsSection}>
-                      <strong>Skills:</strong>
-                      <div className={styles.skillsList}>
-                        {getSkillsArray(proposal.freelancer.profile.skills).map(
-                          (skill, index) => (
-                            <span key={index} className={styles.skillTag}>
-                              {skill}
-                            </span>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Bio */}
-                  {proposal.freelancer.profile.bio && (
-                    <div className={styles.bioSection}>
-                      <strong>Professional Bio:</strong>
-                      <p>{proposal.freelancer.profile.bio}</p>
-                    </div>
-                  )}
-
-                  {/* Resume Section with Download Button */}
-                  {hasResume && (
-                    <div className={styles.resumeSection}>
-                      <div className={styles.resumeHeader}>
-                        <h4>
-                          <FaFilePdf /> Professional Resume
-                        </h4>
-                        <div className={styles.resumeActions}>
-                          <motion.button
-                            onClick={handleViewClick}
-                            className={styles.viewResumeBtn}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            <FaExternalLinkAlt /> View Resume
-                          </motion.button>
-                          <motion.button
-                            onClick={handleDownloadClick}
-                            disabled={resumeLoading || downloadLoading}
-                            className={styles.downloadBtn}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            {resumeLoading || downloadLoading ? (
-                              <div className={styles.resumeSpinner} />
-                            ) : (
-                              <FaDownload />
-                            )}
-                            Download Resume
-                          </motion.button>
-                        </div>
-                      </div>
-                      <div className={styles.resumeViewer}>
-                        <iframe
-                          src={proposal.freelancer.profile.resumeUrl}
-                          className={styles.resumeIframe}
-                          title={`${proposal.freelancer.name}'s Resume`}
-                          onLoad={() => setResumeLoading(false)}
-                          onError={() => setResumeLoading(false)}
-                        />
-                        {(resumeLoading || downloadLoading) && (
-                          <div className={styles.resumeLoading}>
-                            <div className={styles.resumeSpinner} />
-                            <p>Loading resume...</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
             </div>
-          </div>
+          )}
 
-          {/* Cover Letter */}
+          {/* Required Skills */}
+          {proposal.job?.skills && (
+            <div className={styles.detailSection}>
+              <h3>Required Skills</h3>
+              <div className={styles.skillsList}>
+                {proposal.job.skills.split(",").map((skill, index) => (
+                  <span key={index} className={styles.skillTag}>
+                    {skill.trim()}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Your Cover Letter */}
           <div className={styles.detailSection}>
             <h3>
-              <FaComment /> Cover Letter
+              <FaComment /> Your Cover Letter
             </h3>
-            <div className={styles.coverLetterFull}>{proposal.coverLetter}</div>
+            <div className={styles.coverLetterFull}>
+              <p>{proposal.coverLetter}</p>
+            </div>
           </div>
         </div>
 
         <div className={styles.modalFooter}>
-          {proposal.status === "pending" && activeSection === "received" && (
-            <div className={styles.modalActions}>
-              <motion.button
-                onClick={() => onAction(proposal.id, "accepted")}
-                disabled={actionLoading === proposal.id}
-                className={styles.acceptButton}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {actionLoading === proposal.id ? (
-                  <div className={styles.actionSpinner} />
-                ) : (
-                  <FaCheck />
-                )}
-                Accept Proposal
-              </motion.button>
-              <motion.button
-                onClick={() => onAction(proposal.id, "rejected")}
-                disabled={actionLoading === proposal.id}
-                className={styles.rejectButton}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {actionLoading === proposal.id ? (
-                  <div className={styles.actionSpinner} />
-                ) : (
-                  <FaTimes />
-                )}
-                Reject Proposal
-              </motion.button>
-            </div>
-          )}
-
-          <button onClick={onClose} className={styles.closeModalButton}>
-            Close
-          </button>
+          <div className={styles.modalActions}>
+            <button onClick={onClose} className={styles.closeModalButton}>
+              Close
+            </button>
+          </div>
         </div>
       </motion.div>
     </motion.div>

@@ -1,9 +1,7 @@
-// app/api/freelancer/upload-image/route.js
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
 import { PrismaClient } from "@prisma/client";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
 const prisma = new PrismaClient();
 
@@ -56,58 +54,63 @@ export async function POST(request) {
       );
     }
 
-    // Convert file to buffer
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = join(process.cwd(), "public", "uploads", "profiles");
+    try {
+      await mkdir(uploadsDir, { recursive: true });
+    } catch (error) {
+      console.log("Uploads directory already exists or couldn't be created");
+    }
 
     // Generate unique filename
-    const fileExtension = path.extname(file.name);
-    const fileName = `profile_${userId}_${uuidv4()}${fileExtension}`;
+    const timestamp = Date.now();
+    const fileExtension = file.name.split(".").pop();
+    const fileName = `profile_${userId}_${timestamp}.${fileExtension}`;
+    const filePath = join(uploadsDir, fileName);
 
-    // Create uploads directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), "public/uploads/profiles");
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (error) {
-      console.error("Error creating directory:", error);
-      return NextResponse.json(
-        { error: "Failed to create upload directory" },
-        { status: 500 }
-      );
-    }
-
-    // Save file
-    const filePath = path.join(uploadDir, fileName);
+    // Convert file to buffer and save
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
     await writeFile(filePath, buffer);
 
-    // Generate public URL
+    console.log("File saved successfully:", filePath);
+
+    // Generate public URL for the image
     const imageUrl = `/uploads/profiles/${fileName}`;
 
-    console.log("File saved successfully:", imageUrl);
-
-    // Update user profile in database using Prisma directly
-    try {
-      const updateResult = await updateUserProfileImage(userId, imageUrl);
-
-      if (!updateResult.success) {
-        return NextResponse.json(
-          { error: updateResult.error },
-          { status: 500 }
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        imageUrl: imageUrl,
-        message: "Profile image uploaded successfully",
+    // Update user profile and user record in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Update or create user profile
+      const profile = await tx.userProfile.upsert({
+        where: { userId: parseInt(userId) },
+        update: {
+          avatar: imageUrl,
+        },
+        create: {
+          userId: parseInt(userId),
+          avatar: imageUrl,
+          title: "Freelancer",
+          bio: "Update your bio",
+          available: true,
+        },
       });
-    } catch (dbError) {
-      console.error("Database error:", dbError);
-      return NextResponse.json(
-        { error: "Failed to update profile in database" },
-        { status: 500 }
-      );
-    }
+
+      // Update user's main avatar field
+      await tx.user.update({
+        where: { id: parseInt(userId) },
+        data: { avatar: imageUrl },
+      });
+
+      return { profile, imageUrl };
+    });
+
+    console.log("Database updated successfully");
+
+    return NextResponse.json({
+      success: true,
+      imageUrl: result.imageUrl,
+      message: "Profile image uploaded successfully",
+    });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(
@@ -116,52 +119,5 @@ export async function POST(request) {
     );
   } finally {
     await prisma.$disconnect();
-  }
-}
-
-async function updateUserProfileImage(userId, imageUrl) {
-  try {
-    console.log(`Updating user ${userId} with image: ${imageUrl}`);
-
-    // First, check if user has a profile
-    const existingProfile = await prisma.userProfile.findUnique({
-      where: { userId: parseInt(userId) },
-    });
-
-    if (existingProfile) {
-      // Update existing profile
-      await prisma.userProfile.update({
-        where: { userId: parseInt(userId) },
-        data: {
-          avatar: imageUrl,
-        },
-      });
-    } else {
-      // Create new profile with image
-      await prisma.userProfile.create({
-        data: {
-          userId: parseInt(userId),
-          avatar: imageUrl,
-          title: "Freelancer",
-          bio: "Update your bio",
-          available: true,
-        },
-      });
-    }
-
-    // Also update the user's main avatar field
-    await prisma.user.update({
-      where: { id: parseInt(userId) },
-      data: { avatar: imageUrl },
-    });
-
-    console.log("Database updated successfully");
-    return { success: true };
-  } catch (error) {
-    console.error("Database update error:", error);
-    return {
-      success: false,
-      error: "Database update failed: " + error.message,
-    };
   }
 }

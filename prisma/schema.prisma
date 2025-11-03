@@ -1,3 +1,4 @@
+// schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -34,7 +35,6 @@ enum ReviewType {
   FREELANCER_TO_CLIENT
 }
 
-// Add the missing enums
 enum ProposalStatus {
   pending
   accepted
@@ -47,7 +47,7 @@ enum TransactionType {
   CREDIT
   REFUND
   PAYOUT
-  CONNECT_USAGE 
+  CONNECT_USAGE
 }
 
 /*
@@ -66,37 +66,36 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   currency  String   @default("USD")
-  lastLogin DateTime? 
-  // Relations
-  profile              UserProfile?
-  jobPosts             JobPost[]
-  proposals            Proposal[]
-  sentMessages         Message[] @relation("MessageSender")
-  reviewsGiven         Review[] @relation("ReviewGiven")
-  reviewsReceived      Review[] @relation("ReviewReceived")
-  transactions         Transaction[]
-  clientConversations  Conversation[] @relation("ClientConversations")
-  freelancerConversations Conversation[] @relation("FreelancerConversations")
-  clientPaymentRequests PaymentRequest[] @relation("ClientPaymentRequests")
-  freelancerPaymentRequests PaymentRequest[] @relation("FreelancerPaymentRequests")
-  clientProjects       Project[] @relation("ClientProjects")
-  freelancerProjects   Project[] @relation("FreelancerProjects")
-  readMessages         Message[] @relation("MessageReads")
+  lastLogin DateTime?
   registrationMethod String @default("email")
-  userPlan             UserPlan?
-  connectTransactions  ConnectTransaction[]
-  planSubscriptions    PlanSubscription[]
-  freelancerWallet     FreelancerWallet?
 
-  clientRefunds        RefundRequest[] @relation("ClientRefunds")
-  freelancerRefunds    RefundRequest[] @relation("FreelancerRefunds")
-  savedJobs            SavedJob[]
+  // Relations
+  profile                UserProfile?
+  profileImage           ProfileImage?       @relation("UserProfileImage")
+  jobPosts               JobPost[]
+  proposals              Proposal[]
+  sentMessages           Message[] @relation("MessageSender")
+  reviewsGiven           Review[] @relation("ReviewGiven")
+  reviewsReceived        Review[] @relation("ReviewReceived")
+  transactions           Transaction[]
+  clientConversations    Conversation[] @relation("ClientConversations")
+  freelancerConversations Conversation[] @relation("FreelancerConversations")
+  clientPaymentRequests  PaymentRequest[] @relation("ClientPaymentRequests")
+  freelancerPaymentRequests PaymentRequest[] @relation("FreelancerPaymentRequests")
+  clientProjects         Project[] @relation("ClientProjects")
+  freelancerProjects     Project[] @relation("FreelancerProjects")
+  readMessages           Message[] @relation("MessageReads")
+  userPlan               UserPlan?
+  connectTransactions    ConnectTransaction[]
+  planSubscriptions      PlanSubscription[]
+  freelancerWallet       FreelancerWallet?
+  clientRefunds          RefundRequest[] @relation("ClientRefunds")
+  freelancerRefunds      RefundRequest[] @relation("FreelancerRefunds")
+  savedJobs              SavedJob[]
   sentContactRequests     ContactRequest[] @relation("ClientContactRequests")
   receivedContactRequests ContactRequest[] @relation("FreelancerContactRequests")
-  
-  // Add relations for ClientToFreelancerProposal
-  sentProposals        ClientToFreelancerProposal[] @relation("ClientProposals")
-  receivedProposals    ClientToFreelancerProposal[] @relation("FreelancerProposals")
+  sentProposals          ClientToFreelancerProposal[] @relation("ClientProposals")
+  receivedProposals      ClientToFreelancerProposal[] @relation("FreelancerProposals")
 }
 
 model ContactRequest {
@@ -104,7 +103,7 @@ model ContactRequest {
   subject       String
   message       String   @db.Text
   projectDetails String? @db.Text
-  status        String   @default("pending") // pending, accepted, declined
+  status        String   @default("pending")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -151,8 +150,8 @@ model UserProfile {
   resumeUrl   String?
   phone       String?
   available   Boolean  @default(true)
-  panNumber   String?  // Add this line
-  gstNumber   String?  // Add this line
+  panNumber   String?
+  gstNumber   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -203,7 +202,6 @@ model Proposal {
 
   connectTransactions ConnectTransaction[]
 
-  // ✅ Fixed: Added @unique constraint to make one-to-one relation valid
   project          Project?  @relation("ProposalToProject")
 
   @@unique([jobId, freelancerId])
@@ -332,7 +330,7 @@ model BankDetail {
 
   walletId       Int
   wallet         FreelancerWallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  payoutRequests  PayoutRequest[]
+  payoutRequests PayoutRequest[]
 }
 
 model WalletTransaction {
@@ -447,7 +445,7 @@ model Project {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   completedAt  DateTime?
-  completedBy  String?  // Add this line to track who completed the project
+  completedBy  String?
 
   proposalId   Int?     @unique
   proposal     Proposal? @relation("ProposalToProject", fields: [proposalId], references: [id], onDelete: Cascade)
@@ -509,7 +507,6 @@ model ConnectTransaction {
   description                     String
   createdAt                       DateTime @default(now())
   
-  // Relations
   userId                          Int
   user                            User    @relation(fields: [userId], references: [id])
   
@@ -563,57 +560,45 @@ model Admin {
   @@map("admin")
 }
 
-model PlanSubscription {
-  id          Int      @id @default(autoincrement())
-  planType    String
-  amount      Float
-  currency    String   @default("INR")
-  status      String   @default("active")
-  razorpayOrderId   String?
-  razorpayPaymentId String?
-  razorpaySignature String?
-  startsAt    DateTime @default(now())
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("plansubscription")
-}
-
-model PasswordResetToken {
+model ProfileImage {
   id        Int      @id @default(autoincrement())
-  token     String   @unique
-  email     String
-  expiresAt DateTime
+  userId    Int      @unique
+  user      User     @relation("UserProfileImage", fields: [userId], references: [id], onDelete: Cascade)
+  imageData String   @db.Text
+  mimeType  String
+  fileSize  Int
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@map("passwordresettoken")
+  @@map("profile_images")
 }
 
-model OTP {
-  id        String   @id @default(cuid())
-  otp       String
-  email     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+model PlanSubscription {
+  id           Int      @id @default(autoincrement())
+  planName     String?  // ✅ FIXED: Made optional to prevent migration error
+  amount       Float
+  currency     String   @default("USD")
+  status       String   @default("active")
+  startedAt    DateTime @default(now())
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  razorpayPlanId   String?
+  razorpaySubId    String?
+  razorpayPaymentId String?
 
-  @@map("otps")
+  userId       Int
+  user         User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SavedJob {
   id        Int      @id @default(autoincrement())
+  userId    Int
+  jobId     Int
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  jobId Int
-  job   JobPost @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job       JobPost  @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
   @@unique([userId, jobId])
-  @@map("savedjob")
 }

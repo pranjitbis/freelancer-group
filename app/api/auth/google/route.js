@@ -8,18 +8,15 @@ export async function GET(request) {
     // Validate environment variables
     if (!process.env.GOOGLE_CLIENT_ID) {
       console.error("GOOGLE_CLIENT_ID is missing");
-      return NextResponse.redirect("/login?error=Auth configuration error");
+      return NextResponse.redirect(
+        "https://aroliya.com/login?error=Auth configuration error"
+      );
     }
 
-    if (!process.env.NEXTAUTH_URL) {
-      console.error("NEXTAUTH_URL is missing");
-      return NextResponse.redirect("/login?error=Auth configuration error");
-    }
+    // Use production redirect URI
+    const redirectUri = "https://aroliya.com/api/auth/google/callback";
 
-    // Use EXACT redirect URI that matches Google Console
-    const redirectUri = "http://localhost:3000/api/auth/google/callback";
-
-    console.log("Using redirect URI:", redirectUri);
+    console.log("Using production redirect URI:", redirectUri);
 
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams(
       {
@@ -36,6 +33,8 @@ export async function GET(request) {
     return NextResponse.redirect(googleAuthUrl);
   } catch (error) {
     console.error("Google auth initiation error:", error);
-    return NextResponse.redirect("/login?error=Auth configuration error");
+    return NextResponse.redirect(
+      "https://aroliya.com/login?error=Auth configuration error"
+    );
   }
 }

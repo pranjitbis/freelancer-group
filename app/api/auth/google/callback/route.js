@@ -21,11 +21,14 @@ export async function GET(request) {
 
     if (!code) {
       return NextResponse.redirect(
-        "/login?error=No authorization code received"
+        "https://aroliya.com/login?error=No authorization code received"
       );
     }
 
-    const redirectUri = "http://localhost:3000/api/auth/google/callback";
+    // Use production redirect URI
+    const redirectUri = "https://aroliya.com/api/auth/google/callback";
+
+    console.log("Using production redirect URI:", redirectUri);
 
     // Exchange code for tokens
     const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
@@ -47,7 +50,7 @@ export async function GET(request) {
     if (!tokenResponse.ok) {
       console.error("Token exchange failed:", tokens);
       return NextResponse.redirect(
-        `/login?error=Token exchange failed: ${tokens.error}`
+        "https://aroliya.com/login?error=Token exchange failed"
       );
     }
 
@@ -78,11 +81,11 @@ export async function GET(request) {
         data: {
           email: googleUser.email.toLowerCase(),
           name: googleUser.name,
-          password: "google_oauth", // Special marker for Google users
+          password: "google_oauth",
           role: userType,
           status: "active",
           avatar: googleUser.picture,
-          registrationMethod: "google", // Explicitly set to google
+          registrationMethod: "google",
         },
       });
 
@@ -109,7 +112,6 @@ export async function GET(request) {
         where: { id: user.id },
         data: {
           lastLogin: new Date(),
-          // If existing user registered with email but now using Google, update registration method
           registrationMethod:
             user.registrationMethod === "email"
               ? "google"
@@ -150,29 +152,27 @@ export async function GET(request) {
       { expiresIn: "30d" }
     );
 
-    // Redirect to appropriate dashboard
-    const response = NextResponse.redirect(
-      `http://localhost:3000${redirectUrl}`
-    );
+    // Redirect to appropriate dashboard on aroliya.com
+    const response = NextResponse.redirect(`https://aroliya.com${redirectUrl}`);
 
-    // Set cookies
+    // Set secure cookies for production
     response.cookies.set("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: true, // Use secure cookies in production
       sameSite: "lax",
       maxAge: 30 * 24 * 60 * 60,
       path: "/",
     });
 
     response.cookies.set("userRole", user.role, {
-      secure: false,
+      secure: true,
       sameSite: "lax",
       maxAge: 30 * 24 * 60 * 60,
       path: "/",
     });
 
     response.cookies.set("registrationMethod", user.registrationMethod, {
-      secure: false,
+      secure: true,
       sameSite: "lax",
       maxAge: 30 * 24 * 60 * 60,
       path: "/",
@@ -181,6 +181,8 @@ export async function GET(request) {
     return response;
   } catch (error) {
     console.error("Google callback error:", error);
-    return NextResponse.redirect("/login?error=Google authentication failed");
+    return NextResponse.redirect(
+      "https://aroliya.com/login?error=Google authentication failed"
+    );
   }
 }

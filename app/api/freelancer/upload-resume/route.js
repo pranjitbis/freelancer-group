@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import { join } from "path";
 import { PrismaClient } from "@prisma/client";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
 const prisma = new PrismaClient();
 
@@ -11,15 +11,27 @@ export async function POST(request) {
     const file = formData.get("resume");
     const userId = formData.get("userId");
 
-    if (!file || !userId) {
+    console.log("Resume upload request received:", {
+      hasFile: !!file,
+      fileName: file?.name,
+      fileType: file?.type,
+      fileSize: file?.size,
+      userId,
+    });
+
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    if (!userId) {
       return NextResponse.json(
-        { error: "File and user ID are required" },
+        { error: "User ID is required" },
         { status: 400 }
       );
     }
 
-    // Validate file type
-    if (!file.name.toLowerCase().endsWith(".pdf")) {
+    // Validate file type (PDF only)
+    if (file.type !== "application/pdf") {
       return NextResponse.json(
         { error: "Only PDF files are allowed" },
         { status: 400 }
@@ -27,57 +39,66 @@ export async function POST(request) {
     }
 
     // Validate file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
       return NextResponse.json(
         { error: "File size must be less than 5MB" },
         { status: 400 }
       );
     }
 
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = join(process.cwd(), "public", "uploads", "resumes");
+    try {
+      await mkdir(uploadsDir, { recursive: true });
+    } catch (error) {
+      console.log("Uploads directory already exists or couldn't be created");
+    }
+
+    // Generate unique filename
+    const timestamp = Date.now();
+    const fileName = `resume_${userId}_${timestamp}.pdf`;
+    const filePath = join(uploadsDir, fileName);
+
+    // Convert file to buffer and save
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    await writeFile(filePath, buffer);
 
-    // Create unique filename
-    const timestamp = Date.now();
-    const filename = `resume_${userId}_${timestamp}.pdf`;
-    const uploadDir = join(process.cwd(), "public", "uploads", "resumes");
+    console.log("Resume saved successfully:", filePath);
 
-    // Ensure upload directory exists
-    const { mkdir } = require("fs").promises;
-    await mkdir(uploadDir, { recursive: true });
+    // Generate public URL for the resume
+    const resumeUrl = `/uploads/resumes/${fileName}`;
 
-    // Save file
-    const filepath = join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-
-    // Update profile with resume URL
-    const resumeUrl = `/uploads/resumes/${filename}`;
-
-    const updatedProfile = await prisma.userProfile.upsert({
+    // Update user profile with resume URL
+    const profile = await prisma.userProfile.upsert({
       where: { userId: parseInt(userId) },
-      update: { resumeUrl },
+      update: {
+        resumeUrl: resumeUrl,
+      },
       create: {
         userId: parseInt(userId),
-        resumeUrl,
+        resumeUrl: resumeUrl,
+        title: "Freelancer",
+        bio: "Update your bio",
+        available: true,
       },
     });
 
-    console.log("✅ Resume uploaded successfully:", {
-      userId,
-      resumeUrl,
-      profileId: updatedProfile.id,
-    });
+    console.log("Resume URL saved to database");
 
     return NextResponse.json({
       success: true,
+      resumeUrl: resumeUrl,
       message: "Resume uploaded successfully",
-      resumeUrl,
     });
   } catch (error) {
-    console.error("❌ Error uploading resume:", error);
+    console.error("Resume upload error:", error);
     return NextResponse.json(
-      { error: "Failed to upload resume: " + error.message },
+      { error: "Internal server error: " + error.message },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }

@@ -273,7 +273,7 @@ export default function ClientProposalsPage() {
 
       if (conversationData.success) {
         router.push(
-          `/messages?conversation=${conversationData.conversation.id}`
+          `/client-dashboard/messages?conversation=${conversationData.conversation.id}`
         );
       } else {
         throw new Error(
@@ -615,37 +615,6 @@ export default function ClientProposalsPage() {
             <div className={styles.headerMain}>
               <div className={styles.headerTitle}>
                 <h1>Proposals Management</h1>
-
-                {/* TEST BUTTON - Add this to debug API response */}
-                {currentUser && (
-                  <button
-                    onClick={async () => {
-                      console.log("🧪 Testing API Response...");
-                      const response = await fetch(
-                        `/api/proposals/client?userId=${currentUser.id}`
-                      );
-                      const data = await response.json();
-                      console.log("🔍 RAW API RESPONSE:", data);
-                      if (data.proposals && data.proposals.length > 0) {
-                        data.proposals.forEach((proposal, index) => {
-                          console.log(
-                            `📋 Proposal ${index + 1} Profile:`,
-                            proposal.freelancer?.profile
-                          );
-                          console.log(
-                            `📋 Proposal ${index + 1} Resume URL:`,
-                            proposal.freelancer?.profile?.resumeUrl
-                          );
-                        });
-                      } else {
-                        console.log("📭 No proposals in response");
-                      }
-                    }}
-                    className={styles.testButton}
-                  >
-                    Test API Response
-                  </button>
-                )}
 
                 <button
                   onClick={() => router.push("/client-dashboard/analytics")}

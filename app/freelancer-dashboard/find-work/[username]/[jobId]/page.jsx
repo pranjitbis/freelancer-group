@@ -154,23 +154,28 @@ export default function JobDetailPage() {
     if (!dateString) {
       return "Recently joined";
     }
-    
+
     try {
       const date = new Date(dateString);
-      
+
       if (isNaN(date.getTime())) {
         console.warn("Invalid date received:", dateString);
         return "Recently joined";
       }
-      
+
       // Format: "January 15, 2024"
-      return new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+      return new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       }).format(date);
     } catch (error) {
-      console.error("Error formatting join date:", error, "Date string:", dateString);
+      console.error(
+        "Error formatting join date:",
+        error,
+        "Date string:",
+        dateString
+      );
       return "Recently joined";
     }
   };
@@ -178,12 +183,14 @@ export default function JobDetailPage() {
   // Format relative time (e.g., "2 months ago")
   const formatRelativeTime = (dateString) => {
     if (!dateString) return "Recently";
-    
+
     try {
       const date = new Date(dateString);
       const now = new Date();
-      const diffInMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
-      
+      const diffInMonths =
+        (now.getFullYear() - date.getFullYear()) * 12 +
+        (now.getMonth() - date.getMonth());
+
       if (diffInMonths === 0) {
         return "This month";
       } else if (diffInMonths === 1) {
@@ -232,15 +239,15 @@ export default function JobDetailPage() {
 
   const getTimeAgo = (date) => {
     if (!date) return "Recently";
-    
+
     try {
       const now = new Date();
       const posted = new Date(date);
-      
+
       if (isNaN(posted.getTime())) {
         return "Recently";
       }
-      
+
       const diff = now - posted;
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -266,15 +273,15 @@ export default function JobDetailPage() {
     if (!deadline) {
       return { level: "low", label: "Flexible", color: "#059669" };
     }
-    
+
     try {
       const now = new Date();
       const deadlineDate = new Date(deadline);
-      
+
       if (isNaN(deadlineDate.getTime())) {
         return { level: "low", label: "Flexible", color: "#059669" };
       }
-      
+
       const diffDays = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
 
       if (diffDays <= 1)
@@ -340,7 +347,7 @@ export default function JobDetailPage() {
           <h2>Job Not Found</h2>
           <p>{error || "The job you're looking for doesn't exist."}</p>
           <motion.button
-            onClick={() => router.push("/find-work")}
+            onClick={() => router.push("/freelancer-dashboard/find-work")}
             className={styles.backButton}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -367,7 +374,7 @@ export default function JobDetailPage() {
       >
         <div className={styles.navContent}>
           <motion.button
-            onClick={() => router.push("/find-work")}
+            onClick={() => router.push("/freelancer-dashboard/find-work")}
             className={styles.backButton}
             whileHover={{ scale: 1.05, x: -5 }}
             whileTap={{ scale: 0.95 }}
@@ -508,7 +515,9 @@ export default function JobDetailPage() {
                 <div className={styles.overviewContent}>
                   <span className={styles.overviewLabel}>Deadline</span>
                   <strong className={styles.overviewValue}>
-                    {job.deadline ? new Date(job.deadline).toLocaleDateString() : "Flexible"}
+                    {job.deadline
+                      ? new Date(job.deadline).toLocaleDateString()
+                      : "Flexible"}
                   </strong>
                 </div>
               </div>
@@ -552,16 +561,17 @@ export default function JobDetailPage() {
               </h2>
             </div>
             <div className={styles.descriptionContent}>
-              {job.description && job.description.split("\n").map((paragraph, index) => (
-                <motion.p
-                  key={index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  {paragraph}
-                </motion.p>
-              ))}
+              {job.description &&
+                job.description.split("\n").map((paragraph, index) => (
+                  <motion.p
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    {paragraph}
+                  </motion.p>
+                ))}
             </div>
           </motion.div>
 
@@ -578,18 +588,19 @@ export default function JobDetailPage() {
               </h2>
             </div>
             <div className={styles.skillsGrid}>
-              {job.skills && job.skills.map((skill, index) => (
-                <motion.div
-                  key={index}
-                  className={styles.skillsTag}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  {skill}
-                </motion.div>
-              ))}
+              {job.skills &&
+                job.skills.map((skill, index) => (
+                  <motion.div
+                    key={index}
+                    className={styles.skillsTag}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    {skill}
+                  </motion.div>
+                ))}
             </div>
           </motion.div>
 
@@ -647,7 +658,9 @@ export default function JobDetailPage() {
                   </div>
                   <div className={styles.memberSince}>
                     <FaCalendarAlt />
-                    <span>Member since {formatJoinDate(job.user.createdAt)}</span>
+                    <span>
+                      Member since {formatJoinDate(job.user.createdAt)}
+                    </span>
                     <span className={styles.relativeTime}>
                       ({formatRelativeTime(job.user.createdAt)})
                     </span>
@@ -686,7 +699,10 @@ export default function JobDetailPage() {
               <div>
                 <strong>{urgency.label} Deadline</strong>
                 <span>
-                  Apply before {job.deadline ? new Date(job.deadline).toLocaleDateString() : "Open"}
+                  Apply before{" "}
+                  {job.deadline
+                    ? new Date(job.deadline).toLocaleDateString()
+                    : "Open"}
                 </span>
               </div>
             </motion.div>

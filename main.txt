@@ -1,5 +1,3 @@
-fix the aliement in proposal page are client dashbord 
-send proposal add attechment in freelancer dashbord 
 
 
 
@@ -7,13 +5,29 @@ send proposal add attechment in freelancer dashbord
 ///Today//// remove /s/  /saved-job/ 
 
 
-give the permistion in upload image in freelancer profile page 
-check the save job showing the 404 error in find work page
-find-work job not rederect to dashboord rederect to find-work page 
 mention 10% service fees in freelancer dasbord plan page
-review page free like compate the project then freelancer and client will be give the review. 
 
 
-Today
 
-main::: check the register  page are showing are no user found issus
+
+image are not showing the freelancer profile page....
+hire freelacner page login with google like showing are the google user so you can remove this.....
+showing are the client profile invalid date....
+
+
+/wp-admin/
+
+admin dashbord i scroll then website are showing are scroll like left side menu so you can make are like fix llike using ++++=: position:fix
+
+
+
+//website//
+
+post a project  /// join as client
+
+
+
+
+Hire top freelacner // join cliet page hero section title
+
+Nav bar i hide sop you  can make are nav bar are fix like postion are fix::==++ postion:fixed

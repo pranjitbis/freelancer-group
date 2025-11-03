@@ -308,9 +308,10 @@ export default function FreelancerProfilePage() {
         setProfileImage(data.imageUrl);
         setProfile((prev) => ({
           ...prev,
-          profileImage: data.imageUrl,
           avatar: data.imageUrl,
         }));
+        // Refresh the profile data
+        await fetchProfile();
       } else {
         throw new Error(
           data.error || `Upload failed with status ${response.status}`
@@ -372,23 +373,26 @@ export default function FreelancerProfilePage() {
         },
         body: JSON.stringify({
           userId: currentUser.id,
-          ...formData,
-          profileImage: null,
+          profileImage: null, // This will set avatar to null
         }),
       });
+
+      const data = await response.json();
 
       if (response.ok) {
         setSuccess("Profile image removed successfully!");
         setProfileImage(null);
         setProfile((prev) => ({
           ...prev,
-          profileImage: null,
           avatar: null,
         }));
+        await fetchProfile(); // Refresh the profile
+      } else {
+        throw new Error(data.error || "Failed to remove profile image");
       }
     } catch (error) {
       console.error("Error deleting profile image:", error);
-      setError("Failed to remove profile image");
+      setError("Failed to remove profile image: " + error.message);
     }
   };
 
@@ -572,7 +576,7 @@ export default function FreelancerProfilePage() {
                 <div className={styles.imageUploadSection}>
                   <div className={styles.imagePreview}>
                     {profileImage ? (
-                      <>
+                      <div className={styles.imageWithDelete}>
                         <img
                           src={profileImage}
                           alt="Profile"
@@ -583,11 +587,10 @@ export default function FreelancerProfilePage() {
                           type="button"
                           onClick={deleteProfileImage}
                           className={styles.removeImageButton}
-                          style={{ display: "none" }}
                         >
                           <FaTrash />
                         </button>
-                      </>
+                      </div>
                     ) : (
                       <div className={styles.imagePlaceholder}>
                         <FaUser className={styles.placeholderIcon} />

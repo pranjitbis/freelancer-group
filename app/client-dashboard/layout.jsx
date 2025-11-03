@@ -97,7 +97,7 @@ export default function ClientDashboardLayout({ children }) {
       id: "Support",
       label: "Support",
       icon: <MdOutlineContactSupport />,
-      path: "/client-dashboard/profile",
+      path: "/client-dashboard/support",
     },
   ];
 

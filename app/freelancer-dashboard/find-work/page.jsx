@@ -270,7 +270,7 @@ export default function FreelancerHub() {
   const handleJobClick = (job) => {
     const username = job.user.name.toLowerCase().replace(/\s+/g, "-");
     const jobId = `JOB-${job.id.toString().padStart(6, "0")}`;
-    router.push(`/find-work/${username}/${jobId}`);
+    router.push(`/freelancer-dashboard/find-work/${username}/${jobId}`);
   };
 
   const formatUSD = (amount) => {
@@ -576,18 +576,34 @@ export default function FreelancerHub() {
               <Link href="/freelancer-dashboard/saved-jobs">
                 <motion.button
                   className={styles.dashboardButton}
-                  onClick={() => router.push("/freelancer-dashboard")}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, y: 20 }}
+                  onClick={() =>
+                    router.push("/freelancer-dashboard/saved-jobs")
+                  }
+                  whileHover={{
+                    scale: 1.02,
+                    boxShadow: "0 4px 12px rgba(59, 130, 246, 0.15)",
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 }}
+                  transition={{
+                    delay: 1,
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20,
+                  }}
                 >
-                  <span>
-                    {" "}
-                    <FaHeart />
-                  </span>
-                  View Saved Jobs ({savedJobs.length})
+                  <div className={styles.buttonContent}>
+                    <div className={styles.buttonIcon}>
+                      <FaHeart />
+                    </div>
+                    <div className={styles.buttonText}>
+                      <span className={styles.buttonLabel}>Saved Jobs</span>
+                      <span className={styles.buttonCount}>
+                        {savedJobs.length}
+                      </span>
+                    </div>
+                  </div>
                 </motion.button>
               </Link>
             )}
