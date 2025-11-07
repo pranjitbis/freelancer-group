@@ -12,6 +12,7 @@
   overflow: hidden;
   display: flex;
   align-items: center;
+  margin-top: 7rem;
 }
 
 .heroBackground {
@@ -1004,6 +1005,11 @@
 }
 
 @media (max-width: 480px) {
+
+  .ctaButtons{
+    margin: auto;
+    justify-content: center;
+  }
   .hero {
     padding: 100px 5% 60px;
   }

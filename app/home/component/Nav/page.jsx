@@ -35,6 +35,18 @@ export default function Nav() {
     };
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add(styles.menuOpen);
+    } else {
+      document.body.classList.remove(styles.menuOpen);
+    }
+
+    return () => {
+      document.body.classList.remove(styles.menuOpen);
+    };
+  }, [isOpen]);
+
   const checkAuthStatus = async () => {
     try {
       const response = await fetch("/api/auth/verify", {
@@ -81,6 +93,8 @@ export default function Nav() {
     }
   };
 
+  const closeMenu = () => setIsOpen(false);
+
   return (
     <header className={`${styles.header} ${isFixed ? styles.fixed : ""}`}>
       {/* Top Bar */}
@@ -113,18 +127,23 @@ export default function Nav() {
         </Link>
 
         <ul className={`${styles.navLinks} ${isOpen ? styles.active : ""}`}>
+          {/* Close button for mobile */}
+          <button className={styles.closeButton} onClick={closeMenu}>
+            <IoClose size={26} />
+          </button>
+
           <li>
-            <Link href="/" onClick={() => setIsOpen(false)}>
+            <Link href="/" onClick={closeMenu}>
               Home
             </Link>
           </li>
           <li>
-            <Link href="/about" onClick={() => setIsOpen(false)}>
+            <Link href="/about" onClick={closeMenu}>
               About Us
             </Link>
           </li>
           <li>
-            <Link href="/our-team" onClick={() => setIsOpen(false)}>
+            <Link href="/our-team" onClick={closeMenu}>
               Our Team
             </Link>
           </li>
@@ -135,25 +154,29 @@ export default function Nav() {
             </button>
             {dropdown.services && (
               <div className={styles.dropdownMenu}>
-                <Link href="/services/virtual-assistance">
+                <Link href="/services/virtual-assistance" onClick={closeMenu}>
                   Virtual Assistance
                 </Link>
-                <Link href="/services/form-filling">Online Form Filling</Link>
-                <Link href="/services/web-development">Web Development</Link>
-                <Link href="/services/e-commerce-solutions">
+                <Link href="/services/form-filling" onClick={closeMenu}>
+                  Online Form Filling
+                </Link>
+                <Link href="/services/web-development" onClick={closeMenu}>
+                  Web Development
+                </Link>
+                <Link href="/services/e-commerce-solutions" onClick={closeMenu}>
                   E-Commerce Solution
                 </Link>
-                <Link href="/services/travel-bookings">
+                <Link href="/services/travel-bookings" onClick={closeMenu}>
                   Travel & Hotel booking
                 </Link>
-                <Link href="/services/data-visualization">
+                <Link href="/services/data-visualization" onClick={closeMenu}>
                   Data & AI Solution
                 </Link>
               </div>
             )}
           </li>
           <li>
-            <Link href="/find-work" onClick={() => setIsOpen(false)}>
+            <Link href="/find-work" onClick={closeMenu}>
               Find Work
             </Link>
           </li>
@@ -163,10 +186,16 @@ export default function Nav() {
             </button>
             {dropdown.freelancer && (
               <div className={styles.dropdownMenu}>
-                <Link href="/services/freelancer-hub/freelancer-plan">
+                <Link
+                  href="/services/freelancer-hub/freelancer-plan"
+                  onClick={closeMenu}
+                >
                   Join as Freelancer
                 </Link>
-                <Link href="/services/freelancer-hub/client-plan">
+                <Link
+                  href="/services/freelancer-hub/client-plan"
+                  onClick={closeMenu}
+                >
                   Join as Client
                 </Link>
               </div>
@@ -174,12 +203,12 @@ export default function Nav() {
           </li>
 
           <li>
-            <Link href="/career" onClick={() => setIsOpen(false)}>
+            <Link href="/career" onClick={closeMenu}>
               Career
             </Link>
           </li>
           <li>
-            <Link href="/contact-us" onClick={() => setIsOpen(false)}>
+            <Link href="/contact-us" onClick={closeMenu}>
               Contact Us
             </Link>
           </li>
@@ -187,18 +216,22 @@ export default function Nav() {
           {/* Mobile Auth Buttons */}
           <div className={styles.mobileAuthButtons}>
             {user ? (
-              <Link href={getDashboardLink()} className={styles.dashboardBtn}>
+              <Link
+                href={getDashboardLink()}
+                className={styles.dashboardBtn}
+                onClick={closeMenu}
+              >
                 <FaUser /> {userName}
               </Link>
             ) : (
               <>
                 <Link href="/login">
-                  <button className={styles.loginBtn}>
+                  <button className={styles.loginBtn} onClick={closeMenu}>
                     Login
                   </button>
                 </Link>
                 <Link href="/register">
-                  <button className={styles.signUpBtn}>
+                  <button className={styles.signUpBtn} onClick={closeMenu}>
                     Register
                   </button>
                 </Link>
@@ -228,7 +261,7 @@ export default function Nav() {
           className={styles.menuToggle}
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <IoClose className={styles.close} size={26} /> : <IoMenu size={26} />}
+          {isOpen ? <IoClose size={26} /> : <IoMenu size={26} />}
         </button>
       </nav>
     </header>
