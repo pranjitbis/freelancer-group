@@ -1,74 +1,98 @@
-/* Plans.module.css */
-
-/* Container and Layout */
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    sans-serif;
+  background: var(--neutral-50);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+/* Header Section */
 .header {
-  border-bottom: 1px solid #e2e8f0;
-  padding: 1rem 0;
+  background: white;
+  border-bottom: 1px solid var(--neutral-200);
+  padding: 1.5rem 0;
 }
 
 .headerContent {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1.5rem;
+}
+
+.headerMain {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 2rem;
 }
 
-.backButton {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  color: #374151;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  cursor: pointer;
+.headerText {
+  flex: 1;
 }
 
-.backButton:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  transform: translateY(-1px);
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--neutral-900);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+.pageSubtitle {
+  font-size: 1.125rem;
+  color: var(--neutral-600);
+  margin: 0;
+  line-height: 1.5;
 }
 
 .headerControls {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.invoiceButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--success-green);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.invoiceButton:hover {
+  background: #047857;
+  transform: translateY(-1px);
 }
 
 .currencySelector {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  background: var(--neutral-100);
   padding: 0.75rem 1rem;
-  background: white;
-  border: 1px solid #d1d5db;
   border-radius: 8px;
+  border: 1px solid var(--neutral-200);
 }
 
 .globeIcon {
-  color: #6b7280;
+  color: var(--neutral-500);
+  font-size: 0.875rem;
 }
 
 .currencySelect {
+  background: none;
   border: none;
-  outline: none;
-  background: transparent;
+  color: var(--neutral-700);
   font-weight: 500;
-  color: #374151;
   cursor: pointer;
+  outline: none;
+  font-size: 0.875rem;
 }
 
 /* Main Content */
@@ -83,42 +107,46 @@
 
 /* Current Plan Section */
 .currentPlanSection {
-  background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  border: 1px solid #e5e7eb;
+  width: 100%;
 }
 
 .currentPlanCard {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  background: white;
+  border: 1px solid var(--neutral-200);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.currentPlanCard:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .planStatusHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 1.5rem;
   gap: 2rem;
 }
 
 .planInfo {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
   flex: 1;
 }
 
 .planIcon {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
+  flex-shrink: 0;
 }
 
 .planDetails {
@@ -128,21 +156,31 @@
 .planName {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--neutral-900);
   margin: 0 0 0.5rem 0;
 }
 
 .planDescription {
-  color: #6b7280;
-  font-size: 1rem;
-  margin: 0;
+  color: var(--neutral-600);
+  margin: 0 0 1rem 0;
   line-height: 1.5;
+}
+
+.recentPurchase {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--success-green);
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 
 .planStats {
   display: flex;
-  align-items: center;
-  gap: 2rem;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+  min-width: 200px;
 }
 
 .connectsCount {
@@ -151,26 +189,26 @@
 
 .availableConnects {
   display: block;
-  font-size: 2rem;
-  font-weight: 800;
-  color: #059669;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--neutral-900);
   line-height: 1;
 }
 
 .connectsLabel {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--neutral-500);
   font-weight: 500;
 }
 
 .progressSection {
-  min-width: 200px;
+  width: 200px;
 }
 
 .progressBar {
   width: 100%;
   height: 8px;
-  background: #f3f4f6;
+  background: var(--neutral-200);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 0.5rem;
@@ -183,8 +221,8 @@
 }
 
 .progressText {
-  font-size: 0.875rem;
-  color: #6b7280;
+  font-size: 0.75rem;
+  color: var(--neutral-500);
   text-align: center;
 }
 
@@ -192,20 +230,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid #f3f4f6;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--neutral-200);
 }
 
 .resetInfo {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #6b7280;
+  color: var(--neutral-600);
   font-size: 0.875rem;
 }
 
 .calendarIcon {
-  color: #d97706;
+  color: var(--neutral-500);
 }
 
 .upgradeButton {
@@ -213,23 +251,24 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  background: var(--premium-orange);
   color: white;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 0.875rem;
 }
 
 .upgradeButton:hover {
+  background: #b45309;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
 /* Plans Section */
 .plansSection {
-  margin-top: 1rem;
+  width: 100%;
 }
 
 .plansGrid {
@@ -240,24 +279,25 @@
 
 .planCard {
   background: white;
+  border: 1px solid var(--neutral-200);
   border-radius: 16px;
   padding: 2rem;
-  border: 1px solid #e5e7eb;
   position: relative;
   transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
+  height: fit-content;
 }
 
 .planCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-lg);
 }
 
 .planCard.popular {
-  border-color: #d97706;
-  box-shadow: 0 0 0 1px #d97706, 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border-color: var(--premium-orange);
+  box-shadow: var(--shadow-md);
 }
 
 .popularBadge {
@@ -265,38 +305,41 @@
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.5rem 1.5rem;
-  background: #d97706;
+  background: var(--premium-orange);
   color: white;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .planHeader {
   text-align: center;
   margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--neutral-200);
 }
 
 .planIcon {
-  width: 64px;
-  height: 64px;
-  border-radius: 12px;
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
   margin: 0 auto 1rem;
+  font-size: 2rem;
 }
 
 .planName {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--neutral-900);
   margin: 0 0 1rem 0;
 }
 
@@ -306,7 +349,7 @@
 
 .connectsCount {
   display: block;
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 800;
   line-height: 1;
   margin-bottom: 0.25rem;
@@ -314,12 +357,14 @@
 
 .connectsLabel {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--neutral-500);
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .priceSection {
-  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .freePrice {
@@ -327,15 +372,17 @@
 }
 
 .priceAmount {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #059669;
   display: block;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--neutral-900);
+  line-height: 1;
 }
 
 .pricePeriod {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--neutral-500);
+  font-weight: 500;
 }
 
 .paidPrice {
@@ -351,27 +398,32 @@
 }
 
 .currencySymbol {
-  font-size: 1.25rem;
-  color: #374151;
+  font-size: 1.5rem;
+  color: var(--neutral-700);
 }
 
 .priceAmount {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--neutral-900);
+  line-height: 1;
 }
 
 .gstNote {
   font-size: 0.75rem;
-  color: #d97706;
-  font-weight: 500;
-  margin-top: 0.25rem;
+  color: var(--neutral-500);
+  margin-top: 0.5rem;
 }
 
 .planDescription {
   text-align: center;
-  color: #6b7280;
   margin-bottom: 1.5rem;
+}
+
+.planDescription p {
+  color: var(--neutral-600);
+  font-style: italic;
+  margin: 0;
   line-height: 1.5;
 }
 
@@ -383,8 +435,8 @@
 .featuresTitle {
   font-size: 1rem;
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 1rem;
+  color: var(--neutral-800);
+  margin: 0 0 1rem 0;
 }
 
 .featuresList {
@@ -401,25 +453,27 @@
   align-items: flex-start;
   gap: 0.75rem;
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--neutral-700);
+  line-height: 1.4;
 }
 
 .featureIcon {
   flex-shrink: 0;
   margin-top: 0.125rem;
+  font-size: 0.875rem;
 }
 
 .limitationsSection {
   margin-bottom: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid #f3f4f6;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--neutral-200);
 }
 
 .limitationsTitle {
   font-size: 1rem;
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 1rem;
+  color: var(--neutral-800);
+  margin: 0 0 1rem 0;
 }
 
 .limitationsList {
@@ -436,12 +490,14 @@
   align-items: flex-start;
   gap: 0.75rem;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--neutral-500);
+  line-height: 1.4;
 }
 
 .limitationIcon {
   flex-shrink: 0;
   margin-top: 0.125rem;
+  font-size: 0.875rem;
 }
 
 .planActionsRow {
@@ -457,6 +513,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 0.875rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -465,24 +522,25 @@
 
 .selectButton:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
 }
 
 .selectButton:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
+  opacity: 0.7;
 }
 
 .popularButton {
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  box-shadow: var(--shadow-md);
 }
 
 .currentButton {
-  background: #6b7280;
+  background: var(--neutral-400) !important;
 }
 
-.buttonLoading {
+.buttonLoading,
+.buttonCurrent,
+.buttonUpgrade {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -501,61 +559,54 @@
   }
 }
 
-.buttonCurrent {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.buttonUpgrade {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 /* History Section */
 .historySection {
-  margin-top: 1rem;
+  width: 100%;
 }
 
 .historyCard {
   background: white;
-  border-radius: 16px;
+  border: 1px solid var(--neutral-200);
+  border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-sm);
 }
 
 .historyHeader {
   margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .historyTitle {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 1.25rem;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--neutral-900);
   margin: 0 0 0.5rem 0;
 }
 
 .historySubtitle {
-  color: #6b7280;
+  color: var(--neutral-600);
   margin: 0;
+  line-height: 1.5;
 }
 
 .loadingHistory {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 3rem;
-  color: #6b7280;
+  gap: 1rem;
 }
 
 .emptyHistory {
   text-align: center;
-  padding: 3rem;
-  color: #6b7280;
+  padding: 3rem 2rem;
+  color: var(--neutral-500);
 }
 
 .emptyIcon {
@@ -564,10 +615,24 @@
   opacity: 0.5;
 }
 
+.emptyHistory h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--neutral-700);
+}
+
+.emptyHistory p {
+  margin: 0;
+  line-height: 1.5;
+}
+
 .historyList {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .historyItem {
@@ -575,26 +640,25 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: #f8fafc;
+  background: var(--neutral-50);
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--neutral-200);
   transition: all 0.2s ease;
 }
 
 .historyItem:hover {
-  background: #f1f5f9;
-  transform: translateX(4px);
+  background: var(--neutral-100);
 }
 
 .historyIcon {
   width: 40px;
   height: 40px;
-  background: #eff6ff;
   border-radius: 8px;
+  background: var(--primary-blue-light);
+  color: var(--primary-blue);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2563eb;
   flex-shrink: 0;
 }
 
@@ -604,7 +668,7 @@
 
 .historyDescription {
   font-weight: 500;
-  color: #374151;
+  color: var(--neutral-800);
   margin-bottom: 0.25rem;
 }
 
@@ -615,29 +679,29 @@
 }
 
 .historyDate {
-  font-size: 0.875rem;
-  color: #6b7280;
+  font-size: 0.75rem;
+  color: var(--neutral-500);
 }
 
 .connectChange {
-  font-weight: 700;
-  font-size: 1.125rem;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
   flex-shrink: 0;
 }
 
 .connectChange.positive {
-  background: #ecfdf5;
-  color: #059669;
+  background: var(--success-green-light);
+  color: var(--success-green);
 }
 
 .connectChange.negative {
-  background: #fef2f2;
-  color: #dc2626;
+  background: var(--error-red-light);
+  color: var(--error-red);
 }
 
-/* Payment Modal */
+/* Modal Styles */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -650,28 +714,18 @@
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
+  backdrop-filter: blur(4px);
 }
 
-.paymentModal {
+.paymentModal,
+.invoiceModal {
   background: white;
   border-radius: 16px;
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  animation: modalSlideIn 0.3s ease-out;
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  box-shadow: var(--shadow-xl);
 }
 
 .modalHeader {
@@ -679,107 +733,120 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--neutral-200);
+  position: sticky;
+  top: 0;
+  background: white;
+  border-radius: 16px 16px 0 0;
+  z-index: 1;
 }
 
 .modalHeader h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--neutral-900);
 }
 
 .closeButton {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #6b7280;
+  color: var(--neutral-500);
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 4px;
   transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .closeButton:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--neutral-100);
+  color: var(--neutral-700);
 }
 
 .paymentContent {
   padding: 2rem;
 }
 
+.paymentSummary {
+  margin-bottom: 1.5rem;
+}
+
 .planSummary {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--neutral-50);
+  border-radius: 8px;
 }
 
 .planSummary .planIcon {
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   font-size: 1.25rem;
+  margin: 0;
 }
 
 .planDetails h3 {
   margin: 0 0 0.25rem 0;
   font-size: 1.25rem;
-  font-weight: 700;
-  color: #1f2937;
+  font-weight: 600;
+  color: var(--neutral-900);
 }
 
 .planDetails p {
   margin: 0;
-  color: #6b7280;
+  color: var(--neutral-600);
   font-size: 0.875rem;
 }
 
 .priceBreakdown {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
 }
 
-.priceRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  color: #374151;
-}
-
+.priceRow,
 .totalRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
-  border-top: 1px solid #e5e7eb;
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: #1f2937;
+  padding: 0.5rem 0;
+}
+
+.priceRow {
+  color: var(--neutral-600);
+  font-size: 0.875rem;
+}
+
+.totalRow {
+  border-top: 1px solid var(--neutral-200);
+  padding-top: 1rem;
+  font-weight: 600;
+  color: var(--neutral-900);
 }
 
 .totalAmount {
-  color: #059669;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
+  color: var(--primary-blue);
 }
 
 .featurePreview {
-  margin-bottom: 1.5rem;
+  background: var(--neutral-50);
+  padding: 1rem;
+  border-radius: 8px;
 }
 
 .featurePreview h4 {
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--neutral-700);
 }
 
 .featurePreview ul {
@@ -794,9 +861,9 @@
 .featurePreview li {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--neutral-600);
 }
 
 .paymentSecurity {
@@ -805,53 +872,51 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 1rem;
-  background: #eff6ff;
+  background: var(--neutral-50);
   border-radius: 8px;
-  color: #2563eb;
+  color: var(--neutral-600);
   font-size: 0.875rem;
   font-weight: 500;
-  margin-bottom: 1rem;
 }
 
 .paymentLoading {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   padding: 1rem;
-  background: #fffbeb;
-  border: 1px solid #fcd34d;
-  border-radius: 8px;
-  color: #d97706;
-  font-weight: 500;
+  color: var(--neutral-600);
+  font-size: 0.875rem;
 }
 
 .modalActions {
-  padding: 0 2rem 2rem;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--neutral-200);
   display: flex;
-  flex-direction: column;
   gap: 1rem;
 }
 
-.payNowButton {
+.payNowButton,
+.downloadInvoiceButton {
+  flex: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  background: var(--primary-blue);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.payNowButton:hover:not(:disabled) {
+.payNowButton:hover:not(:disabled),
+.downloadInvoiceButton:hover {
+  background: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
 }
 
 .payNowButton:disabled {
@@ -860,87 +925,156 @@
   transform: none;
 }
 
-.cancelButton {
-  padding: 0.75rem 1.5rem;
+.cancelButton,
+.closeModalButton {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border: 1px solid var(--neutral-300);
   background: white;
-  border: 1px solid #d1d5db;
+  color: var(--neutral-700);
   border-radius: 8px;
-  color: #374151;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.cancelButton:hover:not(:disabled) {
-  background: #f9fafb;
-  border-color: #9ca3af;
+.cancelButton:hover,
+.closeModalButton:hover {
+  background: var(--neutral-50);
+  border-color: var(--neutral-400);
 }
 
-/* Loading States */
+/* Invoice Modal Specific Styles */
+.invoiceContent {
+  padding: 2rem;
+}
+
+.invoiceHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--neutral-200);
+}
+
+.invoiceHeader h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--neutral-900);
+}
+
+.invoiceHeader p {
+  margin: 0;
+  color: var(--neutral-600);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.invoiceDetails,
+.customerDetails,
+.planDetails,
+.priceBreakdown {
+  margin-bottom: 1.5rem;
+}
+
+.invoiceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--neutral-100);
+}
+
+.customerDetails h4,
+.planDetails h4,
+.priceBreakdown h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--neutral-800);
+}
+
+.invoiceFooter {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--neutral-200);
+}
+
+.invoiceFooter p {
+  margin: 0 0 0.5rem 0;
+  color: var(--neutral-600);
+}
+
+.footerNote {
+  font-size: 0.75rem;
+  color: var(--neutral-500);
+  font-style: italic;
+  margin-top: 1rem !important;
+}
+
+/* Loading State */
 .loadingContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 50vh;
+  min-height: 100vh;
   gap: 1rem;
-  color: #6b7280;
+  background: var(--neutral-50);
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f4f6;
-  border-left: 4px solid #2563eb;
+  border: 4px solid var(--neutral-200);
+  border-left: 4px solid var(--primary-blue);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
-/* Focus States for Accessibility - Fixed for CSS Modules */
-.backButton:focus-visible,
-.upgradeButton:focus-visible,
-.selectButton:focus-visible,
-.payNowButton:focus-visible,
-.cancelButton:focus-visible,
-.closeButton:focus-visible,
-.currencySelect:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
+.loadingContainer p {
+  color: var(--neutral-600);
+  font-size: 1rem;
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .headerContent {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: stretch;
-  }
-
-  .backButton {
-    align-self: flex-start;
-  }
-
-  .headerControls {
-    justify-content: flex-end;
-  }
-
-  .planStatusHeader {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .planStats {
-    width: 100%;
-    justify-content: space-between;
-  }
-
+@media (max-width: 1024px) {
   .plansGrid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
 
   .planCard {
-    padding: 1.5rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .headerMain {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .headerControls {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .planStatusHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  .planStats {
+    align-items: stretch;
+  }
+
+  .progressSection {
+    width: 100%;
   }
 
   .planActions {
@@ -953,283 +1087,124 @@
     justify-content: center;
   }
 
-  .historyItem {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
+  .plansGrid {
+    grid-template-columns: 1fr;
   }
 
-  .connectChange {
-    align-self: flex-end;
+  .planCard {
+    padding: 1.5rem;
   }
 
-  .paymentModal {
-    margin: 1rem;
+  .main {
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+  }
+
+  .currentPlanCard,
+  .historyCard {
+    padding: 1.5rem;
   }
 
   .modalHeader {
     padding: 1.25rem 1.5rem;
   }
 
-  .paymentContent {
+  .paymentContent,
+  .invoiceContent {
     padding: 1.5rem;
   }
 
   .modalActions {
-    padding: 0 1.5rem 1.5rem;
+    padding: 1.25rem 1.5rem;
+    flex-direction: column;
+  }
+
+  .payNowButton,
+  .downloadInvoiceButton,
+  .cancelButton,
+  .closeModalButton {
+    flex: none;
   }
 }
 
 @media (max-width: 480px) {
-  .main {
-    padding: 1rem;
+  .headerContent {
+    padding: 0 1rem;
+  }
+  
+  .plansSection {
+ max-width: 800px;
+}
+
+  .pageTitle {
+    font-size: 1.75rem;
   }
 
-  .header {
-    margin: auto;
-    display: flex;
+  .pageSubtitle {
+    font-size: 1rem;
+  }
+
+  .headerControls {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .invoiceButton {
     justify-content: center;
   }
 
-  .currentPlanSection,
-  .historyCard {
-    padding: 1.5rem;
+  .currencySelector {
+    justify-content: center;
+  }
+
+  .planInfo {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
   }
 
   .planIcon {
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
     font-size: 1.25rem;
   }
 
   .availableConnects {
+    font-size: 2rem;
+  }
+
+  .planCard {
+    padding: 1.25rem;
+  }
+
+  .planIcon {
+    width: 60px;
+    height: 60px;
     font-size: 1.5rem;
   }
 
   .connectsCount {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 
   .priceAmount {
     font-size: 2rem;
   }
-}
 
-/* Utility Classes */
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Smooth scrolling */
-
-/* Invoice Button */
-.invoiceButton {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.invoiceButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-}
-
-/* Recent Purchase Info */
-.recentPurchase {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  background: #ecfdf5;
-  border: 1px solid #d1fae5;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  color: #065f46;
-}
-
-/* Invoice Modal */
-.invoiceModal {
-  background: white;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  animation: modalSlideIn 0.3s ease-out;
-}
-
-.invoiceContent {
-  padding: 2rem;
-}
-
-.invoiceHeader {
-  text-align: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.invoiceHeader h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
-}
-
-.invoiceHeader p {
-  margin: 0;
-  color: #6b7280;
-  font-weight: 600;
-}
-
-.invoiceDetails,
-.customerDetails,
-.planDetails {
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.invoiceDetails h4,
-.customerDetails h4,
-.planDetails h4,
-.priceBreakdown h4 {
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #374151;
-}
-
-.invoiceRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.invoiceRow:last-child {
-  border-bottom: none;
-}
-
-.priceBreakdown {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.priceRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  color: #374151;
-}
-
-.totalRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
-  border-top: 2px solid #e5e7eb;
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: #1f2937;
-}
-
-.totalAmount {
-  color: #059669;
-  font-size: 1.25rem;
-}
-
-.invoiceFooter {
-  text-align: center;
-  padding-top: 1.5rem;
-  border-top: 2px solid #e5e7eb;
-  color: #6b7280;
-}
-
-.footerNote {
-  font-size: 0.875rem;
-  font-style: italic;
-  margin-top: 1rem;
-}
-
-.downloadInvoiceButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.downloadInvoiceButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-}
-
-.closeModalButton {
-  padding: 1rem 1.5rem;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  color: #374151;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.closeModalButton:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-}
-/* Print Styles */
-@media print {
-  .header,
-  .upgradeButton,
-  .selectButton,
-  .modalOverlay {
-    display: none !important;
+  .historyItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    text-align: left;
   }
 
-  .container {
-    background: white !important;
+  .connectChange {
+    align-self: flex-end;
   }
 
-  .planCard {
-    break-inside: avoid;
-    box-shadow: none !important;
-    border: 1px solid #000 !important;
+  .paymentModal,
+  .invoiceModal {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
   }
 }

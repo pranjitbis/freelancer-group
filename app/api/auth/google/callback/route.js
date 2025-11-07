@@ -98,7 +98,7 @@ export async function GET(request) {
               : userType === "client"
               ? "Client"
               : "User",
-          bio: "Google user",
+          bio: "",
           available: userType === "freelancer",
         },
       });

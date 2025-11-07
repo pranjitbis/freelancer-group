@@ -11,42 +11,179 @@ import {
   FaCog,
   FaHeadset,
   FaRocket,
-  FaLightbulb,
   FaBrain,
-  FaPencilRuler,
-  FaCode,
-  FaCheckCircle,
   FaTruck,
   FaGlobe,
   FaUsers,
   FaMoneyBillAlt,
   FaHandsHelping,
   FaBox,
-  FaBoxOpen,
   FaAd,
   FaStore,
   FaBuilding,
   FaAmazon,
   FaIndustry,
   FaChartBar,
+  FaCheck,
+  FaStar,
+  FaArrowRight,
+  FaQuoteLeft,
 } from "react-icons/fa";
 import Link from "next/link";
 import Footer from "@/app/home/footer/page";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import tick from "../../../public/icons/Mark-Tick.png";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import styles from "./EcommerceSolutions.module.css";
 import Nav from "@/app/home/component/Nav/page";
 import ecomarce from "../../../public/icons/ecommerce.gif";
 import Image from "next/image";
 
+// Animation variants
+const fadeInUp = {
+  initial: { opacity: 0, y: 60 },
+  animate: { opacity: 1, y: 0 },
+};
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const scaleIn = {
+  initial: { opacity: 0, scale: 0.9 },
+  animate: { opacity: 1, scale: 1 },
+};
+
+const slideInLeft = {
+  initial: { opacity: 0, x: -60 },
+  animate: { opacity: 1, x: 0 },
+};
+
+const slideInRight = {
+  initial: { opacity: 0, x: 60 },
+  animate: { opacity: 1, x: 0 },
+};
+
+// Testimonials Grid Component
+const TestimonialsGrid = () => {
+  const testimonials = [
+    {
+      id: 1,
+      text: "Our sales grew 40% within 3 months after adopting Aroliya's platform. The seamless integration and expert support made our transition effortless.",
+      author: "Sarah Johnson",
+      company: "Fashion Boutique",
+      rating: 5,
+      industry: "Fashion Retail",
+    },
+    {
+      id: 2,
+      text: "The analytics dashboard helped us understand our customers better and scale fast. We've seen a 60% increase in customer retention.",
+      author: "Michael Chen",
+      company: "Tech Gadgets Store",
+      rating: 5,
+      industry: "Electronics",
+    },
+    {
+      id: 3,
+      text: "Fantastic support and user-friendly tools. Highly recommend this team! They transformed our online presence completely.",
+      author: "Emily Rodriguez",
+      company: "Home Decor Empire",
+      rating: 5,
+      industry: "Home Decor",
+    },
+    {
+      id: 4,
+      text: "They streamlined our e-commerce operations, saving us 15+ hours every week. The inventory management system is exceptional.",
+      author: "Rajesh Verma",
+      company: "Organic Store Chain",
+      rating: 4,
+      industry: "Organic Products",
+    },
+    {
+      id: 5,
+      text: "Customer engagement increased significantly thanks to their tailored strategies. Our conversion rate improved by 35%.",
+      author: "Priya Nair",
+      company: "Beauty & Wellness",
+      rating: 5,
+      industry: "Beauty & Cosmetics",
+    },
+    {
+      id: 6,
+      text: "The automation features reduced our manual workload by 60%. Now we can focus on business growth instead of operations.",
+      author: "James Miller",
+      company: "Electronics Hub",
+      rating: 5,
+      industry: "Consumer Electronics",
+    },
+    {
+      id: 7,
+      text: "Professional, responsive, and results-driven service. Couldn't be happier with our partnership with Aroliya!",
+      author: "Amit Shah",
+      company: "Bookstore Online",
+      rating: 5,
+      industry: "Books & Education",
+    },
+    {
+      id: 8,
+      text: "Helped us launch our first online store smoothly and professionally. The guidance was invaluable for our startup.",
+      author: "Sophia Williams",
+      company: "Handcrafted Goods",
+      rating: 5,
+      industry: "Handmade Products",
+    },
+  ];
+
+  const RatingStars = ({ rating }) => (
+    <div className={styles.ratingStars}>
+      {[...Array(5)].map((_, i) => (
+        <FaStar
+          key={i}
+          className={i < rating ? styles.starFilled : styles.starEmpty}
+        />
+      ))}
+    </div>
+  );
+
+  return (
+    <div className={styles.testimonialsGrid}>
+      {testimonials.map((testimonial, index) => (
+        <motion.div
+          key={testimonial.id}
+          className={styles.testimonialCard}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+          whileHover={{ y: -5, transition: { duration: 0.3 } }}
+        >
+          <div className={styles.testimonialContent}>
+            <div className={styles.quoteIcon}>
+              <FaQuoteLeft />
+            </div>
+            <RatingStars rating={testimonial.rating} />
+            <p className={styles.testimonialText}>"{testimonial.text}"</p>
+            <div className={styles.testimonialAuthor}>
+              <div className={styles.authorInfo}>
+                <strong>{testimonial.author}</strong>
+                <span>{testimonial.company}</span>
+                <div className={styles.industryTag}>{testimonial.industry}</div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
 const EcommerceSolutions = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: "ease-out-cubic",
-    });
+    setIsVisible(true);
   }, []);
 
   const features = [
@@ -85,7 +222,8 @@ const EcommerceSolutions = () => {
   const pricingPlans = [
     {
       name: "Starter",
-      price: "₹500/mo",
+      price: "₹500",
+      period: "per month",
       features: [
         { text: "Unlimited Products & Categories", included: false },
         { text: "Secure SSL Certificate", included: true },
@@ -95,7 +233,6 @@ const EcommerceSolutions = () => {
         { text: "Mobile-Responsive Design", included: true },
         { text: "Basic SEO Tools", included: false },
         { text: "Abandoned Cart Recovery", included: false },
-
         { text: "Inventory & Order Management", included: true },
         { text: "Automatic Backups", included: false },
       ],
@@ -105,7 +242,8 @@ const EcommerceSolutions = () => {
     },
     {
       name: "Business",
-      price: "₹1,102/mo",
+      price: "₹1,102",
+      period: "per month",
       features: [
         { text: "Unlimited Products & Categories", included: true },
         { text: "Secure SSL Certificate", included: true },
@@ -115,7 +253,6 @@ const EcommerceSolutions = () => {
         { text: "Advanced SEO Tools", included: true },
         { text: "Abandoned Cart Recovery", included: true },
         { text: "Up to 3 Admin Accounts", included: true },
-
         { text: "Automatic Backups (Daily)", included: false },
       ],
       button: "Get Started",
@@ -124,7 +261,8 @@ const EcommerceSolutions = () => {
     },
     {
       name: "Enterprise",
-      price: "₹2,300/mo",
+      price: "₹2,300",
+      period: "per month",
       features: [
         { text: "Unlimited Products & Categories", included: true },
         { text: "Secure SSL Certificate", included: true },
@@ -140,88 +278,6 @@ const EcommerceSolutions = () => {
       button: "Get Started",
       primary: false,
       link: "/register",
-    },
-  ];
-  const testimonials = [
-    {
-      text: "“Our sales grew 40% within 3 months after adopting their platform.”",
-      author: "Sarah Johnson – Fashion Boutique",
-    },
-    {
-      text: "“The analytics helped us understand our customers better and scale fast.”",
-      author: "Michael Chen – Tech Gadgets",
-    },
-    {
-      text: "“Fantastic support and user-friendly tools. Highly recommend this team!”",
-      author: "Emily Rodriguez – Home Decor",
-    },
-    {
-      text: "“They streamlined our e-commerce operations, saving us hours every week.”",
-      author: "Rajesh Verma – Organic Store",
-    },
-    {
-      text: "“Customer engagement increased significantly thanks to their tailored strategies.”",
-      author: "Priya Nair – Beauty & Wellness",
-    },
-    {
-      text: "“The automation features reduced our manual workload by 60%.”",
-      author: "James Miller – Electronics Hub",
-    },
-    {
-      text: "“Professional, responsive, and results-driven service. Couldn’t be happier!”",
-      author: "Amit Shah – Bookstore Online",
-    },
-    {
-      text: "“Helped us launch our first online store smoothly and professionally.”",
-      author: "Sophia Williams – Handcrafted Goods",
-    },
-    {
-      text: "“They turned complex data into clear insights that improved our decisions.”",
-      author: "Daniel Kim – Food Delivery",
-    },
-    {
-      text: "“Our repeat customers doubled within 6 months of using their solutions.”",
-      author: "Ananya Gupta – Fashion Brand",
-    },
-    {
-      text: "“Reliable and consistent support that keeps our business running smoothly.”",
-      author: "Mohammed Ali – Travel Services",
-    },
-    {
-      text: "“Creative marketing strategies brought us thousands of new customers.”",
-      author: "Olivia Brown – Jewelry Store",
-    },
-    {
-      text: "“Seamless integration with Amazon and Flipkart boosted our sales rapidly.”",
-      author: "Vikram Singh – Electronics Retailer",
-    },
-    {
-      text: "“User-friendly dashboards made managing operations a breeze.”",
-      author: "Emma Davis – Fitness Equipment",
-    },
-    {
-      text: "“They deliver results with professionalism and dedication every time.”",
-      author: "Carlos Martinez – Furniture Store",
-    },
-    {
-      text: "“Their customer service tools improved our response time drastically.”",
-      author: "Meera Krishnan – Cosmetics Brand",
-    },
-    {
-      text: "“Our brand visibility skyrocketed after their digital campaigns.”",
-      author: "David Johnson – Sports Apparel",
-    },
-    {
-      text: "“Great value for money and unmatched expertise in e-commerce.”",
-      author: "Arjun Patel – Grocery Mart",
-    },
-    {
-      text: "“They provided personalized solutions that fit our unique business needs.”",
-      author: "Sophia Lee – Pet Supplies",
-    },
-    {
-      text: "“We now manage orders and inventory effortlessly, thanks to their system.”",
-      author: "Karan Mehta – Kitchen Essentials",
     },
   ];
 
@@ -267,17 +323,15 @@ const EcommerceSolutions = () => {
   const services = [
     {
       icon: <FaBox />,
-      title: "Product Catalog & Inventory Management",
+      title: "Product Catalog Management",
       description:
         "Your products are the heart of your store. We make sure they shine.",
       features: [
-        "High-quality product listing with engaging titles & SEO-rich descriptions",
-        "Upload and management of product images, variants, and attributes",
-        "Category structuring for easy navigation & better customer experience",
-        "Real-time inventory updates to prevent overselling or stock-outs",
+        "High-quality product listing with SEO-rich descriptions",
+        "Upload and management of product images and variants",
+        "Category structuring for easy navigation",
+        "Real-time inventory updates",
       ],
-      platforms:
-        "Amazon, Flipkart, Meesho, Shopify, WooCommerce, Magento, Custom Stores",
     },
     {
       icon: <FaTruck />,
@@ -285,11 +339,10 @@ const EcommerceSolutions = () => {
       description:
         "Fast and error-free order processing builds trust with your customers.",
       features: [
-        "Processing of customer orders from multiple channels",
-        "Generating invoices, packing slips, and shipping labels",
-        "Coordinating with courier partners for smooth dispatch",
-        "Tracking shipments and ensuring timely delivery",
-        "Managing returns, replacements, and refunds professionally",
+        "Processing customer orders from multiple channels",
+        "Generating invoices and shipping labels",
+        "Coordinating with courier partners",
+        "Managing returns and refunds professionally",
       ],
     },
     {
@@ -298,22 +351,21 @@ const EcommerceSolutions = () => {
       description:
         "Bring more visitors, convert them into buyers, and increase revenue.",
       features: [
-        "SEO optimization of product pages for higher marketplace rankings",
-        "Running Google Ads & Meta Ads campaigns for targeted sales",
-        "Social media promotions & engagement to drive traffic",
-        "Marketplace-specific promotions (Amazon ads, Flipkart Boost)",
-        "A/B testing to improve product page conversions",
+        "SEO optimization for higher marketplace rankings",
+        "Google Ads & Meta Ads campaigns",
+        "Social media promotions to drive traffic",
+        "A/B testing to improve conversions",
       ],
     },
     {
       icon: <FaHeadset />,
-      title: "Customer Support Outsourcing",
+      title: "Customer Support",
       description: "Delight your customers with responsive support.",
       features: [
         "24/7 email, chat, and phone support",
-        "Handling queries on orders, shipping, and returns",
-        "Complaint resolution and customer satisfaction follow-ups",
-        "Building loyalty with excellent after-sales support",
+        "Handling queries on orders and shipping",
+        "Complaint resolution and follow-ups",
+        "Building loyalty with after-sales support",
       ],
     },
     {
@@ -321,21 +373,21 @@ const EcommerceSolutions = () => {
       title: "Analytics & Business Insights",
       description: "Make smarter decisions with data-driven strategies.",
       features: [
-        "Sales and performance dashboards (Power BI, Tableau, Looker Studio)",
+        "Sales and performance dashboards",
         "Weekly and monthly reports with KPIs",
-        "Customer behavior analysis for cross-selling & upselling",
-        "Predictive insights for future growth",
+        "Customer behavior analysis",
+        "Predictive insights for growth",
       ],
     },
     {
       icon: <FaBrain />,
-      title: "Data & AI Solutions",
+      title: "AI Solutions",
       description: "Leverage advanced AI to scale your business smarter.",
       features: [
         "Predictive analytics for sales trends",
-        "AI-powered chatbots for instant support",
+        "AI-powered chatbots for support",
         "Intelligent inventory management",
-        "Personalized recommendations for customers",
+        "Personalized recommendations",
       ],
     },
   ];
@@ -348,7 +400,7 @@ const EcommerceSolutions = () => {
       icon: <FaShoppingCart />,
     },
     {
-      title: "Established E-Commerce Businesses",
+      title: "Established E-Commerce",
       description:
         "Streamline and outsource operations to scale faster and save resources.",
       icon: <FaStore />,
@@ -374,18 +426,29 @@ const EcommerceSolutions = () => {
     {
       title: "Enterprise Solutions",
       description:
-        "Robust, scalable solutions tailored for large enterprises to manage high-volume operations and maximize growth.",
+        "Robust, scalable solutions for large enterprises to manage high-volume operations.",
       icon: <FaBuilding />,
     },
   ];
 
+  const StatCard = ({ number, label }) => (
+    <motion.div
+      className={styles.statCard}
+      whileHover={{ scale: 1.05 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      <h3>{number}</h3>
+      <p>{label}</p>
+    </motion.div>
+  );
+
   return (
     <>
       <Head>
-        <title>E-commerce Solutions | Grow Your Business</title>
+        <title>Professional E-commerce Solutions | Aroliya</title>
         <meta
           name="description"
-          content="High-quality e-commerce solutions with professional features, secure payments, expert support, and flexible pricing."
+          content="Complete e-commerce solutions with professional features, secure payments, expert support, and flexible pricing for businesses of all sizes."
         />
       </Head>
       <Nav />
@@ -393,212 +456,360 @@ const EcommerceSolutions = () => {
 
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className={styles.container} data-aos="fade-up">
-          <div className={styles.heroText}>
-            <h1>E-Commerce Solutions by Aroliya</h1>
-
-            <p>
-              Aroliya powers seamless e-commerce: build, manage, scale with
-              complete solutions.
-            </p>
-            <div className={styles.heroBtns}>
-              <Link href="/register">
-                {" "}
-                <button className={styles.btnPrimary}>Start Now</button>
-              </Link>
-            </div>
+        <div className={styles.container}>
+          <div className={styles.heroContent}>
+            <motion.div
+              className={styles.heroText}
+              initial="initial"
+              animate="animate"
+              variants={slideInLeft}
+              transition={{ duration: 0.8 }}
+            >
+              <div className={styles.heroBadge}>
+                Professional E-commerce Solutions
+              </div>
+              <h1>Transform Your Online Business with Aroliya</h1>
+              <p>
+                Complete e-commerce solutions to build, manage, and scale your
+                online store. Professional services tailored for businesses of
+                all sizes.
+              </p>
+              <div className={styles.heroStats}>
+                <div className={styles.stat}>
+                  <strong>500+</strong>
+                  <span>Stores Built</span>
+                </div>
+                <div className={styles.stat}>
+                  <strong>99.9%</strong>
+                  <span>Uptime</span>
+                </div>
+                <div className={styles.stat}>
+                  <strong>24/7</strong>
+                  <span>Support</span>
+                </div>
+              </div>
+              <div className={styles.heroButtons}>
+                <Link href="/register">
+                  <motion.button
+                    className={styles.btnPrimary}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Start Your Store <FaArrowRight />
+                  </motion.button>
+                </Link>
+                <Link href="#services">
+                  <button className={styles.btnSecondary}>
+                    Explore Services
+                  </button>
+                </Link>
+              </div>
+            </motion.div>
+            <motion.div
+              className={styles.heroImage}
+              initial="initial"
+              animate="animate"
+              variants={slideInRight}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <Image src={ecomarce} alt="E-commerce solutions" priority />
+            </motion.div>
           </div>
-          <div className={styles.heroImage}>
-            <Image src={ecomarce} alt="E-commerce solutions" />
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className={styles.stats}>
+        <div className={styles.container}>
+          <div className={styles.statsGrid}>
+            <StatCard number="500+" label="Stores Built" />
+            <StatCard number="40%" label="Average Growth" />
+            <StatCard number="24/7" label="Customer Support" />
+            <StatCard number="99.9%" label="Platform Uptime" />
           </div>
         </div>
       </section>
 
       {/* Services Section */}
-      <section className={styles.services}>
-        <div className={styles.sectionHead}>
-          <h2>Our Comprehensive E-Commerce Services</h2>
-          <p>
-            Everything you need to build, manage, and grow your online store
-          </p>
-        </div>
-
-        <div className={styles.servicesGrid}>
-          {services.map((service, index) => (
-            <div key={index} className={styles.serviceCard} data-aos="fade-up">
-              <div className={styles.iconWrapper}>{service.icon}</div>
-              <h3 className={styles.cardTitle}>{service.title}</h3>
-              <p className={styles.cardDesc}>{service.description}</p>
-              <ul className={styles.cardFeatures}>
-                {service.features.map((feature, i) => (
-                  <li key={i}>
-                    <div className={styles.cardContnet}>
-                      <Image src={tick} alt="err" />
-                      <p>{feature}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              {service.platforms && (
-                <div className={styles.platforms}>
-                  <strong>Platforms we support:</strong> {service.platforms}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Benefits Section - Professional Card Design */}
-      <section className={styles.benefits}>
-        <div className={styles.sectionHead}>
-          <h2>Why Choose Aroliya for Your E-Commerce Business?</h2>
-          <p>
-            We provide comprehensive solutions that drive growth and success for
-            your online store
-          </p>
-        </div>
-        <div className={styles.benefitsGrid}>
-          {benefits.map((benefit, index) => (
-            <div
-              key={index}
-              className={styles.benefitCard}
-              data-aos="fade-up"
-              data-aos-delay={index * 100}
+      <section id="services" className={styles.services}>
+        <div className={styles.container}>
+          <div className={styles.sectionHeader}>
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
             >
-              <div className={styles.benefitIcon}>{benefit.icon}</div>
-              <h3>{benefit.title}</h3>
-              <p>{benefit.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.audience}>
-        <div className={styles.sectionHead}>
-          <h2>Who Can Benefit from Our Services?</h2>
-          <p>
-            Our solutions are designed for a variety of e-commerce businesses
-          </p>
-        </div>
-
-        <div className={styles.audienceGrid}>
-          {targetAudience.map((aud, index) => (
-            <div key={index} className={styles.audienceCard} data-aos="fade-up">
-              <div className={styles.iconWrapper}>{aud.icon}</div>
-              <h3 className={styles.audienceTitle}>{aud.title}</h3>
-              <p className={styles.audienceDesc}>{aud.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className={styles.features}>
-        <div className={styles.sectionHead}>
-          <h2>Platform Features</h2>
-          <p>
-            Comprehensive tools to manage, grow, and secure your online store.
-          </p>
-        </div>
-        <div className={styles.grid}>
-          {features.map((f, index) => (
-            <div key={index} data-aos="zoom-in" className={styles.card}>
-              <div className={styles.icon}>{f.icon}</div>
-              <h3>{f.title}</h3>
-              <p>{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section className={styles.pricing}>
-        <div className={styles.sectionHead}>
-          <h2>Pricing Plans</h2>
-          <p>Flexible packages designed for every stage of your business.</p>
-        </div>
-        <div className={styles.grids}>
-          {pricingPlans.map((plan, index) => (
-            <div
-              data-aos="zoom-out-up"
-              key={index}
-              className={`${styles.priceCard} ${
-                plan.primary ? styles.recommended : ""
-              }`}
+              Comprehensive E-Commerce Services
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <h3>{plan.name}</h3>
-              <p className={styles.price}>{plan.price}</p>
-              <Link href={plan.link}>
-                <button
-                  className={
-                    plan.primary ? styles.btnPrimary : styles.btnSecondary
-                  }
+              End-to-end solutions to manage every aspect of your online
+              business
+            </motion.p>
+          </div>
+
+          <div className={styles.servicesGrid}>
+            {services.map((service, index) => (
+              <motion.div
+                key={index}
+                className={styles.serviceCard}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <motion.div
+                  className={styles.serviceIcon}
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  {plan.button}
-                </button>
-              </Link>
-              <ul>
-                {plan.features.map((feature, i) => (
-                  <li key={i} className={styles.featureItem}>
-                    {feature.included ? (
-                      <Image src={tick} alt="Included" />
-                    ) : (
-                      <span className={styles.crossIcon}>✖</span>
-                    )}
-                    <p> {feature.text}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className={styles.testimonials}>
-        <div className={styles.sectionHead}>
-          <h2>What Clients Say</h2>
-        </div>
-        <div className={styles.slider}>
-          <div className={styles.slideTrack}>
-            {testimonials.map((t, index) => (
-              <div key={index} className={styles.testimonial}>
-                <p>{t.text}</p>
-                <h4>{t.author}</h4>
-              </div>
-            ))}
-            {/* Duplicate for infinite scroll loop */}
-            {testimonials.map((t, index) => (
-              <div key={`dup-${index}`} className={styles.testimonial}>
-                <p>{t.text}</p>
-                <h4>{t.author}</h4>
-              </div>
+                  {service.icon}
+                </motion.div>
+                <h3>{service.title}</h3>
+                <p className={styles.serviceDescription}>
+                  {service.description}
+                </p>
+                <ul className={styles.serviceFeatures}>
+                  {service.features.map((feature, i) => (
+                    <motion.li
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: i * 0.05 }}
+                    >
+                      <FaCheck className={styles.checkIcon} />
+                      <span>{feature}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Benefits Section */}
+      <section className={styles.benefits}>
+        <div className={styles.container}>
+          <div className={styles.sectionHeader}>
+            <h2>Why Choose Aroliya?</h2>
+            <p>Professional solutions that drive real results</p>
+          </div>
+          <div className={styles.benefitsGrid}>
+            {benefits.map((benefit, index) => (
+              <motion.div
+                key={index}
+                className={styles.benefitCard}
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true }}
+                variants={scaleIn}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <motion.div
+                  className={styles.benefitIcon}
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {benefit.icon}
+                </motion.div>
+                <h3>{benefit.title}</h3>
+                <p>{benefit.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Target Audience Section */}
+      <section className={styles.audience}>
+        <div className={styles.container}>
+          <div className={styles.sectionHeader}>
+            <h2>Perfect For Your Business</h2>
+            <p>Tailored solutions for every type of e-commerce business</p>
+          </div>
+          <div className={styles.audienceGrid}>
+            {targetAudience.map((aud, index) => (
+              <motion.div
+                key={index}
+                className={styles.audienceCard}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <div className={styles.audienceIcon}>{aud.icon}</div>
+                <h3>{aud.title}</h3>
+                <p>{aud.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className={styles.features}>
+        <div className={styles.container}>
+          <div className={styles.sectionHeader}>
+            <h2>Platform Features</h2>
+            <p>Everything you need to succeed in e-commerce</p>
+          </div>
+          <div className={styles.featuresGrid}>
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                className={styles.featureCard}
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true }}
+                variants={fadeInUp}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <motion.div
+                  className={styles.featureIcon}
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  {feature.icon}
+                </motion.div>
+                <h3>{feature.title}</h3>
+                <p>{feature.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className={styles.pricing}>
+        <div className={styles.container}>
+          <div className={styles.sectionHeader}>
+            <h2>Transparent Pricing</h2>
+            <p>Choose the perfect plan for your business needs</p>
+          </div>
+          <div className={styles.pricingGrid}>
+            {pricingPlans.map((plan, index) => (
+              <motion.div
+                key={index}
+                className={`${styles.pricingCard} ${
+                  plan.primary ? styles.recommended : ""
+                }`}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
+                whileHover={{ y: -5 }}
+              >
+                {plan.primary && (
+                  <div className={styles.recommendedBadge}>Most Popular</div>
+                )}
+                <div className={styles.pricingHeader}>
+                  <h3>{plan.name}</h3>
+                  <div className={styles.price}>
+                    <span className={styles.priceAmount}>{plan.price}</span>
+                    <span className={styles.pricePeriod}>{plan.period}</span>
+                  </div>
+                </div>
+                <Link href={plan.link}>
+                  <motion.button
+                    className={
+                      plan.primary
+                        ? styles.planBtnPrimary
+                        : styles.planBtnSecondary
+                    }
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {plan.button}
+                  </motion.button>
+                </Link>
+                <ul className={styles.featuresList}>
+                  {plan.features.map((feature, i) => (
+                    <motion.li
+                      key={i}
+                      className={styles.featureItem}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.3, delay: i * 0.05 }}
+                    >
+                      {feature.included ? (
+                        <FaCheck className={styles.featureIncluded} />
+                      ) : (
+                        <span className={styles.featureExcluded}>×</span>
+                      )}
+                      <span
+                        className={
+                          feature.included
+                            ? styles.featureText
+                            : styles.featureTextExcluded
+                        }
+                      >
+                        {feature.text}
+                      </span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className={styles.testimonials}>
+        <div className={styles.container}>
+          <div className={styles.sectionHeader}>
+            <h2>Client Success Stories</h2>
+            <p>
+              See what our satisfied clients say about their experience with
+              Aroliya
+            </p>
+          </div>
+          <TestimonialsGrid />
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className={styles.ctaSection}>
-        <div className={styles.ctaContent} data-aos="fade-up">
-          <h2>Get Started with Aroliya's E-Commerce Solutions</h2>
-          <p>
-            Don't let e-commerce management slow you down. Focus on growing your
-            brand while we handle the back-end operations.
-          </p>
-          <p>
-            <strong>Ready to scale your online business?</strong>
-          </p>
-          <Link href="/contact">
-            {" "}
-            <button className={styles.ctaButton}>
-              Contact Us Now for a free consultation
-            </button>
-          </Link>
-          <p className={styles.ctaSubtext}>
-            We'll create a custom package tailored to your needs.
-          </p>
+      <section className={styles.cta}>
+        <div className={styles.container}>
+          <motion.div
+            className={styles.ctaContent}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2>Ready to Transform Your E-commerce Business?</h2>
+            <p>
+              Join hundreds of successful businesses using Aroliya's
+              professional e-commerce solutions. Start your journey today.
+            </p>
+            <div className={styles.ctaButtons}>
+              <Link href="/contact">
+                <motion.button
+                  className={styles.ctaBtnPrimary}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Get Started Today
+                </motion.button>
+              </Link>
+              <Link href="/demo">
+                <button className={styles.ctaBtnSecondary}>Request Demo</button>
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 

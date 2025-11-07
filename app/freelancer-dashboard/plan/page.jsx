@@ -18,6 +18,11 @@ import {
   FaShieldAlt,
   FaDownload,
   FaFileInvoice,
+  FaRocket,
+  FaChartLine,
+  FaUsers,
+  FaLightbulb,
+  FaInfinity,
 } from "react-icons/fa";
 import styles from "./Plans.module.css";
 import Banner from "../components/page.jsx";
@@ -48,6 +53,7 @@ export default function PlansPage() {
     success: "#059669",
     error: "#dc2626",
     gray: "#6b7280",
+    dark: "#1e293b",
   };
 
   const exchangeRates = {
@@ -60,14 +66,15 @@ export default function PlansPage() {
       id: "free",
       name: "Starter",
       price: 0,
-      connects: 2, // CHANGED: from 5 to 2
+      connects: 2,
       features: [
-        "2 connects per month", // CHANGED: from 5 to 2
+        "2 connects per month",
         "1 connect per proposal",
         "Basic profile visibility",
         "Standard email support",
         "Access to basic job posts",
         "Email notifications",
+        "10% fee per project",
       ],
       limitations: [
         "No featured proposals",
@@ -77,7 +84,7 @@ export default function PlansPage() {
       ],
       popular: false,
       bestFor: "Beginners exploring the platform",
-      icon: "FaSeedling",
+      icon: "FaLightbulb",
       color: colors.primary,
       bgColor: colors.primaryLight,
     },
@@ -85,9 +92,9 @@ export default function PlansPage() {
       id: "premium",
       name: "Professional",
       price: 999,
-      connects: 10, // CHANGED: from 20 to 10
+      connects: 10,
       features: [
-        "10 connects per month", // CHANGED: from 20 to 10
+        "10 connects per month",
         "1 connect per proposal",
         "Enhanced profile visibility",
         "Priority 24/7 support",
@@ -98,11 +105,12 @@ export default function PlansPage() {
         "Premium profile badge",
         "Early access to features",
         "Credit card payments supported",
+        "10% fee per project",
       ],
       limitations: [],
       popular: true,
       bestFor: "Serious professionals seeking growth",
-      icon: "FaCrown",
+      icon: "FaRocket",
       color: colors.premium,
       bgColor: colors.premiumLight,
     },
@@ -230,13 +238,11 @@ export default function PlansPage() {
 
   const calculateTotalAmount = (plan) => {
     if (currency === "USD") {
-      // For USD, no GST, just return the display price
       return plan.displayPrice;
     }
 
-    // For INR, calculate with GST
     const basePrice = plan.price;
-    const gstRate = 0.18; // 18% GST
+    const gstRate = 0.18;
     const gstAmount = Math.round(basePrice * gstRate);
     return basePrice + gstAmount;
   };
@@ -340,10 +346,7 @@ This is a computer-generated invoice and does not require a signature.
     setLoading(true);
 
     try {
-      // Calculate total amount in the actual currency
       const totalAmount = calculateTotalAmount(selectedPlan);
-
-      // For Razorpay, send the amount in the actual currency (not multiplied by 100)
       const razorpayAmount = totalAmount;
 
       let description = `${selectedPlan.name} Plan - ${selectedPlan.connects} connects monthly`;
@@ -407,14 +410,12 @@ This is a computer-generated invoice and does not require a signature.
               setShowNoConnectsError(false);
               setShowPaymentModal(false);
 
-              // Store recent purchase data for invoice
               setRecentPurchase({
                 plan: selectedPlan,
                 paymentId: response.razorpay_payment_id,
                 date: new Date().toISOString(),
               });
 
-              // Show success message with invoice option
               alert(
                 "🎉 Professional plan activated successfully! You can download your invoice from the download button."
               );
@@ -441,7 +442,6 @@ This is a computer-generated invoice and does not require a signature.
         },
       };
 
-      // For USD, restrict payment methods
       if (currency === "USD") {
         options.method = {
           netbanking: false,
@@ -450,13 +450,6 @@ This is a computer-generated invoice and does not require a signature.
           wallet: false,
         };
       }
-
-      console.log("Payment Details:", {
-        displayAmount: totalAmount,
-        razorpayAmount: razorpayAmount,
-        currency: currency,
-        description: description,
-      });
 
       const rzp = new window.Razorpay(options);
       rzp.open();
@@ -537,11 +530,12 @@ This is a computer-generated invoice and does not require a signature.
 
   const PlanIcon = ({ iconName, ...props }) => {
     const icons = {
-      FaSeedling: FaCrown,
+      FaLightbulb: FaLightbulb,
+      FaRocket: FaRocket,
       FaCrown: FaCrown,
     };
 
-    const IconComponent = icons[iconName] || FaCrown;
+    const IconComponent = icons[iconName] || FaRocket;
     return <IconComponent {...props} />;
   };
 
@@ -562,34 +556,44 @@ This is a computer-generated invoice and does not require a signature.
     <div className={styles.container}>
       <Banner className={styles.banner} />
 
+      {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <div className={styles.headerControls}>
-            {/* Invoice Download Button - Only show if user has premium plan */}
-            {userPlan?.planType === "premium" && recentPurchase && (
-              <button
-                className={styles.invoiceButton}
-                onClick={handleViewInvoice}
-              >
-                <FaDownload />
-                Download Invoice
-              </button>
-            )}
+          <div className={styles.headerMain}>
+            <div className={styles.headerText}>
+              <h1 className={styles.pageTitle}>Choose Your Plan</h1>
+              <p className={styles.pageSubtitle}>
+                Select the perfect plan to grow your freelance business
+              </p>
+            </div>
 
-            <div className={styles.currencySelector}>
-              <FaGlobe className={styles.globeIcon} />
-              <select
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-                className={styles.currencySelect}
-              >
-                <option value="INR">INR (₹)</option>
-                <option value="USD">USD ($)</option>
-              </select>
+            <div className={styles.headerControls}>
+              {userPlan?.planType === "premium" && recentPurchase && (
+                <button
+                  className={styles.invoiceButton}
+                  onClick={handleViewInvoice}
+                >
+                  <FaDownload />
+                  Download Invoice
+                </button>
+              )}
+
+              <div className={styles.currencySelector}>
+                <FaGlobe className={styles.globeIcon} />
+                <select
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  className={styles.currencySelect}
+                >
+                  <option value="INR">INR (₹)</option>
+                  <option value="USD">USD ($)</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
       </header>
+
       <main className={styles.main}>
         {/* Current Plan Status */}
         <section className={styles.currentPlanSection}>
@@ -610,9 +614,9 @@ This is a computer-generated invoice and does not require a signature.
                   }}
                 >
                   {userPlan?.planType === "premium" ? (
-                    <FaCrown />
+                    <FaRocket />
                   ) : (
-                    <PlanIcon iconName="FaSeedling" />
+                    <FaLightbulb />
                   )}
                 </div>
                 <div className={styles.planDetails}>
@@ -629,7 +633,6 @@ This is a computer-generated invoice and does not require a signature.
                       : "Upgrade to unlock premium features"}
                   </p>
 
-                  {/* Show recent purchase info */}
                   {recentPurchase && (
                     <div className={styles.recentPurchase}>
                       <FaCheck style={{ color: colors.success }} />
@@ -689,7 +692,7 @@ This is a computer-generated invoice and does not require a signature.
                       .scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  <FaCrown />
+                  <FaRocket />
                   {getAvailableConnects() === 0
                     ? "Recharge Now"
                     : "Upgrade Plan"}
@@ -699,7 +702,6 @@ This is a computer-generated invoice and does not require a signature.
           </div>
         </section>
 
-        {/* Rest of your existing code remains the same... */}
         {/* Plans Comparison Section */}
         <section id="plans-section" className={styles.plansSection}>
           <div className={styles.plansGrid}>
@@ -710,7 +712,6 @@ This is a computer-generated invoice and does not require a signature.
                   plan.popular ? styles.popular : ""
                 }`}
               >
-                {/* ... existing plan card content ... */}
                 {plan.popular && (
                   <div
                     className={styles.popularBadge}
@@ -782,7 +783,7 @@ This is a computer-generated invoice and does not require a signature.
                 </div>
 
                 <div className={styles.featuresSection}>
-                  <h4 className={styles.featuresTitle}>Features</h4>
+                  <h4 className={styles.featuresTitle}>What's Included</h4>
                   <ul className={styles.featuresList}>
                     {plan.features.map((feature, index) => (
                       <li key={index} className={styles.featureItem}>
@@ -845,7 +846,7 @@ This is a computer-generated invoice and does not require a signature.
                       "Continue with Starter"
                     ) : (
                       <span className={styles.buttonUpgrade}>
-                        <FaCrown />
+                        <FaRocket />
                         Upgrade to Professional
                       </span>
                     )}

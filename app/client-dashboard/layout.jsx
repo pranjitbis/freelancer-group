@@ -15,12 +15,19 @@ import {
   FaBars,
   FaTimes,
   FaSignOutAlt,
+  FaFacebook,
+  FaTwitter,
+  FaLinkedin,
+  FaInstagram,
+  FaYoutube,
+  FaGlobe,
 } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { MdMessage } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { RiRefund2Line } from "react-icons/ri";
 import Link from "next/link";
+
 export default function ClientDashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -59,14 +66,12 @@ export default function ClientDashboardLayout({ children }) {
       icon: <HiReceiptRefund />,
       path: "/client-dashboard/hire-freelancer",
     },
-
     {
       id: "Message",
       label: "Message",
       icon: <MdMessage />,
       path: "/client-dashboard/messages",
     },
-
     {
       id: "payments",
       label: "Payment",
@@ -78,9 +83,7 @@ export default function ClientDashboardLayout({ children }) {
       label: "Refund",
       icon: <RiRefund2Line size={20} />,
       path: "/client-dashboard/refunds",
-      bgColor: "#f0fdf4",
     },
-
     {
       id: "profile",
       label: "Profile",
@@ -98,6 +101,40 @@ export default function ClientDashboardLayout({ children }) {
       label: "Support",
       icon: <MdOutlineContactSupport />,
       path: "/client-dashboard/support",
+    },
+  ];
+
+  // Social media links
+  const socialLinks = [
+    {
+      name: "Facebook",
+      icon: <FaFacebook />,
+      url: "https://facebook.com",
+      color: "#1877F2",
+    },
+    {
+      name: "Twitter",
+      icon: <FaTwitter />,
+      url: "https://twitter.com",
+      color: "#1DA1F2",
+    },
+    {
+      name: "LinkedIn",
+      icon: <FaLinkedin />,
+      url: "https://linkedin.com",
+      color: "#0077B5",
+    },
+    {
+      name: "Instagram",
+      icon: <FaInstagram />,
+      url: "https://instagram.com",
+      color: "#E4405F",
+    },
+    {
+      name: "YouTube",
+      icon: <FaYoutube />,
+      url: "https://youtube.com",
+      color: "#FF0000",
     },
   ];
 
@@ -119,7 +156,7 @@ export default function ClientDashboardLayout({ children }) {
     const checkScreenSize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      setIsSidebarOpen(!mobile); // Open on desktop, closed on mobile by default
+      setIsSidebarOpen(!mobile);
     };
 
     checkScreenSize();
@@ -155,7 +192,7 @@ export default function ClientDashboardLayout({ children }) {
 
   const desktopSidebarVariants = {
     open: { x: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
-    closed: { x: 0 }, // Always visible on desktop
+    closed: { x: 0 },
   };
 
   if (!user) {
@@ -172,6 +209,7 @@ export default function ClientDashboardLayout({ children }) {
         animate={isMobile ? (isSidebarOpen ? "open" : "closed") : "open"}
       >
         <div className={styles.sidebarHeader}>
+          <h2>Client Dashboard</h2>
           {isMobile && (
             <button
               className={styles.closeBtn}
@@ -215,14 +253,37 @@ export default function ClientDashboardLayout({ children }) {
           ))}
         </nav>
 
-        <Link href="/client-dashboard/settings">
-          <button className={styles.settings}>
-            <IoMdSettings /> settings
+        {/* Social Media Section */}
+        <div className={styles.socialSection}>
+          <h4 className={styles.socialTitle}>Follow Us</h4>
+          <div className={styles.socialIcons}>
+            {socialLinks.map((social) => (
+              <a
+                key={social.name}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+                style={{ "--social-color": social.color }}
+                title={social.name}
+              >
+                {social.icon}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Settings and Logout */}
+        <div className={styles.bottomActions}>
+          <Link href="/client-dashboard/settings">
+            <button className={styles.settings}>
+              <IoMdSettings /> Settings
+            </button>
+          </Link>
+          <button onClick={handleLogout} className={styles.logoutBtn}>
+            <FaSignOutAlt /> Logout
           </button>
-        </Link>
-        <button onClick={handleLogout} className={styles.logoutBtn}>
-          <FaSignOutAlt /> Logout
-        </button>
+        </div>
       </motion.div>
 
       {/* Overlay for mobile */}

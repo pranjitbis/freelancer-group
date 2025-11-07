@@ -27,7 +27,7 @@
   z-index: 2;
 }
 .dashboardButton {
-  background:rgb(14, 161, 219);
+  background: rgb(14, 161, 219);
   color: white;
   border: none;
   padding: 12px 20px;
@@ -958,7 +958,25 @@
   }
 }
 
+@media (max-width: 360px) {
+  .container {
+    position: relative;
+    right: 15px;
+  }
+  .heroBanner {
+  background-color: #1e293b;
+  color: white;
+  padding: 2rem 2rem;
+  border-bottom: 1px solid #334155;
+  position: relative;
+  width: 350px;
+  overflow: hidden;
+}
+}
 @media (max-width: 480px) {
+  .container {
+    margin: auto !important;
+  }
   .bannerStats {
     flex-direction: column;
     gap: 1rem;

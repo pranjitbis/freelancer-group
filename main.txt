@@ -7,19 +7,13 @@
 
 mention 10% service fees in freelancer dasbord plan page
 
-
-
-
-image are not showing the freelancer profile page....
-hire freelacner page login with google like showing are the google user so you can remove this.....
-showing are the client profile invalid date....
-
-
 /wp-admin/
 
 admin dashbord i scroll then website are showing are scroll like left side menu so you can make are like fix llike using ++++=: position:fix
 
 
+
+-   wp-admin -- contact page is not wroking 
 
 //website//
 
@@ -31,3 +25,9 @@ post a project  /// join as client
 Hire top freelacner // join cliet page hero section title
 
 Nav bar i hide sop you  can make are nav bar are fix like postion are fix::==++ postion:fixed
+
+service [freelacner-plan] make into resposive and add link mins add working btns
+
+[term of services]  & [pravice and police]  & [how it work] & [trus and sefty]
+
+project entry [wp-admin]

@@ -349,12 +349,7 @@
   }
   .statsOverview {
     grid-template-columns: 1fr;
-  }
-  .filtersSection {
-    position: relative;
-    right: 250px;
-  }
-}
+  }}
 @media (max-width: 768px) {
   .myJobs {
     padding: 1rem;

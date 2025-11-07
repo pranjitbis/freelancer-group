@@ -13,6 +13,99 @@
   min-height: 100vh;
 }
 
+/* Custom Scrollbar Styles */
+.scrollContainer {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px; /* Space for scrollbar */
+}
+
+/* Custom scrollbar for Webkit browsers (Chrome, Safari, Edge) */
+.scrollContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollContainer::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  border: 2px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb:active {
+  background: #64748b;
+}
+
+.scrollContainer::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Custom scrollbar for Firefox */
+.scrollContainer {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Hide scrollbar on mobile devices */
+@media (max-width: 768px) {
+  .scrollContainer {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .scrollContainer::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  .scrollContainer {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    padding-right: 0; /* Remove padding on mobile */
+  }
+}
+
+/* Sidebar Scrollbar */
+.sidebar {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Hide sidebar scrollbar on mobile */
+@media (max-width: 768px) {
+  .sidebar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Mobile Header */
 .mobileHeader {
   display: none;
@@ -265,6 +358,57 @@
   border-radius: 2px 0 0 2px;
 }
 
+/* Social Media Section */
+.socialMediaSection {
+  padding: 16px 0;
+  border-bottom: 1px solid #334155;
+  margin-bottom: 12px;
+}
+
+.socialMediaTitle {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0 0 12px 0;
+  text-align: center;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.socialMediaIcons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.socialMediaIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 6px;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.socialMediaIcon:hover {
+  background: var(--social-color, #3b82f6);
+  border-color: var(--social-color, #3b82f6);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.socialMediaIcon:active {
+  transform: translateY(0);
+}
+
 /* Plan Badges */
 .freeBadge {
   background: #f1f5f9;
@@ -445,6 +589,7 @@
 
 .mainMobile {
   margin-left: 0;
+  padding-top: 64px; /* Account for mobile header */
 }
 
 .breadcrumbSection {
@@ -481,6 +626,8 @@
 .content {
   flex: 1;
   padding: 0 32px 32px;
+  height: calc(100vh - 64px); /* Full height minus mobile header */
+  overflow: hidden; /* Prevent double scrollbars */
 }
 
 /* Loading */
@@ -532,6 +679,11 @@
   .content {
     padding: 0 20px 20px;
   }
+
+  /* Hide social media on tablet */
+  .sidebarTablet .socialMediaSection {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {
@@ -579,6 +731,22 @@
   .upgradeBtnMobile {
     padding: 5px 8px;
     font-size: 10px;
+  }
+
+  /* Adjust social media for mobile */
+  .socialMediaIcons {
+    gap: 6px;
+  }
+
+  .socialMediaIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Mobile content adjustments */
+  .content {
+    padding: 0 16px 16px;
+    height: calc(100vh - 60px); /* Adjust for smaller mobile header */
   }
 }
 
@@ -637,6 +805,20 @@
   .upgradeBadgeContainer {
     padding: 12px 16px 6px;
   }
+
+  /* Further adjust social media for small mobile */
+  .socialMediaSection {
+    padding: 12px 0;
+  }
+
+  .socialMediaIcons {
+    gap: 4px;
+  }
+
+  .socialMediaIcon {
+    width: 26px;
+    height: 26px;
+  }
 }
 
 /* Tooltip for tablet mode */
@@ -691,3 +873,38 @@
   font-size: 12px;
   font-weight: bold;
 }
+
+/* Social Media Icon Tooltips */
+.socialMediaIcon {
+  position: relative;
+}
+
+.socialMediaIcon:hover::before {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 8px;
+}
+
+.socialMediaIcon:hover::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: #1e293b;
+  margin-bottom: 0;
+}
+
+
+

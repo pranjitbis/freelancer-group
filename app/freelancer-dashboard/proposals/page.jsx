@@ -226,41 +226,33 @@ export default function FreelancerProposalsPage() {
   const getStatusIcon = (status) => {
     switch (status) {
       case "pending":
-        return <FaHourglassHalf style={{ color: "#f59e0b" }} />;
+        return <FaHourglassHalf className={styles.statusIcon} />;
       case "accepted":
-        return <FaCheckCircle style={{ color: "#10b981" }} />;
+        return <FaCheckCircle className={styles.statusIcon} />;
       case "rejected":
-        return <FaTimes style={{ color: "#ef4444" }} />;
+        return <FaTimes className={styles.statusIcon} />;
       case "withdrawn":
-        return <FaExclamationTriangle style={{ color: "#6b7280" }} />;
+        return <FaExclamationTriangle className={styles.statusIcon} />;
       default:
-        return <FaHourglassHalf style={{ color: "#6b7280" }} />;
+        return <FaHourglassHalf className={styles.statusIcon} />;
     }
   };
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending: { color: "#f59e0b", label: "Under Review", bgColor: "#fffbeb" },
-      accepted: { color: "#10b981", label: "Accepted", bgColor: "#ecfdf5" },
-      rejected: { color: "#ef4444", label: "Rejected", bgColor: "#fef2f2" },
-      withdrawn: { color: "#6b7280", label: "Withdrawn", bgColor: "#f9fafb" },
+      pending: { label: "Under Review", className: styles.statusPending },
+      accepted: { label: "Accepted", className: styles.statusAccepted },
+      rejected: { label: "Not Selected", className: styles.statusRejected },
+      withdrawn: { label: "Withdrawn", className: styles.statusWithdrawn },
     };
 
     const config = statusConfig[status] || {
-      color: "#6b7280",
       label: status,
-      bgColor: "#f9fafb",
+      className: styles.statusDefault,
     };
 
     return (
-      <span
-        className={styles.statusBadge}
-        style={{
-          backgroundColor: config.bgColor,
-          color: config.color,
-          borderColor: config.color,
-        }}
-      >
+      <span className={`${styles.statusBadge} ${config.className}`}>
         {getStatusIcon(status)}
         {config.label}
       </span>
@@ -286,8 +278,8 @@ export default function FreelancerProposalsPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
       whileHover={{
-        y: -5,
-        boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+        y: -2,
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
       }}
     >
       <div className={styles.proposalHeader}>
@@ -297,12 +289,14 @@ export default function FreelancerProposalsPage() {
           </h3>
           <div className={styles.metaInfo}>
             <span className={styles.client}>
-              <FaUser /> {proposal.client?.name || "Client"}
+              <FaUser className={styles.metaIcon} />
+              {proposal.client?.name || "Client"}
             </span>
             {proposal.job?.category && (
               <span className={styles.category}>{proposal.job.category}</span>
             )}
             <span className={styles.timeAgo}>
+              <FaClock className={styles.metaIcon} />
               {getTimeAgo(proposal.createdAt)}
             </span>
           </div>
@@ -313,28 +307,40 @@ export default function FreelancerProposalsPage() {
       </div>
 
       <div className={styles.proposalDetails}>
-        {/* Job Budget vs Your Bid */}
         <div className={styles.bidComparison}>
           <div className={styles.bidItem}>
             <FaDollarSign className={styles.bidIcon} />
-            <span>Job Budget: ${proposal.job?.budget?.toLocaleString()}</span>
+            <div className={styles.bidInfo}>
+              <span className={styles.bidLabel}>Job Budget</span>
+              <span className={styles.bidAmount}>
+                ${proposal.job?.budget?.toLocaleString()}
+              </span>
+            </div>
           </div>
           <div className={styles.bidItem}>
             <FaDollarSign className={styles.bidIcon} />
-            <span>Your Bid: ${proposal.bidAmount?.toLocaleString()}</span>
+            <div className={styles.bidInfo}>
+              <span className={styles.bidLabel}>Your Bid</span>
+              <span className={styles.bidAmount}>
+                ${proposal.bidAmount?.toLocaleString()}
+              </span>
+            </div>
           </div>
           <div className={styles.bidItem}>
             <FaClock className={styles.bidIcon} />
-            <span>Timeline: {proposal.timeframe} days</span>
+            <div className={styles.bidInfo}>
+              <span className={styles.bidLabel}>Timeline</span>
+              <span className={styles.bidAmount}>
+                {proposal.timeframe} days
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Cover Letter Preview */}
         <div className={styles.coverLetterPreview}>
           <p>{proposal.coverLetter?.substring(0, 150)}...</p>
         </div>
 
-        {/* Job Description Preview */}
         {proposal.job?.description && (
           <div className={styles.jobDescriptionPreview}>
             <strong>Job Description:</strong>
@@ -346,17 +352,16 @@ export default function FreelancerProposalsPage() {
       <div className={styles.proposalFooter}>
         <div className={styles.proposalMeta}>
           <span className={styles.submittedDate}>
-            <FaCalendar />
+            <FaCalendar className={styles.metaIcon} />
             Submitted: {new Date(proposal.createdAt).toLocaleDateString()}
           </span>
         </div>
         <div className={styles.proposalActions}>
-          {/* Only show View Details button */}
           <motion.button
             onClick={() => handleViewDetails(proposal)}
             className={styles.viewButton}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             <FaEye /> View Details
           </motion.button>
@@ -388,16 +393,19 @@ export default function FreelancerProposalsPage() {
             <div className={styles.headerMain}>
               <div className={styles.headerTitle}>
                 <h1>My Proposals</h1>
-                <button
-                  onClick={() => router.push("/find-work")}
-                  className={styles.findWorkButton}
-                >
-                  <FaSearch />
-                  Find New Work
-                </button>
+                <p className={styles.headerSubtitle}>
+                  Manage and track your job proposals
+                </p>
               </div>
-              <p>Manage and track your job proposals</p>
+              <button
+                onClick={() => router.push("/find-work")}
+                className={styles.findWorkButton}
+              >
+                <FaSearch />
+                Find New Work
+              </button>
             </div>
+
             <div className={styles.stats}>
               <div className={styles.stat}>
                 <span className={styles.statNumber}>{stats.total}</span>
@@ -473,7 +481,7 @@ export default function FreelancerProposalsPage() {
               animate={{ opacity: 1 }}
             >
               <FaPaperPlane className={styles.emptyIcon} />
-              <h3>No proposals sent yet</h3>
+              <h3>No proposals found</h3>
               <p>
                 {searchTerm || filterStatus !== "all"
                   ? "Try adjusting your search or filters"
@@ -514,31 +522,23 @@ export default function FreelancerProposalsPage() {
   );
 }
 
-// Modal Component for Proposal Details - Simplified without action buttons
+// Modal Component for Proposal Details
 function ProposalDetailsModal({ proposal, onClose }) {
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending: { color: "#f59e0b", label: "Under Review", bgColor: "#fffbeb" },
-      accepted: { color: "#10b981", label: "Accepted", bgColor: "#ecfdf5" },
-      rejected: { color: "#ef4444", label: "Not Selected", bgColor: "#fef2f2" },
-      withdrawn: { color: "#6b7280", label: "Withdrawn", bgColor: "#f9fafb" },
+      pending: { label: "Under Review", className: styles.statusPending },
+      accepted: { label: "Accepted", className: styles.statusAccepted },
+      rejected: { label: "Not Selected", className: styles.statusRejected },
+      withdrawn: { label: "Withdrawn", className: styles.statusWithdrawn },
     };
 
     const config = statusConfig[status] || {
-      color: "#6b7280",
       label: status,
-      bgColor: "#f9fafb",
+      className: styles.statusDefault,
     };
 
     return (
-      <span
-        className={styles.statusBadge}
-        style={{
-          backgroundColor: config.bgColor,
-          color: config.color,
-          borderColor: config.color,
-        }}
-      >
+      <span className={`${styles.statusBadge} ${config.className}`}>
         {status === "pending" && <FaHourglassHalf />}
         {status === "accepted" && <FaCheckCircle />}
         {status === "rejected" && <FaTimes />}
@@ -573,36 +573,41 @@ function ProposalDetailsModal({ proposal, onClose }) {
         <div className={styles.modalBody}>
           {/* Job Information */}
           <div className={styles.detailSection}>
-            <h3>
+            <h3 className={styles.detailSectionTitle}>
               <FaBriefcase /> Job Information
             </h3>
             <div className={styles.detailGrid}>
               <div className={styles.detailItem}>
-                <strong>Job Title:</strong> {proposal.job?.title}
+                <strong>Job Title:</strong>
+                <span>{proposal.job?.title}</span>
               </div>
               <div className={styles.detailItem}>
-                <strong>Client:</strong> {proposal.client?.name}
+                <strong>Client:</strong>
+                <span>{proposal.client?.name}</span>
               </div>
               <div className={styles.detailItem}>
-                <strong>Category:</strong> {proposal.job?.category}
+                <strong>Category:</strong>
+                <span>{proposal.job?.category}</span>
               </div>
               <div className={styles.detailItem}>
-                <strong>Job Budget:</strong> $
-                {proposal.job?.budget?.toLocaleString()}
+                <strong>Job Budget:</strong>
+                <span>${proposal.job?.budget?.toLocaleString()}</span>
               </div>
               <div className={styles.detailItem}>
-                <strong>Your Bid:</strong> $
-                {proposal.bidAmount?.toLocaleString()}
+                <strong>Your Bid:</strong>
+                <span>${proposal.bidAmount?.toLocaleString()}</span>
               </div>
               <div className={styles.detailItem}>
-                <strong>Timeline:</strong> {proposal.timeframe} days
+                <strong>Timeline:</strong>
+                <span>{proposal.timeframe} days</span>
               </div>
               <div className={styles.detailItem}>
-                <strong>Status:</strong> {getStatusBadge(proposal.status)}
+                <strong>Status:</strong>
+                <span>{getStatusBadge(proposal.status)}</span>
               </div>
               <div className={styles.detailItem}>
-                <strong>Submitted:</strong>{" "}
-                {new Date(proposal.createdAt).toLocaleString()}
+                <strong>Submitted:</strong>
+                <span>{new Date(proposal.createdAt).toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -610,7 +615,7 @@ function ProposalDetailsModal({ proposal, onClose }) {
           {/* Job Description */}
           {proposal.job?.description && (
             <div className={styles.detailSection}>
-              <h3>Job Description</h3>
+              <h3 className={styles.detailSectionTitle}>Job Description</h3>
               <div className={styles.jobDescription}>
                 <p>{proposal.job.description}</p>
               </div>
@@ -620,7 +625,7 @@ function ProposalDetailsModal({ proposal, onClose }) {
           {/* Required Skills */}
           {proposal.job?.skills && (
             <div className={styles.detailSection}>
-              <h3>Required Skills</h3>
+              <h3 className={styles.detailSectionTitle}>Required Skills</h3>
               <div className={styles.skillsList}>
                 {proposal.job.skills.split(",").map((skill, index) => (
                   <span key={index} className={styles.skillTag}>
@@ -633,7 +638,7 @@ function ProposalDetailsModal({ proposal, onClose }) {
 
           {/* Your Cover Letter */}
           <div className={styles.detailSection}>
-            <h3>
+            <h3 className={styles.detailSectionTitle}>
               <FaComment /> Your Cover Letter
             </h3>
             <div className={styles.coverLetterFull}>

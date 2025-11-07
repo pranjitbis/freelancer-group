@@ -25,19 +25,55 @@ export default function ProfilePage() {
   const [message, setMessage] = useState({ type: "", text: "" });
   const router = useRouter();
 
+  // Safe date formatting function
+  const formatMemberSince = (dateString) => {
+    if (!dateString) return "Not available";
+
+    try {
+      const date = new Date(dateString);
+
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        // If direct parsing fails, try alternative formats
+        const timestamp = Date.parse(dateString);
+        if (!isNaN(timestamp)) {
+          const validDate = new Date(timestamp);
+          return validDate.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+          });
+        }
+        return "Not available";
+      }
+
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Not available";
+    }
+  };
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
-      const userObj = JSON.parse(userData);
-      setUser(userObj);
-      setFormData({
-        name: userObj.name || "",
-        email: userObj.email || "",
-        businessName: userObj.businessName || "",
-        avatar: null,
-      });
-      if (userObj.avatar) {
-        setPreviewUrl(userObj.avatar);
+      try {
+        const userObj = JSON.parse(userData);
+        setUser(userObj);
+        setFormData({
+          name: userObj.name || "",
+          email: userObj.email || "",
+          businessName: userObj.businessName || "",
+          avatar: null,
+        });
+        if (userObj.avatar) {
+          setPreviewUrl(userObj.avatar);
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        router.push("/login");
       }
     } else {
       router.push("/login");
@@ -208,7 +244,7 @@ export default function ProfilePage() {
                     onChange={handleFileChange}
                     className={styles.fileInput}
                   />
-              
+
                   <p className={styles.uploadHint}>JPG, PNG or GIF • Max 5MB</p>
                 </div>
               </div>
@@ -337,10 +373,7 @@ export default function ProfilePage() {
               <div className={styles.summaryItem}>
                 <span className={styles.summaryLabel}>Member Since</span>
                 <span className={styles.summaryValue}>
-                  {new Date(user.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                  })}
+                  {formatMemberSince(user.createdAt)}
                 </span>
               </div>
               <div className={styles.summaryItem}>

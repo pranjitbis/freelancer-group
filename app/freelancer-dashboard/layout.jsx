@@ -24,6 +24,16 @@ import { IoPricetags, IoSend } from "react-icons/io5";
 import { RiRefund2Line } from "react-icons/ri";
 import { MdOutlineContactSupport } from "react-icons/md";
 
+// Social Media Icons
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaLinkedinIn,
+  FaInstagram,
+  FaYoutube,
+  FaGithub,
+} from "react-icons/fa";
+
 export default function DashboardLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -137,6 +147,46 @@ export default function DashboardLayout({ children }) {
       icon: <MdOutlineContactSupport size={20} />,
       path: "/freelancer-dashboard/support",
       bgColor: "#f0fdf4",
+    },
+  ];
+
+  // Social Media Links
+  const socialMediaLinks = [
+    {
+      name: "Facebook",
+      icon: <FaFacebookF size={14} />,
+      url: "https://facebook.com",
+      color: "#1877F2",
+    },
+    {
+      name: "Twitter",
+      icon: <FaTwitter size={14} />,
+      url: "https://twitter.com",
+      color: "#1DA1F2",
+    },
+    {
+      name: "LinkedIn",
+      icon: <FaLinkedinIn size={14} />,
+      url: "https://linkedin.com",
+      color: "#0A66C2",
+    },
+    {
+      name: "Instagram",
+      icon: <FaInstagram size={14} />,
+      url: "https://instagram.com",
+      color: "#E4405F",
+    },
+    {
+      name: "YouTube",
+      icon: <FaYoutube size={14} />,
+      url: "https://youtube.com",
+      color: "#FF0000",
+    },
+    {
+      name: "GitHub",
+      icon: <FaGithub size={14} />,
+      url: "https://github.com",
+      color: "#181717",
     },
   ];
 
@@ -294,6 +344,10 @@ export default function DashboardLayout({ children }) {
       .slice(0, 2);
   };
 
+  const handleSocialMediaClick = (url) => {
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -390,7 +444,6 @@ export default function DashboardLayout({ children }) {
                         {userPlan} Plan
                       </span>
                     </div>
-   
                   </div>
                 </div>
 
@@ -416,6 +469,26 @@ export default function DashboardLayout({ children }) {
 
                 {/* Sidebar Footer */}
                 <div className={styles.sidebarFooter}>
+                  {/* Social Media Links */}
+                  <div className={styles.socialMediaSection}>
+                    <p className={styles.socialMediaTitle}>Follow Us</p>
+                    <div className={styles.socialMediaIcons}>
+                      {socialMediaLinks.map((social) => (
+                        <motion.button
+                          key={social.name}
+                          className={styles.socialMediaIcon}
+                          onClick={() => handleSocialMediaClick(social.url)}
+                          whileHover={{ scale: 1.1, y: -2 }}
+                          whileTap={{ scale: 0.95 }}
+                          style={{ "--social-color": social.color }}
+                          title={social.name}
+                        >
+                          {social.icon}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+
                   <Link
                     href="/freelancer-dashboard/settings"
                     className={styles.sidebarButton}
@@ -506,6 +579,28 @@ export default function DashboardLayout({ children }) {
 
               {/* Sidebar Footer */}
               <div className={styles.sidebarFooter}>
+                {/* Social Media Links - Only show on desktop */}
+                {!isTablet && (
+                  <div className={styles.socialMediaSection}>
+                    <p className={styles.socialMediaTitle}>Follow Us</p>
+                    <div className={styles.socialMediaIcons}>
+                      {socialMediaLinks.map((social) => (
+                        <motion.button
+                          key={social.name}
+                          className={styles.socialMediaIcon}
+                          onClick={() => handleSocialMediaClick(social.url)}
+                          whileHover={{ scale: 1.1, y: -2 }}
+                          whileTap={{ scale: 0.95 }}
+                          style={{ "--social-color": social.color }}
+                          title={social.name}
+                        >
+                          {social.icon}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <Link
                   href="/freelancer-dashboard/settings"
                   className={`${styles.sidebarButton} ${
@@ -538,7 +633,10 @@ export default function DashboardLayout({ children }) {
           }`}
           style={pageStyle}
         >
-          <div className={styles.content}>{children}</div>
+          <div className={styles.content}>
+            {/* Custom Scrollbar Container */}
+            <div className={styles.scrollContainer}>{children}</div>
+          </div>
         </main>
       </div>
     </div>

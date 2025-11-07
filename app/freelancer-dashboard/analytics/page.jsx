@@ -1,4 +1,3 @@
-// app/freelancer-dashboard/analytics/page.jsx
 "use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,6 +44,8 @@ import {
   FaFileAlt,
   FaCalendar,
   FaMoneyCheck,
+  FaMobile,
+  FaDesktop,
 } from "react-icons/fa";
 
 import styles from "./FreelancerAnalytics.module.css";
@@ -80,6 +81,14 @@ export default function FreelancerAnalyticsPage() {
   const [exchangeRate, setExchangeRate] = useState(0.012);
   const [showUSD, setShowUSD] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     fetchCurrentUser();
@@ -139,27 +148,18 @@ export default function FreelancerAnalyticsPage() {
 
   const fetchFreelancerReviews = async (freelancerId) => {
     try {
-      console.log(`🔄 Fetching reviews for freelancer: ${freelancerId}`);
       const response = await fetch(
         `/api/reviews/freelancer?freelancerId=${freelancerId}`
       );
       if (response.ok) {
         const data = await response.json();
-        console.log("📊 Reviews API response:", data);
         if (data.success) {
           setReviews({
             received: data.data?.receivedReviews || [],
             given: data.data?.givenReviews || [],
             reviewable: data.data?.reviewableProjects || [],
           });
-          console.log(
-            `✅ Loaded ${
-              data.data?.reviewableProjects?.length || 0
-            } reviewable projects`
-          );
         }
-      } else {
-        console.error("❌ Failed to fetch reviews");
       }
     } catch (error) {
       console.error("Error fetching reviews:", error);
@@ -188,13 +188,11 @@ export default function FreelancerAnalyticsPage() {
 
   const fetchAnalyticsData = async (freelancerId) => {
     try {
-      console.log(`📈 Fetching analytics for freelancer: ${freelancerId}`);
       const response = await fetch(
         `/api/analytics/freelancer?userId=${freelancerId}&timeRange=${timeRange}`
       );
       if (response.ok) {
         const data = await response.json();
-        console.log("📊 Analytics API response:", data);
         if (data.success) {
           setAnalytics({
             totalEarnings: data.data?.totalEarnings || 0,
@@ -206,19 +204,13 @@ export default function FreelancerAnalyticsPage() {
             ongoingProjects: data.data?.ongoingProjects || 0,
           });
 
-          // Update the reviewable projects from analytics
           if (data.data?.pendingReviewProjects) {
-            console.log(
-              `🔄 Updating reviewable projects from analytics: ${data.data.pendingReviewProjects.length}`
-            );
             setReviews((prev) => ({
               ...prev,
               reviewable: data.data.pendingReviewProjects,
             }));
           }
         }
-      } else {
-        console.error("❌ Failed to fetch analytics");
       }
     } catch (error) {
       console.error("Error fetching analytics:", error);
@@ -230,7 +222,6 @@ export default function FreelancerAnalyticsPage() {
     if (!selectedProject) return;
 
     try {
-      console.log("📝 Submitting review for project:", selectedProject.id);
       const response = await fetch("/api/reviews", {
         method: "POST",
         headers: {
@@ -249,17 +240,11 @@ export default function FreelancerAnalyticsPage() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          console.log("✅ Review submitted successfully");
           setShowReviewModal(false);
           setReviewForm({ rating: 5, comment: "" });
           setSelectedProject(null);
-          // Refresh all data
           await fetchAllData();
-        } else {
-          console.error("❌ Failed to submit review:", data.error);
         }
-      } else {
-        console.error("❌ Review submission failed");
       }
     } catch (error) {
       console.error("Error submitting review:", error);
@@ -267,40 +252,8 @@ export default function FreelancerAnalyticsPage() {
   };
 
   const openReviewModal = (project) => {
-    console.log("🎯 Opening review modal for project:", project);
     setSelectedProject(project);
     setShowReviewModal(true);
-  };
-
-  const handleWithdraw = async () => {
-    if (wallet.balance <= 0) {
-      alert("No funds available to withdraw");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/freelancer/wallet/withdraw", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: currentUser.id,
-          amount: wallet.balance,
-          currency: "INR",
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          alert("Withdrawal request submitted successfully!");
-          fetchWalletData(currentUser.id);
-        }
-      }
-    } catch (error) {
-      console.error("Error withdrawing funds:", error);
-    }
   };
 
   const handleViewDetails = (review) => {
@@ -381,21 +334,29 @@ export default function FreelancerAnalyticsPage() {
   return (
     <div className={styles.container}>
       {/* Mobile Header */}
-      <motion.div
-        className={styles.mobileHeader}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div className={styles.mobileHeaderContent}>
-          <button
-            className={styles.mobileMenuButton}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <FaBars />
-          </button>
-          <h1 className={styles.mobileHeaderTitle}>Analytics</h1>
-        </div>
-      </motion.div>
+      {isMobile && (
+        <motion.div
+          className={styles.mobileHeader}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className={styles.mobileHeaderContent}>
+            <button
+              className={styles.mobileMenuButton}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              <FaBars />
+            </button>
+            <h1 className={styles.mobileHeaderTitle}>Analytics</h1>
+            <div className={styles.mobileCurrencyToggle}>
+              <button onClick={toggleCurrency} className={styles.currencyBadge}>
+                {getCurrencyIcon()}
+                {getCurrencyLabel()}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Header Section */}
       <motion.header
@@ -436,6 +397,17 @@ export default function FreelancerAnalyticsPage() {
                 <option value="year">Last Year</option>
               </select>
             </div>
+            {!isMobile && (
+              <motion.button
+                className={styles.currencyToggle}
+                onClick={toggleCurrency}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaExchangeAlt />
+                {getCurrencyLabel()}
+              </motion.button>
+            )}
           </div>
         </div>
       </motion.header>
@@ -447,26 +419,24 @@ export default function FreelancerAnalyticsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className={styles.walletGrid}>
+        <div
+          className={`${styles.walletGrid} ${isMobile ? styles.mobile : ""}`}
+        >
           <motion.div
             className={styles.walletCard}
-            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            whileHover={
+              !isMobile ? { y: -5, transition: { duration: 0.2 } } : {}
+            }
           >
             <div className={styles.walletCardHeader}>
               <div className={styles.walletIconContainer}>
                 <FaWallet className={styles.walletIcon} />
               </div>
-              <div className={styles.walletTrend}>
-                <motion.button
-                  className={styles.currencyToggle}
-                  onClick={toggleCurrency}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <FaExchangeAlt />
-                  {getCurrencyLabel()}
-                </motion.button>
-              </div>
+              {!isMobile && (
+                <div className={styles.walletTrend}>
+                  <span>Available</span>
+                </div>
+              )}
             </div>
             <div className={styles.walletAmount}>
               {formatCurrency(wallet.balance, showUSD ? "USD" : "INR")}
@@ -477,16 +447,20 @@ export default function FreelancerAnalyticsPage() {
 
           <motion.div
             className={styles.walletCard}
-            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            whileHover={
+              !isMobile ? { y: -5, transition: { duration: 0.2 } } : {}
+            }
           >
             <div className={styles.walletCardHeader}>
               <div className={styles.walletIconContainer}>
                 <FaClock className={styles.walletIcon} />
               </div>
-              <div className={styles.walletTrend}>
-                <FaSync />
-                <span>Processing</span>
-              </div>
+              {!isMobile && (
+                <div className={styles.walletTrend}>
+                  <FaSync />
+                  <span>Processing</span>
+                </div>
+              )}
             </div>
             <div className={styles.walletAmount}>
               {formatCurrency(wallet.pending, showUSD ? "USD" : "INR")}
@@ -497,16 +471,20 @@ export default function FreelancerAnalyticsPage() {
 
           <motion.div
             className={styles.walletCard}
-            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            whileHover={
+              !isMobile ? { y: -5, transition: { duration: 0.2 } } : {}
+            }
           >
             <div className={styles.walletCardHeader}>
               <div className={styles.walletIconContainer}>
                 <FaChartBar className={styles.walletIcon} />
               </div>
-              <div className={styles.walletTrend}>
-                <FaRocket />
-                <span>Lifetime</span>
-              </div>
+              {!isMobile && (
+                <div className={styles.walletTrend}>
+                  <FaRocket />
+                  <span>Lifetime</span>
+                </div>
+              )}
             </div>
             <div className={styles.walletAmount}>
               {formatCurrency(analytics.totalEarnings, showUSD ? "USD" : "INR")}
@@ -523,7 +501,7 @@ export default function FreelancerAnalyticsPage() {
       <div className={styles.dashboardContent}>
         {/* Navigation Tabs */}
         <motion.nav
-          className={styles.tabs}
+          className={`${styles.tabs} ${isMobile ? styles.mobileTabs : ""}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -533,25 +511,19 @@ export default function FreelancerAnalyticsPage() {
               id: "overview",
               label: "Overview",
               icon: <FaChartPie />,
-              color: "#3b82f6",
+              color: "#2563eb",
             },
             {
               id: "reviews",
               label: "Reviews",
               icon: <FaStar />,
-              color: "#f59e0b",
-            },
-            {
-              id: "wallet",
-              label: "Wallet",
-              icon: <FaWallet />,
-              color: "#10b981",
+              color: "#d97706",
             },
             {
               id: "performance",
               label: "Performance",
               icon: <FaTachometerAlt />,
-              color: "#8b5cf6",
+              color: "#7c3aed",
             },
           ].map((tab) => (
             <motion.button
@@ -560,12 +532,14 @@ export default function FreelancerAnalyticsPage() {
                 activeTab === tab.id ? styles.active : ""
               }`}
               onClick={() => setActiveTab(tab.id)}
-              whileHover={{ scale: 1.05 }}
+              whileHover={!isMobile ? { scale: 1.05 } : {}}
               whileTap={{ scale: 0.95 }}
               style={{ "--tab-color": tab.color }}
             >
               <span className={styles.tabIcon}>{tab.icon}</span>
-              <span className={styles.tabLabel}>{tab.label}</span>
+              {!isMobile && (
+                <span className={styles.tabLabel}>{tab.label}</span>
+              )}
               {activeTab === tab.id && (
                 <motion.div
                   className={styles.tabIndicator}
@@ -589,6 +563,7 @@ export default function FreelancerAnalyticsPage() {
               formatCurrency={formatCurrency}
               showUSD={showUSD}
               performanceMetrics={performanceMetrics}
+              isMobile={isMobile}
             />
           )}
 
@@ -601,20 +576,7 @@ export default function FreelancerAnalyticsPage() {
               handleViewDetails={handleViewDetails}
               formatCurrency={formatCurrency}
               showUSD={showUSD}
-            />
-          )}
-
-          {/* Wallet Tab */}
-          {activeTab === "wallet" && (
-            <WalletTab
-              wallet={wallet}
-              handleWithdraw={handleWithdraw}
-              formatCurrency={formatCurrency}
-              showUSD={showUSD}
-              exchangeRate={exchangeRate}
-              toggleCurrency={toggleCurrency}
-              getCurrencyLabel={getCurrencyLabel}
-              getCurrencyIcon={getCurrencyIcon}
+              isMobile={isMobile}
             />
           )}
 
@@ -626,6 +588,7 @@ export default function FreelancerAnalyticsPage() {
               formatCurrency={formatCurrency}
               showUSD={showUSD}
               performanceMetrics={performanceMetrics}
+              isMobile={isMobile}
             />
           )}
         </div>
@@ -640,6 +603,7 @@ export default function FreelancerAnalyticsPage() {
             setReviewForm={setReviewForm}
             setShowReviewModal={setShowReviewModal}
             handleSubmitReview={handleSubmitReview}
+            isMobile={isMobile}
           />
         )}
       </AnimatePresence>
@@ -650,6 +614,7 @@ export default function FreelancerAnalyticsPage() {
           <ViewDetailsModal
             review={viewDetails}
             setViewDetails={setViewDetails}
+            isMobile={isMobile}
           />
         )}
       </AnimatePresence>
@@ -667,10 +632,9 @@ function OverviewTab({
   formatCurrency,
   showUSD,
   performanceMetrics,
+  isMobile,
 }) {
   const [expandedProject, setExpandedProject] = useState(null);
-
-  console.log("📊 OverviewTab - Reviewable projects:", reviews.reviewable);
 
   const toggleProjectDetails = (projectId) => {
     setExpandedProject(expandedProject === projectId ? null : projectId);
@@ -683,15 +647,15 @@ function OverviewTab({
       animate={{ opacity: 1, y: 0 }}
     >
       {/* Key Metrics Grid */}
-      <div className={styles.metricsGrid}>
+      <div className={`${styles.metricsGrid} ${isMobile ? styles.mobile : ""}`}>
         <motion.div
           className={styles.metricCard}
-          whileHover={{ scale: 1.02, y: -2 }}
+          whileHover={!isMobile ? { scale: 1.02, y: -2 } : {}}
         >
           <div className={styles.metricHeader}>
             <div
               className={styles.metricIcon}
-              style={{ backgroundColor: "#10b981" }}
+              style={{ backgroundColor: "#059669" }}
             >
               <FaProjectDiagram />
             </div>
@@ -705,12 +669,12 @@ function OverviewTab({
 
         <motion.div
           className={styles.metricCard}
-          whileHover={{ scale: 1.02, y: -2 }}
+          whileHover={!isMobile ? { scale: 1.02, y: -2 } : {}}
         >
           <div className={styles.metricHeader}>
             <div
               className={styles.metricIcon}
-              style={{ backgroundColor: "#3b82f6" }}
+              style={{ backgroundColor: "#2563eb" }}
             >
               <FaStar />
             </div>
@@ -728,12 +692,12 @@ function OverviewTab({
 
         <motion.div
           className={styles.metricCard}
-          whileHover={{ scale: 1.02, y: -2 }}
+          whileHover={!isMobile ? { scale: 1.02, y: -2 } : {}}
         >
           <div className={styles.metricHeader}>
             <div
               className={styles.metricIcon}
-              style={{ backgroundColor: "#8b5cf6" }}
+              style={{ backgroundColor: "#7c3aed" }}
             >
               <FaUsers />
             </div>
@@ -747,12 +711,12 @@ function OverviewTab({
 
         <motion.div
           className={styles.metricCard}
-          whileHover={{ scale: 1.02, y: -2 }}
+          whileHover={!isMobile ? { scale: 1.02, y: -2 } : {}}
         >
           <div className={styles.metricHeader}>
             <div
               className={styles.metricIcon}
-              style={{ backgroundColor: "#f59e0b" }}
+              style={{ backgroundColor: "#d97706" }}
             >
               <FaAward />
             </div>
@@ -770,7 +734,7 @@ function OverviewTab({
       </div>
 
       {/* Action Cards */}
-      <div className={styles.actionGrid}>
+      <div className={`${styles.actionGrid} ${isMobile ? styles.mobile : ""}`}>
         <motion.div
           className={styles.actionCard}
           initial={{ opacity: 0, x: -20 }}
@@ -782,9 +746,8 @@ function OverviewTab({
           <div className={styles.quickActions}>
             <motion.button
               className={styles.actionButton}
-              whileHover={{ scale: 1.02 }}
+              whileHover={!isMobile ? { scale: 1.02 } : {}}
               whileTap={{ scale: 0.98 }}
-              onClick={() => setActiveTab("wallet")}
             >
               <div className={styles.actionIcon}>
                 <FaMoneyBillWave />
@@ -802,7 +765,7 @@ function OverviewTab({
             {reviews.reviewable.length > 0 && (
               <motion.button
                 className={styles.actionButton}
-                whileHover={{ scale: 1.02 }}
+                whileHover={!isMobile ? { scale: 1.02 } : {}}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab("reviews")}
               >
@@ -823,7 +786,7 @@ function OverviewTab({
 
             <motion.button
               className={styles.actionButton}
-              whileHover={{ scale: 1.02 }}
+              whileHover={!isMobile ? { scale: 1.02 } : {}}
               whileTap={{ scale: 0.98 }}
             >
               <div className={styles.actionIcon}>
@@ -868,136 +831,111 @@ function OverviewTab({
               </div>
             ) : (
               <div className={styles.pendingReviewsList}>
-                {reviews.reviewable.slice(0, 3).map((project) => (
-                  <motion.div
-                    key={project.id}
-                    className={styles.pendingReviewItem}
-                    whileHover={{ y: -2 }}
-                  >
-                    <div className={styles.projectHeader}>
-                      <div className={styles.projectBasicInfo}>
-                        <div className={styles.projectIcon}>
-                          <FaFileAlt />
-                        </div>
-                        <div className={styles.projectDetails}>
-                          <h4 className={styles.projectTitle}>
-                            {project.title}
-                          </h4>
-                          <div className={styles.projectMeta}>
-                            <span className={styles.clientInfo}>
-                              <FaUserTie />
-                              {project.client?.name || "Unknown Client"}
-                            </span>
-                            <span className={styles.projectEarnings}>
-                              <FaMoneyCheck />
-                              {formatCurrency(
-                                project.totalEarnings || 0,
-                                showUSD ? "USD" : "INR"
-                              )}
-                            </span>
-                            <span className={styles.projectDuration}>
-                              <FaCalendar />
-                              {project.projectDuration || "N/A"}
-                            </span>
+                {reviews.reviewable
+                  .slice(0, isMobile ? 2 : 3)
+                  .map((project) => (
+                    <motion.div
+                      key={project.id}
+                      className={styles.pendingReviewItem}
+                      whileHover={!isMobile ? { y: -2 } : {}}
+                    >
+                      <div className={styles.projectHeader}>
+                        <div className={styles.projectBasicInfo}>
+                          <div className={styles.projectIcon}>
+                            <FaFileAlt />
                           </div>
-                        </div>
-                      </div>
-                      <div className={styles.projectActions}>
-                        <motion.button
-                          className={styles.viewDetailsBtn}
-                          onClick={() => toggleProjectDetails(project.id)}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          {expandedProject === project.id ? (
-                            <FaChevronUp />
-                          ) : (
-                            <FaChevronDown />
-                          )}
-                          Details
-                        </motion.button>
-                        <motion.button
-                          className={styles.reviewActionButton}
-                          onClick={() => openReviewModal(project)}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <FaEdit />
-                          Write Review
-                        </motion.button>
-                      </div>
-                    </div>
-
-                    {/* Expandable Project Details */}
-                    <AnimatePresence>
-                      {expandedProject === project.id && (
-                        <motion.div
-                          className={styles.projectExpandedDetails}
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <div className={styles.detailsGrid}>
-                            <div className={styles.detailItem}>
-                              <strong>Project Description:</strong>
-                              <p>
-                                {project.description ||
-                                  "No description available"}
-                              </p>
-                            </div>
-                            <div className={styles.detailItem}>
-                              <strong>Completed:</strong>
-                              <span>
-                                {project.completedAt
-                                  ? new Date(
-                                      project.completedAt
-                                    ).toLocaleDateString()
-                                  : "Recently"}
+                          <div className={styles.projectDetails}>
+                            <h4 className={styles.projectTitle}>
+                              {project.title}
+                            </h4>
+                            <div className={styles.projectMeta}>
+                              <span className={styles.clientInfo}>
+                                <FaUserTie />
+                                {project.client?.name || "Unknown Client"}
                               </span>
-                            </div>
-                            <div className={styles.detailItem}>
-                              <strong>Total Earnings:</strong>
-                              <span className={styles.earningsHighlight}>
+                              <span className={styles.projectEarnings}>
+                                <FaMoneyCheck />
                                 {formatCurrency(
                                   project.totalEarnings || 0,
                                   showUSD ? "USD" : "INR"
                                 )}
                               </span>
                             </div>
-                            {project.hasClientReview && (
-                              <div className={styles.detailItem}>
-                                <strong>Client's Review:</strong>
-                                <div className={styles.clientReview}>
-                                  <div className={styles.reviewRating}>
-                                    {[...Array(5)].map((_, i) => (
-                                      <FaStar
-                                        key={i}
-                                        className={
-                                          i < project.clientReview?.rating
-                                            ? styles.starFilled
-                                            : styles.starEmpty
-                                        }
-                                      />
-                                    ))}
-                                  </div>
-                                  <p className={styles.reviewComment}>
-                                    {project.clientReview?.comment ||
-                                      "No comment provided"}
-                                  </p>
-                                </div>
-                              </div>
-                            )}
                           </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                ))}
+                        </div>
+                        <div className={styles.projectActions}>
+                          <motion.button
+                            className={styles.viewDetailsBtn}
+                            onClick={() => toggleProjectDetails(project.id)}
+                            whileHover={!isMobile ? { scale: 1.05 } : {}}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            {expandedProject === project.id ? (
+                              <FaChevronUp />
+                            ) : (
+                              <FaChevronDown />
+                            )}
+                            {!isMobile && "Details"}
+                          </motion.button>
+                          <motion.button
+                            className={styles.reviewActionButton}
+                            onClick={() => openReviewModal(project)}
+                            whileHover={!isMobile ? { scale: 1.05 } : {}}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <FaEdit />
+                            {!isMobile && "Write Review"}
+                          </motion.button>
+                        </div>
+                      </div>
+
+                      {/* Expandable Project Details */}
+                      <AnimatePresence>
+                        {expandedProject === project.id && (
+                          <motion.div
+                            className={styles.projectExpandedDetails}
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <div className={styles.detailsGrid}>
+                              <div className={styles.detailItem}>
+                                <strong>Project Description:</strong>
+                                <p>
+                                  {project.description ||
+                                    "No description available"}
+                                </p>
+                              </div>
+                              <div className={styles.detailItem}>
+                                <strong>Completed:</strong>
+                                <span>
+                                  {project.completedAt
+                                    ? new Date(
+                                        project.completedAt
+                                      ).toLocaleDateString()
+                                    : "Recently"}
+                                </span>
+                              </div>
+                              <div className={styles.detailItem}>
+                                <strong>Total Earnings:</strong>
+                                <span className={styles.earningsHighlight}>
+                                  {formatCurrency(
+                                    project.totalEarnings || 0,
+                                    showUSD ? "USD" : "INR"
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  ))}
               </div>
             )}
           </div>
-          {reviews.reviewable.length > 3 && (
+          {reviews.reviewable.length > (isMobile ? 2 : 3) && (
             <button
               className={styles.viewAllButton}
               onClick={() => setActiveTab("reviews")}
@@ -1032,12 +970,16 @@ function OverviewTab({
               </p>
             </div>
           ) : (
-            <div className={styles.reviewsGrid}>
-              {reviews.received.slice(0, 2).map((review) => (
+            <div
+              className={`${styles.reviewsGrid} ${
+                isMobile ? styles.mobile : ""
+              }`}
+            >
+              {reviews.received.slice(0, isMobile ? 1 : 2).map((review) => (
                 <motion.div
                   key={review.id}
                   className={styles.reviewCard}
-                  whileHover={{ y: -2 }}
+                  whileHover={!isMobile ? { y: -2 } : {}}
                 >
                   <div className={styles.reviewHeader}>
                     <div className={styles.reviewerInfo}>
@@ -1093,11 +1035,10 @@ function ReviewsTab({
   handleViewDetails,
   formatCurrency,
   showUSD,
+  isMobile,
 }) {
   const [activeReviewSection, setActiveReviewSection] = useState("received");
   const [expandedProject, setExpandedProject] = useState(null);
-
-  console.log("📊 ReviewsTab - Reviewable projects:", reviews.reviewable);
 
   const toggleProjectDetails = (projectId) => {
     setExpandedProject(expandedProject === projectId ? null : projectId);
@@ -1109,7 +1050,11 @@ function ReviewsTab({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <div className={styles.reviewSectionsNav}>
+      <div
+        className={`${styles.reviewSectionsNav} ${
+          isMobile ? styles.mobile : ""
+        }`}
+      >
         <button
           className={`${styles.sectionTab} ${
             activeReviewSection === "received" ? styles.active : ""
@@ -1173,12 +1118,16 @@ function ReviewsTab({
                 </p>
               </div>
             ) : (
-              <div className={styles.reviewsGrid}>
+              <div
+                className={`${styles.reviewsGrid} ${
+                  isMobile ? styles.mobile : ""
+                }`}
+              >
                 {reviews.received.map((review) => (
                   <motion.div
                     key={review.id}
                     className={styles.reviewCard}
-                    whileHover={{ y: -2 }}
+                    whileHover={!isMobile ? { y: -2 } : {}}
                   >
                     <div className={styles.reviewCardHeader}>
                       <div className={styles.reviewerInfo}>
@@ -1213,11 +1162,11 @@ function ReviewsTab({
                       <motion.button
                         className={styles.viewDetailsBtn}
                         onClick={() => handleViewDetails(review)}
-                        whileHover={{ scale: 1.05 }}
+                        whileHover={!isMobile ? { scale: 1.05 } : {}}
                         whileTap={{ scale: 0.95 }}
                       >
                         <FaEye />
-                        Details
+                        {!isMobile && "Details"}
                       </motion.button>
                     </div>
                   </motion.div>
@@ -1249,12 +1198,16 @@ function ReviewsTab({
                 </p>
               </div>
             ) : (
-              <div className={styles.reviewsGrid}>
+              <div
+                className={`${styles.reviewsGrid} ${
+                  isMobile ? styles.mobile : ""
+                }`}
+              >
                 {reviews.given.map((review) => (
                   <motion.div
                     key={review.id}
                     className={styles.reviewCard}
-                    whileHover={{ y: -2 }}
+                    whileHover={!isMobile ? { y: -2 } : {}}
                   >
                     <div className={styles.reviewCardHeader}>
                       <div className={styles.reviewerInfo}>
@@ -1324,12 +1277,16 @@ function ReviewsTab({
                 </p>
               </div>
             ) : (
-              <div className={styles.pendingReviewsGrid}>
+              <div
+                className={`${styles.pendingReviewsGrid} ${
+                  isMobile ? styles.mobile : ""
+                }`}
+              >
                 {reviews.reviewable.map((project) => (
                   <motion.div
                     key={project.id}
                     className={styles.pendingReviewCard}
-                    whileHover={{ y: -2 }}
+                    whileHover={!isMobile ? { y: -2 } : {}}
                   >
                     <div className={styles.pendingReviewHeader}>
                       <div className={styles.projectInfo}>
@@ -1350,23 +1307,8 @@ function ReviewsTab({
                                 showUSD ? "USD" : "INR"
                               )}
                             </span>
-                            <span className={styles.projectDuration}>
-                              <FaCalendar />
-                              {project.projectDuration || "N/A"}
-                            </span>
                           </div>
                         </div>
-                      </div>
-                      <div className={styles.statusIndicator}>
-                        {project.hasClientReview ? (
-                          <span className={styles.reviewedStatus}>
-                            <FaComments /> Client Reviewed You
-                          </span>
-                        ) : (
-                          <span className={styles.pendingStatus}>
-                            <FaClock /> Awaiting Mutual Review
-                          </span>
-                        )}
                       </div>
                     </div>
 
@@ -1378,7 +1320,7 @@ function ReviewsTab({
                       <motion.button
                         className={styles.viewProjectDetails}
                         onClick={() => toggleProjectDetails(project.id)}
-                        whileHover={{ scale: 1.05 }}
+                        whileHover={!isMobile ? { scale: 1.05 } : {}}
                         whileTap={{ scale: 0.95 }}
                       >
                         {expandedProject === project.id ? (
@@ -1391,7 +1333,7 @@ function ReviewsTab({
                       <motion.button
                         onClick={() => openReviewModal(project)}
                         className={styles.reviewActionBtn}
-                        whileHover={{ scale: 1.05 }}
+                        whileHover={!isMobile ? { scale: 1.05 } : {}}
                         whileTap={{ scale: 0.95 }}
                       >
                         <FaEdit />
@@ -1437,33 +1379,6 @@ function ReviewsTab({
                                 )}
                               </span>
                             </div>
-                            {project.hasClientReview &&
-                              project.clientReview && (
-                                <div className={styles.detailItem}>
-                                  <strong>Client's Review:</strong>
-                                  <div className={styles.clientReview}>
-                                    <div className={styles.reviewRating}>
-                                      {[...Array(5)].map((_, i) => (
-                                        <FaStar
-                                          key={i}
-                                          className={
-                                            i < project.clientReview.rating
-                                              ? styles.starFilled
-                                              : styles.starEmpty
-                                          }
-                                        />
-                                      ))}
-                                      <span className={styles.ratingValue}>
-                                        ({project.clientReview.rating}.0)
-                                      </span>
-                                    </div>
-                                    <p className={styles.reviewComment}>
-                                      {project.clientReview.comment ||
-                                        "No comment provided"}
-                                    </p>
-                                  </div>
-                                </div>
-                              )}
                           </div>
                         </motion.div>
                       )}
@@ -1479,141 +1394,13 @@ function ReviewsTab({
   );
 }
 
-// Wallet Tab Component
-function WalletTab({
-  wallet,
-  handleWithdraw,
-  formatCurrency,
-  showUSD,
-  exchangeRate,
-  toggleCurrency,
-  getCurrencyLabel,
-  getCurrencyIcon,
-}) {
-  return (
-    <motion.div
-      className={styles.tabContent}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
-      <div className={styles.walletOverview}>
-        <div className={styles.balanceSummary}>
-          <motion.div
-            className={styles.balanceCardLarge}
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className={styles.balanceHeader}>
-              <div className={styles.balanceIconLarge}>
-                <FaWallet />
-              </div>
-              <div>
-                <span className={styles.balanceLabel}>Total Available</span>
-                <span className={styles.balanceAmountLarge}>
-                  {formatCurrency(wallet.balance, showUSD ? "USD" : "INR")}
-                </span>
-                <motion.button
-                  className={styles.currencyToggleBtn}
-                  onClick={toggleCurrency}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <FaExchangeAlt />
-                  Show in {showUSD ? "INR" : "USD"}
-                </motion.button>
-              </div>
-            </div>
-            <div className={styles.balanceActions}>
-              <motion.button
-                className={styles.withdrawButtonLarge}
-                onClick={handleWithdraw}
-                disabled={wallet.balance <= 0}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FaMoneyBillWave />
-                Withdraw Funds
-              </motion.button>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Transaction History */}
-        <motion.div
-          className={styles.transactionCard}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className={styles.cardHeader}>
-            <h3>Transaction History</h3>
-            <div className={styles.currencyDisplay}>
-              <span className={styles.currencyIcon}>{getCurrencyIcon()}</span>
-              Displaying in: <strong>{getCurrencyLabel()}</strong>
-            </div>
-          </div>
-          <div className={styles.transactionList}>
-            {wallet.transactions?.length === 0 ? (
-              <div className={styles.emptyState}>
-                <FaMoneyBillWave className={styles.emptyIcon} />
-                <p>No transactions yet.</p>
-              </div>
-            ) : (
-              wallet.transactions?.map((transaction, index) => (
-                <motion.div
-                  key={transaction.id || index}
-                  className={styles.transactionItem}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <div className={styles.transactionInfo}>
-                    <div className={styles.transactionIcon}>
-                      {transaction.amount >= 0 ? (
-                        <FaArrowDown />
-                      ) : (
-                        <FaArrowUp />
-                      )}
-                    </div>
-                    <div>
-                      <div className={styles.transactionType}>
-                        {transaction.type || "Transaction"}
-                      </div>
-                      <div className={styles.transactionDate}>
-                        {new Date(transaction.createdAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className={`
-                    ${styles.transactionAmount} 
-                    ${
-                      transaction.amount >= 0
-                        ? styles.positive
-                        : styles.negative
-                    }
-                  `}
-                  >
-                    {transaction.amount >= 0 ? "+" : ""}
-                    {formatCurrency(
-                      transaction.amount,
-                      showUSD ? "USD" : "INR"
-                    )}
-                  </div>
-                </motion.div>
-              ))
-            )}
-          </div>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-}
-
 // Performance Tab Component
 function PerformanceTab({
   analytics,
   formatCurrency,
   showUSD,
   performanceMetrics,
+  isMobile,
 }) {
   return (
     <motion.div
@@ -1630,11 +1417,13 @@ function PerformanceTab({
         <div className={styles.cardHeader}>
           <h3>Performance Metrics</h3>
         </div>
-        <div className={styles.metricsGrid}>
+        <div
+          className={`${styles.metricsGrid} ${isMobile ? styles.mobile : ""}`}
+        >
           <div className={styles.performanceMetric}>
             <div
               className={styles.metricIcon}
-              style={{ backgroundColor: "#10b981" }}
+              style={{ backgroundColor: "#059669" }}
             >
               <FaCheckCircle />
             </div>
@@ -1648,7 +1437,7 @@ function PerformanceTab({
           <div className={styles.performanceMetric}>
             <div
               className={styles.metricIcon}
-              style={{ backgroundColor: "#3b82f6" }}
+              style={{ backgroundColor: "#2563eb" }}
             >
               <FaClock />
             </div>
@@ -1662,7 +1451,7 @@ function PerformanceTab({
           <div className={styles.performanceMetric}>
             <div
               className={styles.metricIcon}
-              style={{ backgroundColor: "#f59e0b" }}
+              style={{ backgroundColor: "#d97706" }}
             >
               <FaRegSmile />
             </div>
@@ -1676,7 +1465,7 @@ function PerformanceTab({
           <div className={styles.performanceMetric}>
             <div
               className={styles.metricIcon}
-              style={{ backgroundColor: "#8b5cf6" }}
+              style={{ backgroundColor: "#7c3aed" }}
             >
               <FaUsers />
             </div>
@@ -1704,7 +1493,9 @@ function PerformanceTab({
             Displayed in {showUSD ? "USD" : "INR"}
           </div>
         </div>
-        <div className={styles.earningsGrid}>
+        <div
+          className={`${styles.earningsGrid} ${isMobile ? styles.mobile : ""}`}
+        >
           <div className={styles.earningsItem}>
             <div className={styles.earningsLabel}>Total Earnings</div>
             <div className={styles.earningsValue}>
@@ -1744,6 +1535,7 @@ function ReviewModal({
   setReviewForm,
   setShowReviewModal,
   handleSubmitReview,
+  isMobile,
 }) {
   return (
     <motion.div
@@ -1754,7 +1546,9 @@ function ReviewModal({
       onClick={() => setShowReviewModal(false)}
     >
       <motion.div
-        className={styles.modalContent}
+        className={`${styles.modalContent} ${
+          isMobile ? styles.mobileModal : ""
+        }`}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -1789,7 +1583,7 @@ function ReviewModal({
                   onClick={() =>
                     setReviewForm((prev) => ({ ...prev, rating: star }))
                   }
-                  whileHover={{ scale: 1.2 }}
+                  whileHover={!isMobile ? { scale: 1.2 } : {}}
                   whileTap={{ scale: 0.9 }}
                 >
                   <FaStar />
@@ -1806,7 +1600,7 @@ function ReviewModal({
                 setReviewForm((prev) => ({ ...prev, comment: e.target.value }))
               }
               placeholder="Share your experience..."
-              rows="4"
+              rows={isMobile ? 3 : 4}
             />
           </div>
 
@@ -1815,7 +1609,7 @@ function ReviewModal({
               type="button"
               className={styles.cancelButton}
               onClick={() => setShowReviewModal(false)}
-              whileHover={{ scale: 1.05 }}
+              whileHover={!isMobile ? { scale: 1.05 } : {}}
               whileTap={{ scale: 0.95 }}
             >
               Cancel
@@ -1823,7 +1617,7 @@ function ReviewModal({
             <motion.button
               type="submit"
               className={styles.submitButton}
-              whileHover={{ scale: 1.05 }}
+              whileHover={!isMobile ? { scale: 1.05 } : {}}
               whileTap={{ scale: 0.95 }}
             >
               Submit Review
@@ -1836,7 +1630,7 @@ function ReviewModal({
 }
 
 // View Details Modal Component
-function ViewDetailsModal({ review, setViewDetails }) {
+function ViewDetailsModal({ review, setViewDetails, isMobile }) {
   return (
     <motion.div
       className={styles.modalOverlay}
@@ -1846,12 +1640,14 @@ function ViewDetailsModal({ review, setViewDetails }) {
       onClick={() => setViewDetails(null)}
     >
       <motion.div
-        className={styles.modalContent}
+        className={`${styles.modalContent} ${
+          isMobile ? styles.mobileModal : ""
+        }`}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: "600px" }}
+        style={{ maxWidth: isMobile ? "90vw" : "600px" }}
       >
         <div className={styles.modalHeader}>
           <h2>Review Details</h2>
@@ -1913,7 +1709,7 @@ function ViewDetailsModal({ review, setViewDetails }) {
           <motion.button
             className={styles.closeButton}
             onClick={() => setViewDetails(null)}
-            whileHover={{ scale: 1.05 }}
+            whileHover={!isMobile ? { scale: 1.05 } : {}}
             whileTap={{ scale: 0.95 }}
           >
             Close

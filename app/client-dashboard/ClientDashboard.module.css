@@ -1,3 +1,4 @@
+/* app\client-dashboard\ClientDashboard.module.css */
 .layout {
   display: flex;
   min-height: 100vh;
@@ -15,6 +16,11 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+}
+
+.header {
+  display: none;
 }
 
 .sidebarHeader {
@@ -29,6 +35,7 @@
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
+  color: #fff;
 }
 
 .closeBtn {
@@ -39,6 +46,11 @@
   padding: 0.5rem;
   border-radius: 4px;
   display: none;
+  transition: background-color 0.3s ease;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .userInfo {
@@ -60,16 +72,19 @@
   font-weight: 600;
   font-size: 1.2rem;
   color: white;
+  flex-shrink: 0;
 }
 
 .userDetails h4 {
   margin: 0 0 0.25rem 0;
   font-size: 1rem;
+  color: #fff;
 }
 
 .userDetails span {
   font-size: 0.8rem;
   opacity: 0.8;
+  color: #ecf0f1;
 }
 
 .sidebarNav {
@@ -78,9 +93,10 @@
 }
 
 .avatarImage {
-  width: 59px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  height: 59px;
+  object-fit: cover;
 }
 
 .navItem {
@@ -91,10 +107,11 @@
   padding: 1rem 1.5rem;
   background: none;
   border: none;
-  color: rgb(255, 255, 255);
+  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
+  font-size: 0.95rem;
 }
 
 .navItem:hover {
@@ -114,6 +131,103 @@
   text-align: center;
 }
 
+/* Social Media Section */
+.socialSection {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.socialTitle {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.socialIcons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  position: relative;
+}
+
+.socialLink:hover {
+  background: var(--social-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.socialLink::before {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2c3e50;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.socialLink:hover::before {
+  opacity: 1;
+  visibility: visible;
+  bottom: calc(100% + 8px);
+}
+
+/* Bottom Actions */
+.bottomActions {
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.settings {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  width: 100%;
+  text-align: left;
+}
+
+.settings:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  transform: translateY(-1px);
+}
+
 .logoutBtn {
   display: flex;
   align-items: center;
@@ -121,16 +235,18 @@
   background: rgba(231, 76, 60, 0.1);
   color: #e74c3c;
   border: 1px solid rgba(231, 76, 60, 0.2);
-  padding: 1rem 1.5rem;
-  margin: 1rem;
-  border-radius: 6px;
+  padding: 1rem;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 0.95rem;
+  width: 100%;
 }
 
 .logoutBtn:hover {
   background: #e74c3c;
   color: white;
+  transform: translateY(-1px);
 }
 
 .mainContent {
@@ -138,6 +254,7 @@
   margin-left: 280px;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 .menuToggle {
@@ -148,30 +265,36 @@
   padding: 0.5rem;
   border-radius: 4px;
   display: none;
+  color: #2c3e50;
+  transition: background-color 0.3s ease;
+}
+
+.menuToggle:hover {
+  background: #ecf0f1;
 }
 
 .headerContent {
   flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .headerContent h1 {
-  margin: 0;
+  margin: 0 0 0.25rem 0;
   font-size: 1.5rem;
   color: #2c3e50;
+  font-weight: 600;
 }
 
 .welcomeText {
   color: #7f8c8d;
   font-weight: 500;
+  font-size: 0.95rem;
 }
 
 .content {
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
+  background: #f8f9fa;
 }
 
 .overlay {
@@ -195,6 +318,17 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .header {
+    display: block;
+    background: white;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e1e8ed;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
   .sidebar {
     width: 100%;
     max-width: 300px;
@@ -219,18 +353,25 @@
   .content {
     padding: 1rem;
   }
+
+  .socialIcons {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .socialLink {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
 }
-.settings {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #c5c2c2;
-  background: rgb(86, 86, 206);
-  border: none;
-  cursor: pointer;
-  width: 240px;
-  text-align: left;
-  margin: 0px 0px 0px 20px;
-  padding: 1rem 1rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+
+@media (max-width: 480px) {
+  .sidebar {
+    max-width: 280px;
+  }
+
+  .socialIcons {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

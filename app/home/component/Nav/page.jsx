@@ -81,7 +81,6 @@ export default function Nav() {
     }
   };
 
-
   return (
     <header className={`${styles.header} ${isFixed ? styles.fixed : ""}`}>
       {/* Top Bar */}
@@ -184,6 +183,28 @@ export default function Nav() {
               Contact Us
             </Link>
           </li>
+
+          {/* Mobile Auth Buttons */}
+          <div className={styles.mobileAuthButtons}>
+            {user ? (
+              <Link href={getDashboardLink()} className={styles.dashboardBtn}>
+                <FaUser /> {userName}
+              </Link>
+            ) : (
+              <>
+                <Link href="/login">
+                  <button className={styles.loginBtn}>
+                    Login
+                  </button>
+                </Link>
+                <Link href="/register">
+                  <button className={styles.signUpBtn}>
+                    Register
+                  </button>
+                </Link>
+              </>
+            )}
+          </div>
         </ul>
 
         <div className={styles.actions}>
@@ -207,7 +228,7 @@ export default function Nav() {
           className={styles.menuToggle}
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <IoClose size={26} /> : <IoMenu size={26} />}
+          {isOpen ? <IoClose className={styles.close} size={26} /> : <IoMenu size={26} />}
         </button>
       </nav>
     </header>
