@@ -932,13 +932,7 @@ const ClientServices = () => {
                     </div>
                     <h3>{feature.title}</h3>
                     <p>{feature.description}</p>
-                    <motion.div
-                      className={styles.featureArrow}
-                      whileHover={{ x: 10, scale: 1.2 }}
-                      transition={{ type: "spring", stiffness: 400 }}
-                    >
-                      <FaArrowRight />
-                    </motion.div>
+                
                   </motion.div>
                 ))}
               </div>

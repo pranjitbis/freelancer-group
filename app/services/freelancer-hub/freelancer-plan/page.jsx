@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import styles from "./FreelancerHub.module.css";
+import Link from "next/link";
 import {
   FaCheck,
   FaStar,
@@ -152,6 +153,7 @@ const FreelancerHub = () => {
         },
       ],
       connectsPerMonth: 20,
+      link: "/register",
       contractTypes: ["Fixed-price", "Hourly"],
       canApplyPremiumJobs: false,
       popular: false,
@@ -163,6 +165,7 @@ const FreelancerHub = () => {
       name: "Pro",
       price: "₹999",
       period: "per month",
+      link: "/register",
       bestFor: "Perfect for freelancers ready to grow and get noticed",
       features: [
         {
@@ -545,7 +548,9 @@ const FreelancerHub = () => {
                   }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <span>Start Your Journey Free</span>
+                  <Link href="/register">
+                    <span>Start Your Journey Free</span>
+                  </Link>
                   <FaArrowRight className={styles.buttonIcon} />
                 </motion.button>
               </motion.div>
@@ -747,18 +752,20 @@ const FreelancerHub = () => {
                   ))}
                 </ul>
 
-                <motion.button
-                  className={`${styles.planButton} ${
-                    plan.buttonType === "premium"
-                      ? styles.premium
-                      : styles.primary
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {plan.buttonText}
-                  <FaArrowRight className={styles.buttonIcon} />
-                </motion.button>
+                <Link href={plan.link}>
+                  <motion.button
+                    className={`${styles.planButton} ${
+                      plan.buttonType === "premium"
+                        ? styles.premium
+                        : styles.primary
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {plan.buttonText}
+                    <FaArrowRight className={styles.buttonIcon} />
+                  </motion.button>
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -825,14 +832,17 @@ const FreelancerHub = () => {
                 perfect workflow with our platform.
               </p>
               <div className={styles.ctaButtons}>
-                <motion.button
-                  className={styles.ctaPrimary}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Start Free Today
-                  <FaArrowRight />
-                </motion.button>
+                <Link href="/register">
+                  {" "}
+                  <motion.button
+                    className={styles.ctaPrimary}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Start Free Today
+                    <FaArrowRight />
+                  </motion.button>
+                </Link>
               </div>
             </div>
             <div className={styles.ctaVisual}>
