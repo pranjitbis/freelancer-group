@@ -2,7 +2,7 @@
 
 .container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 10rem auto 4rem;
   padding: 0 20px;
 }
 
@@ -238,7 +238,7 @@
 
 /* Section Styles */
 .section {
-  padding: 60px 0 40px;
+  padding: 0px 0 40px;
 }
 
 .sectionHeader {

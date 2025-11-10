@@ -193,10 +193,10 @@ export default function Nav() {
                   Join as Freelancer
                 </Link>
                 <Link
-                  href="/services/freelancer-hub/client-plan"
+                  href="/services/freelancer-hub/hire-freelancer"
                   onClick={closeMenu}
                 >
-                  Join as Client
+                  Hire freelancer
                 </Link>
               </div>
             )}

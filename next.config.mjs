@@ -1,28 +1,56 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable Next.js dev indicators
-  devIndicators: {
-    buildActivity: false,
-  },
-
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
 
-  // Socket.io configuration
-  serverExternalPackages: ["socket.io"],
+  // Socket.io and AWS SDK configuration
+  serverExternalPackages: ["socket.io", "@aws-sdk/client-s3"],
 
   // Compiler optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
 
-  // Image optimization configuration for your domain
+  // Image optimization configuration for Aroliya with AWS S3 support
   images: {
-    domains: ["localhost", "127.0.0.1", "www.aroliya.com", "aroliya.com"],
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+      },
+      {
+        protocol: "https",
+        hostname: "aroliya.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.aroliya.com",
+      },
+      // AWS S3 eu-north-1 (Stockholm) support
+      {
+        protocol: "https",
+        hostname: "*.s3.eu-north-1.amazonaws.com",
+      },
+      {
+        protocol: "https", 
+        hostname: "aroliya-freelancer-*.s3.eu-north-1.amazonaws.com",
+      },
+      // Fallback for other AWS regions
+      {
+        protocol: "https",
+        hostname: "*.s3.*.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.amazonaws.com",
+      },
+    ],
     formats: ["image/webp", "image/avif"],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 
   // Security headers
@@ -39,46 +67,23 @@ const nextConfig = {
             key: "X-Content-Type-Options",
             value: "nosniff",
           },
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
         ],
       },
+      // Add headers for optimized images (fixed route)
       {
-        source: "/api/(.*)",
+        source: "/_next/image",
         headers: [
           {
             key: "Cache-Control",
-            value: "no-store, max-age=0",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },
     ];
   },
 
-  // Body size limit for file uploads
-  experimental: {
-    serverComponentsExternalPackages: ["@aws-sdk/client-s3"],
-  },
-
-  // Output standalone for better AWS deployment
+  // Output standalone for better deployment
   output: process.env.NODE_ENV === "production" ? "standalone" : undefined,
-
-  // Webpack configuration
-  webpack: (config, { dev, isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        net: false,
-        tls: false,
-        fs: false,
-        dns: false,
-        child_process: false,
-      };
-    }
-    return config;
-  },
 };
 
 export default nextConfig;

@@ -304,7 +304,7 @@ export default function Register() {
                 <div className={styles.logoIcon}>
                   <FaShieldAlt className={styles.brandLogoIcon} />
                 </div>
-                <span className={styles.brandName}>YourBrand</span>
+                <span className={styles.brandName}>Aroliya</span>
               </div>
 
               <div className={styles.brandText}>

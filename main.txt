@@ -5,7 +5,6 @@
 ///Today//// remove /s/  /saved-job/ 
 
 
-mention 10% service fees in freelancer dasbord plan page
 
 /wp-admin/
 
@@ -22,12 +21,24 @@ post a project  /// join as client
 
 
 
-Hire top freelacner // join cliet page hero section title
 
-Nav bar i hide sop you  can make are nav bar are fix like postion are fix::==++ postion:fixed
 
-service [freelacner-plan] make into resposive and add link mins add working btns
 
 [term of services]  & [pravice and police]  & [how it work] & [trus and sefty]
 
 project entry [wp-admin]
+
+
+
+
+
+
+Join as client mention:/// explain how it's work
+
+
+
+Join as client // Hire freelancer
+
+
+check the client dashbord are showing the invaild date so you can fix the problem
+

@@ -576,7 +576,7 @@ export default function FreelancerHub() {
               {pagination.totalCount} projects available
             </span>
             {user && (
-              <Link href="/freelancer-dashboard/saved-jobs">
+              <Link href="/freelancer-dashboard/save-jobs">
                 <motion.button
                   className={styles.dashboardButton}
                   onClick={() => router.push("/freelancer-dashboard")}

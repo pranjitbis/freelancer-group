@@ -1037,7 +1037,74 @@
   color: var(--neutral-600);
   font-size: 1rem;
 }
+/* Currency Toggle Styles */
+.currencyToggle {
+  display: flex;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+  border: 1px solid #e5e7eb;
+}
 
+.toggleButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+.toggleButton.active {
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.toggleButton:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.5);
+  color: #374151;
+}
+
+.toggleButton svg {
+  font-size: 12px;
+}
+
+/* Header Controls Layout */
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.invoiceButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.invoiceButton:hover {
+  background: #047857;
+}
+
+/* Rest of your existing styles remain the same */
 /* Responsive Design */
 @media (max-width: 1024px) {
   .plansGrid {

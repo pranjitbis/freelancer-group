@@ -1,3 +1,4 @@
+// app/api/freelancer/profile/route.js
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { unlink } from "fs/promises";
@@ -53,6 +54,7 @@ export async function POST(request) {
     const body = await request.json();
     const {
       userId,
+      name,
       phoneNumber,
       title,
       bio,
@@ -81,6 +83,14 @@ export async function POST(request) {
     }
 
     console.log("Updating profile for user:", userId, body);
+
+    // Update user name if provided
+    if (name) {
+      await prisma.user.update({
+        where: { id: parseInt(userId) },
+        data: { name },
+      });
+    }
 
     // Prepare profile data
     const profileData = {

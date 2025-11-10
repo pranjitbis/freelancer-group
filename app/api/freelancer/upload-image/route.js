@@ -1,7 +1,7 @@
+// app/api/freelancer/upload-image/route.js
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { uploadToS3 } from "@/lib/s3-upload";
 
 const prisma = new PrismaClient();
 
@@ -54,31 +54,11 @@ export async function POST(request) {
       );
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), "public", "uploads", "profiles");
-    try {
-      await mkdir(uploadsDir, { recursive: true });
-    } catch (error) {
-      console.log("Uploads directory already exists or couldn't be created");
-    }
+    // Upload to S3
+    const imageUrl = await uploadToS3(file, userId, "profiles");
+    console.log("File uploaded to S3:", imageUrl);
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const fileExtension = file.name.split(".").pop();
-    const fileName = `profile_${userId}_${timestamp}.${fileExtension}`;
-    const filePath = join(uploadsDir, fileName);
-
-    // Convert file to buffer and save
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    await writeFile(filePath, buffer);
-
-    console.log("File saved successfully:", filePath);
-
-    // Generate public URL for the image
-    const imageUrl = `/uploads/profiles/${fileName}`;
-
-    // Update user profile and user record in a transaction
+    // Update database
     const result = await prisma.$transaction(async (tx) => {
       // Update or create user profile
       const profile = await tx.userProfile.upsert({
@@ -109,7 +89,7 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       imageUrl: result.imageUrl,
-      message: "Profile image uploaded successfully",
+      message: "Profile image uploaded successfully to cloud",
     });
   } catch (error) {
     console.error("Upload error:", error);

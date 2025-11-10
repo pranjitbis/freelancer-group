@@ -767,18 +767,6 @@ export default function ProjectManagement() {
 
           <div className={styles.statCard}>
             <div className={styles.statIcon}>
-              <FaChartLine />
-            </div>
-            <div className={styles.statContent}>
-              <div className={styles.statNumber}>
-                {formatCurrency(projectStats.totalEarned, currency)}
-              </div>
-              <div className={styles.statLabel}>Total Earned</div>
-            </div>
-          </div>
-
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
               <FaCheckCircle />
             </div>
             <div className={styles.statContent}>

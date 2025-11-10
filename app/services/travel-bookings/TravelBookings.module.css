@@ -6,6 +6,7 @@
   color: #222;
   line-height: 1.6;
   overflow-x: hidden;
+  margin: 5rem 0 0;
 }
 .heroImage {
   display: flex;

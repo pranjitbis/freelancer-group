@@ -578,16 +578,26 @@ This is a computer-generated invoice and does not require a signature.
                 </button>
               )}
 
-              <div className={styles.currencySelector}>
-                <FaGlobe className={styles.globeIcon} />
-                <select
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                  className={styles.currencySelect}
+              {/* Currency Toggle */}
+              <div className={styles.currencyToggle}>
+                <button
+                  className={`${styles.toggleButton} ${
+                    currency === "INR" ? styles.active : ""
+                  }`}
+                  onClick={() => setCurrency("INR")}
                 >
-                  <option value="INR">INR (₹)</option>
-                  <option value="USD">USD ($)</option>
-                </select>
+                  <FaRupeeSign />
+                  INR
+                </button>
+                <button
+                  className={`${styles.toggleButton} ${
+                    currency === "USD" ? styles.active : ""
+                  }`}
+                  onClick={() => setCurrency("USD")}
+                >
+                  <FaDollarSign />
+                  USD
+                </button>
               </div>
             </div>
           </div>

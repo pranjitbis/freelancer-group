@@ -31,7 +31,6 @@ import {
   FaLinkedinIn,
   FaInstagram,
   FaYoutube,
-  FaGithub,
 } from "react-icons/fa";
 
 export default function DashboardLayout({ children }) {
@@ -181,12 +180,6 @@ export default function DashboardLayout({ children }) {
       icon: <FaYoutube size={14} />,
       url: "https://youtube.com",
       color: "#FF0000",
-    },
-    {
-      name: "GitHub",
-      icon: <FaGithub size={14} />,
-      url: "https://github.com",
-      color: "#181717",
     },
   ];
 

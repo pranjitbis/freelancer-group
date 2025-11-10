@@ -88,7 +88,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className={styles.link}>
+                <Link href="/contact-us" className={styles.link}>
                   Contact Us
                 </Link>
               </li>
@@ -109,7 +109,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/services/e-eommerce-solutions"
+                  href="/services/e-commerce-solutions"
                   className={styles.link}
                 >
                   E-Commerce Solutions

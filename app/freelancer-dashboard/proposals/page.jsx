@@ -242,7 +242,7 @@ export default function FreelancerProposalsPage() {
     const statusConfig = {
       pending: { label: "Under Review", className: styles.statusPending },
       accepted: { label: "Accepted", className: styles.statusAccepted },
-      rejected: { label: "Not Selected", className: styles.statusRejected },
+      rejected: { label: "Rejected", className: styles.statusRejected },
       withdrawn: { label: "Withdrawn", className: styles.statusWithdrawn },
     };
 
@@ -421,7 +421,7 @@ export default function FreelancerProposalsPage() {
               </div>
               <div className={styles.stat}>
                 <span className={styles.statNumber}>{stats.rejected}</span>
-                <span className={styles.statLabel}>Not Selected</span>
+                <span className={styles.statLabel}>Rejected</span>
               </div>
             </div>
           </div>
@@ -467,7 +467,7 @@ export default function FreelancerProposalsPage() {
               <option value="all">All Proposals</option>
               <option value="pending">Under Review</option>
               <option value="accepted">Accepted</option>
-              <option value="rejected">Not Selected</option>
+              <option value="rejected">Rejected</option>
             </select>
           </div>
         </motion.div>
@@ -528,7 +528,7 @@ function ProposalDetailsModal({ proposal, onClose }) {
     const statusConfig = {
       pending: { label: "Under Review", className: styles.statusPending },
       accepted: { label: "Accepted", className: styles.statusAccepted },
-      rejected: { label: "Not Selected", className: styles.statusRejected },
+      rejected: { label: "Rejected", className: styles.statusRejected },
       withdrawn: { label: "Withdrawn", className: styles.statusWithdrawn },
     };
 

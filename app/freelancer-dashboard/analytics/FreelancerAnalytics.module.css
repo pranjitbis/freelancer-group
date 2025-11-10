@@ -1305,7 +1305,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1068px) {
   .headerContent {
     flex-direction: column;
     text-align: center;
@@ -1367,4 +1367,186 @@
     gap: 0.5rem;
     align-items: flex-start;
   }
+}
+/* Currency Toggle Styles */
+.currencyToggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 12px;
+  min-width: 140px;
+  justify-content: space-between;
+}
+
+.currencyOption {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  transition: all 0.3s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.currencyOption.active {
+  color: #3b82f6;
+  background: #eff6ff;
+  font-weight: 600;
+}
+
+.currencyOption svg {
+  font-size: 10px;
+}
+
+.toggleSwitch {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  width: 44px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.toggleSlider {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #cbd5e1;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+}
+
+.toggleSlider.usdActive {
+  background: #3b82f6;
+}
+
+.toggleKnob {
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggleSlider.usdActive .toggleKnob {
+  transform: translateX(20px);
+}
+
+/* Mobile Currency Toggle */
+.mobileCurrencyToggle {
+  display: flex;
+  align-items: center;
+}
+
+.mobileCurrencyToggle .currencyToggle {
+  min-width: 120px;
+  padding: 6px 8px;
+  gap: 8px;
+}
+
+.mobileCurrencyToggle .currencyOption {
+  font-size: 11px;
+  padding: 3px 6px;
+}
+
+.mobileCurrencyToggle .toggleSwitch {
+  width: 36px;
+  height: 20px;
+}
+
+.mobileCurrencyToggle .toggleSlider {
+  width: 36px;
+  height: 20px;
+}
+
+.mobileCurrencyToggle .toggleKnob {
+  width: 16px;
+  height: 16px;
+}
+
+.mobileCurrencyToggle .toggleSlider.usdActive .toggleKnob {
+  transform: translateX(16px);
+}
+
+/* Header Actions */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.timeRangeFilter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.filterIcon {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.timeSelect {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Mobile Header */
+.mobileHeaderContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.mobileMenuButton {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.mobileHeaderTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Hover effects */
+.currencyToggle:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.toggleSwitch:hover .toggleSlider {
+  background: #94a3b8;
+}
+
+.toggleSwitch:hover .toggleSlider.usdActive {
+  background: #2563eb;
 }

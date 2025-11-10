@@ -349,10 +349,24 @@ export default function FreelancerAnalyticsPage() {
             </button>
             <h1 className={styles.mobileHeaderTitle}>Analytics</h1>
             <div className={styles.mobileCurrencyToggle}>
-              <button onClick={toggleCurrency} className={styles.currencyBadge}>
-                {getCurrencyIcon()}
-                {getCurrencyLabel()}
-              </button>
+              <div className={styles.currencyToggle}>
+                <span className={`${styles.currencyOption} ${!showUSD ? styles.active : ''}`}>
+                  <FaRupeeSign />
+                  INR
+                </span>
+                <button 
+                  onClick={toggleCurrency} 
+                  className={styles.toggleSwitch}
+                >
+                  <span className={`${styles.toggleSlider} ${showUSD ? styles.usdActive : ''}`}>
+                    <span className={styles.toggleKnob} />
+                  </span>
+                </button>
+                <span className={`${styles.currencyOption} ${showUSD ? styles.active : ''}`}>
+                  <FaDollarSign />
+                  USD
+                </span>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -398,15 +412,28 @@ export default function FreelancerAnalyticsPage() {
               </select>
             </div>
             {!isMobile && (
-              <motion.button
+              <motion.div 
                 className={styles.currencyToggle}
-                onClick={toggleCurrency}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <FaExchangeAlt />
-                {getCurrencyLabel()}
-              </motion.button>
+                <span className={`${styles.currencyOption} ${!showUSD ? styles.active : ''}`}>
+                  <FaRupeeSign />
+                  INR
+                </span>
+                <button 
+                  onClick={toggleCurrency} 
+                  className={styles.toggleSwitch}
+                >
+                  <span className={`${styles.toggleSlider} ${showUSD ? styles.usdActive : ''}`}>
+                    <span className={styles.toggleKnob} />
+                  </span>
+                </button>
+                <span className={`${styles.currencyOption} ${showUSD ? styles.active : ''}`}>
+                  <FaDollarSign />
+                  USD
+                </span>
+              </motion.div>
             )}
           </div>
         </div>

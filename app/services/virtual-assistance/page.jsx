@@ -13,7 +13,65 @@ import CreativeServices from "../../../public/icons/CreativeServices.png";
 import Marketing from "../../../public/icons/Marketing.png";
 import technical from "../../../public/icons/technical-support.png";
 import TickMark from "../../../public/icons/Mark-Tick.png";
-import WhatsApp from '../../whatsapp_icon/page'
+import WhatsApp from "../../whatsapp_icon/page";
+
+// Icons (you can replace these with your actual icons)
+const AdminIcon = () => (
+  <svg
+    width="48"
+    height="48"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#2563eb"
+    strokeWidth="2"
+  >
+    <path d="M12 16s-6-5.686-6-10A6 6 0 0 1 12 2a6 6 0 0 1 6 6c0 4.314-6 10-6 10z" />
+    <path d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+  </svg>
+);
+
+const CreativeIcon = () => (
+  <svg
+    width="48"
+    height="48"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#2563eb"
+    strokeWidth="2"
+  >
+    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+  </svg>
+);
+
+const TechIcon = () => (
+  <svg
+    width="48"
+    height="48"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#2563eb"
+    strokeWidth="2"
+  >
+    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+    <path d="M8 21h8" />
+    <path d="M12 17v4" />
+  </svg>
+);
+
+const MarketingIcon = () => (
+  <svg
+    width="48"
+    height="48"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#2563eb"
+    strokeWidth="2"
+  >
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
+
 const VirtualAssistance = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -24,8 +82,6 @@ const VirtualAssistance = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [activeService, setActiveService] = useState(0);
-  const [error, setError] = useState("");
-  const [successful, setSuccessful] = useState("");
 
   // Animation variants
   const fadeInUp = {
@@ -42,28 +98,9 @@ const VirtualAssistance = () => {
   };
 
   const scaleIn = {
-    initial: { opacity: 0, scale: 0.8 },
+    initial: { opacity: 0, scale: 0.9 },
     animate: { opacity: 1, scale: 1 },
   };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const elements = document.querySelectorAll(`.${styles.fadeInUp}`);
-      elements.forEach((el) => {
-        const position = el.getBoundingClientRect();
-        if (position.top < window.innerHeight * 0.85) {
-          el.classList.add(styles.visible);
-        }
-      });
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -75,7 +112,6 @@ const VirtualAssistance = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccessful("");
     try {
       const res = await fetch("/api/VirtualAssistance", {
         method: "POST",
@@ -94,7 +130,7 @@ const VirtualAssistance = () => {
         });
       }
     } catch (error) {
-      setError("Failed to submit form. Please try again.");
+      console.error("Form submission error:", error);
     }
   };
 
@@ -102,7 +138,7 @@ const VirtualAssistance = () => {
     {
       id: "administrative",
       title: "Administrative Support",
-      icon: WebOne,
+      icon: <AdminIcon />,
       description:
         "Comprehensive administrative assistance to keep your business running smoothly",
       features: [
@@ -117,7 +153,7 @@ const VirtualAssistance = () => {
     {
       id: "creative",
       title: "Creative Services",
-      icon: CreativeServices,
+      icon: <CreativeIcon />,
       description:
         "Creative solutions to enhance your brand and marketing efforts",
       features: [
@@ -132,7 +168,7 @@ const VirtualAssistance = () => {
     {
       id: "technical",
       title: "Technical Support",
-      icon: technical,
+      icon: <TechIcon />,
       description: "Expert technical assistance for your digital needs",
       features: [
         "Website Maintenance",
@@ -146,7 +182,7 @@ const VirtualAssistance = () => {
     {
       id: "marketing",
       title: "Marketing Assistance",
-      icon: Marketing,
+      icon: <MarketingIcon />,
       description: "Strategic marketing support to grow your business",
       features: [
         "Market Research",
@@ -171,8 +207,8 @@ const VirtualAssistance = () => {
         "Basic data entry tasks",
         "Up to 3 social media posts weekly",
         "Email support",
-        "Priority email & chat support",
-        "24/7 priority support",
+        "Basic reporting",
+        "Weekly check-ins",
       ],
       recommended: false,
     },
@@ -187,8 +223,8 @@ const VirtualAssistance = () => {
         "Content creation",
         "Social media management",
         "Basic graphic design",
-        "Priority email & chat support",
-        "24/7 priority support",
+        "Priority support",
+        "Detailed analytics",
       ],
       recommended: true,
     },
@@ -204,7 +240,7 @@ const VirtualAssistance = () => {
         "SEO optimization",
         "Market research",
         "Dedicated account manager",
-        "24/7 priority support",
+        "Custom solutions",
       ],
       recommended: false,
     },
@@ -214,22 +250,22 @@ const VirtualAssistance = () => {
     {
       step: 1,
       title: "Consultation",
-      description: "We discuss your needs and requirements",
+      description: "We discuss your needs and requirements in detail",
     },
     {
       step: 2,
       title: "Matching",
-      description: "We match you with the perfect virtual assistant",
+      description: "We match you with the perfect virtual assistant specialist",
     },
     {
       step: 3,
       title: "Onboarding",
-      description: "We set up systems and processes for collaboration",
+      description: "We set up systems and processes for seamless collaboration",
     },
     {
       step: 4,
       title: "Execution",
-      description: "Your virtual assistant starts delivering value",
+      description: "Your virtual assistant starts delivering immediate value",
     },
   ];
 
@@ -237,7 +273,7 @@ const VirtualAssistance = () => {
     <>
       <Head>
         <title>
-          Professional Virtual Assistance Services | Your Business Support
+          Professional Virtual Assistance Services | Scale Your Business
         </title>
         <meta
           name="description"
@@ -246,65 +282,86 @@ const VirtualAssistance = () => {
       </Head>
       <Nav />
       <WhatsApp />
+
       <div className={styles.container}>
         {/* Hero Section */}
         <section className={styles.hero}>
           <div className={styles.heroContent}>
-            <motion.h1
-              className={styles.heroTitle}
+            <motion.div
+              className={styles.heroText}
               initial="initial"
               animate="animate"
               variants={fadeInUp}
               transition={{ duration: 0.8 }}
             >
-              Professional Virtual Assistance Services
-            </motion.h1>
-            <motion.p
-              className={styles.heroDescription}
-              initial="initial"
-              animate="animate"
-              variants={fadeInUp}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              Scale your business with expert virtual assistants handling
-              administrative, creative, technical, and marketing tasks.
-            </motion.p>
-            <motion.div
-              className={styles.heroCta}
-              initial="initial"
-              animate="animate"
-              variants={fadeInUp}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              <Link href="/register" className={styles.ctaButton}>
-                Get Started Today
-              </Link>
-              <a href="#service">
-                <button className={styles.secondaryButton}>
+              <motion.h1 className={styles.heroTitle} variants={fadeInUp}>
+                Professional Virtual Assistance Services
+              </motion.h1>
+              <motion.p
+                className={styles.heroDescription}
+                variants={fadeInUp}
+                transition={{ delay: 0.2 }}
+              >
+                Scale your business with expert virtual assistants handling
+                administrative, creative, technical, and marketing tasks. Focus
+                on growth while we handle the rest.
+              </motion.p>
+              <motion.div
+                className={styles.heroCta}
+                variants={fadeInUp}
+                transition={{ delay: 0.4 }}
+              >
+                <Link href="/register" className={styles.ctaButton}>
+                  Get Started Today
+                </Link>
+                <Link href="#services" className={styles.secondaryButton}>
                   View Services
-                </button>
-              </a>
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              className={styles.heroGraphics}
+              initial={{ opacity: 0, x: 60 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.3 }}
+            >
+              <div className={styles.graphicCard}>
+                <div className={styles.graphicIcon}>
+                  <AdminIcon />
+                </div>
+                <h4>Administrative</h4>
+              </div>
+              <div className={styles.graphicCard}>
+                <div className={styles.graphicIcon}>
+                  <CreativeIcon />
+                </div>
+                <h4>Creative</h4>
+              </div>
+              <div className={styles.graphicCard}>
+                <div className={styles.graphicIcon}>
+                  <TechIcon />
+                </div>
+                <h4>Technical</h4>
+              </div>
+              <div className={styles.graphicCard}>
+                <div className={styles.graphicIcon}>
+                  <MarketingIcon />
+                </div>
+                <h4>Marketing</h4>
+              </div>
             </motion.div>
           </div>
-          <motion.div
-            className={styles.graphicElement}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.3 }}
-          >
-            <Image src={Assistance} alt="Virtual Assistance" priority />
-          </motion.div>
         </section>
 
         {/* Services Section */}
-        <section className={styles.services}>
+        <section className={styles.services} id="services">
           <div className={styles.sectionHeader}>
             <motion.h2
               className={styles.sectionTitle}
               initial="initial"
               whileInView="animate"
               variants={fadeInUp}
-              id="service"
               viewport={{ once: true }}
             >
               Our Virtual Assistance Services
@@ -317,7 +374,7 @@ const VirtualAssistance = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              Comprehensive support for all your business needs
+              Comprehensive support solutions tailored to your business needs
             </motion.p>
           </div>
 
@@ -331,16 +388,15 @@ const VirtualAssistance = () => {
             {services.map((service, index) => (
               <motion.div
                 key={service.id}
-                className={`${styles.serviceCard} ${styles.fadeInUp}`}
+                className={styles.serviceCard}
                 variants={scaleIn}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ y: -8 }}
                 transition={{ type: "spring", stiffness: 300 }}
-                onMouseEnter={() => setActiveService(index)}
               >
-                <div className={styles.serviceIcon}>
-                  <Image src={service.icon} alt={service.title} />
+                <div className={styles.serviceHeader}>
+                  <div className={styles.serviceIcon}>{service.icon}</div>
+                  <h3 className={styles.serviceTitle}>{service.title}</h3>
                 </div>
-                <h3 className={styles.serviceTitle}>{service.title}</h3>
                 <p className={styles.serviceDescription}>
                   {service.description}
                 </p>
@@ -352,23 +408,40 @@ const VirtualAssistance = () => {
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.1 }}
+                      viewport={{ once: true }}
                     >
-                      <div className={styles.TickMark}>
-                        <Image src={TickMark} alt="✓" />
-                        <p>{feature}</p>
+                      <div className={styles.featureItem}>
+                        <div className={styles.tickMark}>
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#059669"
+                            strokeWidth="3"
+                          >
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        </div>
+                        <span>{feature}</span>
                       </div>
                     </motion.li>
                   ))}
                 </ul>
-                <Link href="/register" className={styles.serviceButton}>
-                  Get Started
-                </Link>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link href="/register" className={styles.serviceButton}>
+                    Start This Service
+                  </Link>
+                </motion.div>
               </motion.div>
             ))}
           </motion.div>
         </section>
 
-        {/* How It Works */}
+        {/* Process Section */}
         <section className={styles.process}>
           <div className={styles.sectionHeader}>
             <motion.h2
@@ -378,7 +451,7 @@ const VirtualAssistance = () => {
               variants={fadeInUp}
               viewport={{ once: true }}
             >
-              How Our Service Works
+              How It Works
             </motion.h2>
             <motion.p
               className={styles.sectionSubtitle}
@@ -388,7 +461,8 @@ const VirtualAssistance = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              Simple process to get you started with your virtual assistant
+              Get started with your dedicated virtual assistant in 4 simple
+              steps
             </motion.p>
           </div>
 
@@ -402,14 +476,14 @@ const VirtualAssistance = () => {
             {processSteps.map((step, index) => (
               <motion.div
                 key={index}
-                className={`${styles.processStep} ${styles.fadeInUp}`}
+                className={styles.processStep}
                 variants={scaleIn}
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
                   className={styles.stepNumber}
                   whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.6 }}
                 >
                   {step.step}
                 </motion.div>
@@ -440,7 +514,7 @@ const VirtualAssistance = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              Choose the plan that works best for your business needs
+              Choose the perfect plan for your business needs
             </motion.p>
           </div>
 
@@ -454,112 +528,122 @@ const VirtualAssistance = () => {
             {plans.map((plan, index) => (
               <motion.div
                 key={index}
-                className={`${styles.planCard} ${styles.fadeInUp} ${
+                className={`${styles.planCard} ${
                   plan.recommended ? styles.recommended : ""
                 }`}
                 variants={scaleIn}
-                whileHover={{ scale: 1.03 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                whileHover={{ y: -5 }}
               >
                 {plan.recommended && (
-                  <motion.div
-                    className={styles.recommendedBadge}
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    Most Popular
-                  </motion.div>
+                  <div className={styles.recommendedBadge}>Most Popular</div>
                 )}
-                <h3 className={styles.planName}>{plan.name}</h3>
-                <div className={styles.planPrice}>
-                  <span className={styles.price}>{plan.price}</span>
-                  <span className={styles.period}>/{plan.period}</span>
+                <div className={styles.planHeader}>
+                  <h3 className={styles.planName}>{plan.name}</h3>
+                  <div className={styles.planPrice}>
+                    <span className={styles.price}>{plan.price}</span>
+                    <span className={styles.period}>/{plan.period}</span>
+                  </div>
+                  <p className={styles.planDescription}>{plan.description}</p>
                 </div>
-                <p className={styles.planDescription}>{plan.description}</p>
                 <ul className={styles.planFeatures}>
                   {plan.features.map((feature, i) => (
-                    <motion.li
-                      key={i}
-                      className={styles.planFeature}
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ delay: i * 0.1 }}
-                    >
-                      <div className={styles.TickMark}>
-                        <Image src={TickMark} alt="✓" />
-                        {feature}
+                    <li key={i} className={styles.planFeature}>
+                      <div className={styles.featureItem}>
+                        <div className={styles.tickMark}>
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#059669"
+                            strokeWidth="3"
+                          >
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        </div>
+                        <span>{feature}</span>
                       </div>
-                    </motion.li>
+                    </li>
                   ))}
                 </ul>
-                <Link
-                  href="/register"
-                  className={
-                    plan.recommended
-                      ? styles.primaryButton
-                      : styles.secondaryButton
-                  }
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  Get Started
-                </Link>
+                  <Link
+                    href="/register"
+                    className={
+                      plan.recommended
+                        ? styles.primaryButton
+                        : styles.secondaryButton
+                    }
+                  >
+                    Get Started
+                  </Link>
+                </motion.div>
               </motion.div>
             ))}
           </motion.div>
         </section>
 
-        {/* Contact Form */}
+        {/* Contact Section */}
         <section className={styles.contact}>
           <div className={styles.contactContainer}>
-            <div className={styles.contactContent}>
-              <motion.h2
-                className={styles.contactTitle}
-                initial="initial"
-                whileInView="animate"
-                variants={fadeInUp}
-                viewport={{ once: true }}
-              >
-                Ready to Get Started?
-              </motion.h2>
-              <motion.p
-                className={styles.contactDescription}
-                initial="initial"
-                whileInView="animate"
-                variants={fadeInUp}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-              >
-                Fill out the form and our team will contact you to discuss your
-                virtual assistance needs
-              </motion.p>
+            <motion.div
+              className={styles.contactContent}
+              initial="initial"
+              whileInView="animate"
+              variants={fadeInUp}
+              viewport={{ once: true }}
+            >
+              <h2 className={styles.contactTitle}>
+                Ready to Scale Your Business?
+              </h2>
+              <p className={styles.contactDescription}>
+                Let us handle the tasks so you can focus on growth. Get started
+                with a professional virtual assistant today.
+              </p>
+              <div className={styles.contactBenefits}>
+                <div className={styles.benefitItem}>
+                  <div className={styles.benefitIcon}>✓</div>
+                  <span>No setup fees or long-term contracts</span>
+                </div>
+                <div className={styles.benefitItem}>
+                  <div className={styles.benefitIcon}>✓</div>
+                  <span>Dedicated account manager</span>
+                </div>
+                <div className={styles.benefitItem}>
+                  <div className={styles.benefitIcon}>✓</div>
+                  <span>24/7 customer support</span>
+                </div>
+              </div>
+            </motion.div>
 
+            <motion.div
+              className={styles.contactFormContainer}
+              initial="initial"
+              whileInView="animate"
+              variants={fadeInUp}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
               {isSubmitted ? (
                 <motion.div
                   className={styles.successMessage}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
                 >
+                  <div className={styles.successIcon}>✓</div>
                   <h3>Thank You!</h3>
                   <p>
-                    Your inquiry has been received. We'll contact you shortly to
-                    discuss your virtual assistance needs.
+                    We've received your inquiry and will contact you within 24
+                    hours.
                   </p>
                 </motion.div>
               ) : (
-                <motion.form
-                  className={styles.contactForm}
-                  onSubmit={handleSubmit}
-                  initial="initial"
-                  whileInView="animate"
-                  variants={fadeInUp}
-                  viewport={{ once: true }}
-                >
+                <form className={styles.contactForm} onSubmit={handleSubmit}>
                   <div className={styles.formRow}>
-                    <motion.div
-                      className={styles.formGroup}
-                      variants={fadeInUp}
-                    >
+                    <div className={styles.formGroup}>
                       <label htmlFor="name">Full Name *</label>
                       <input
                         type="text"
@@ -568,13 +652,10 @@ const VirtualAssistance = () => {
                         value={formData.name}
                         onChange={handleChange}
                         required
+                        className={styles.formInput}
                       />
-                    </motion.div>
-                    <motion.div
-                      className={styles.formGroup}
-                      variants={fadeInUp}
-                      transition={{ delay: 0.1 }}
-                    >
+                    </div>
+                    <div className={styles.formGroup}>
                       <label htmlFor="email">Email Address *</label>
                       <input
                         type="email"
@@ -583,16 +664,13 @@ const VirtualAssistance = () => {
                         value={formData.email}
                         onChange={handleChange}
                         required
+                        className={styles.formInput}
                       />
-                    </motion.div>
+                    </div>
                   </div>
 
                   <div className={styles.formRow}>
-                    <motion.div
-                      className={styles.formGroup}
-                      variants={fadeInUp}
-                      transition={{ delay: 0.2 }}
-                    >
+                    <div className={styles.formGroup}>
                       <label htmlFor="phone">Phone Number</label>
                       <input
                         type="tel"
@@ -600,19 +678,17 @@ const VirtualAssistance = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        className={styles.formInput}
                       />
-                    </motion.div>
-                    <motion.div
-                      className={styles.formGroup}
-                      variants={fadeInUp}
-                      transition={{ delay: 0.3 }}
-                    >
+                    </div>
+                    <div className={styles.formGroup}>
                       <label htmlFor="service">Service Interest *</label>
                       <select
                         name="service"
                         value={formData.service}
                         onChange={handleChange}
                         required
+                        className={styles.formInput}
                       >
                         <option value="">Select a service</option>
                         <option value="administrative">
@@ -622,14 +698,10 @@ const VirtualAssistance = () => {
                         <option value="technical">Technical Support</option>
                         <option value="marketing">Marketing Assistance</option>
                       </select>
-                    </motion.div>
+                    </div>
                   </div>
 
-                  <motion.div
-                    className={styles.formGroup}
-                    variants={fadeInUp}
-                    transition={{ delay: 0.4 }}
-                  >
+                  <div className={styles.formGroup}>
                     <label htmlFor="message">Your Requirements *</label>
                     <textarea
                       id="message"
@@ -638,8 +710,10 @@ const VirtualAssistance = () => {
                       value={formData.message}
                       onChange={handleChange}
                       required
-                    ></textarea>
-                  </motion.div>
+                      className={styles.formTextarea}
+                      placeholder="Tell us about your business needs..."
+                    />
+                  </div>
 
                   <motion.button
                     type="submit"
@@ -649,11 +723,12 @@ const VirtualAssistance = () => {
                   >
                     Get Started Now
                   </motion.button>
-                </motion.form>
+                </form>
               )}
-            </div>
+            </motion.div>
           </div>
         </section>
+
         <Footer />
       </div>
     </>

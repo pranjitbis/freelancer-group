@@ -26,6 +26,8 @@ import {
   FaIdCard,
   FaReceipt,
   FaDownload,
+  FaPhone,
+  FaEnvelope,
 } from "react-icons/fa";
 import styles from "./FreelancerProfile.module.css";
 
@@ -45,8 +47,10 @@ export default function FreelancerProfilePage() {
 
   // Form state
   const [formData, setFormData] = useState({
-    title: "",
+    name: "",
+    email: "",
     phoneNumber: "",
+    title: "",
     bio: "",
     skills: "",
     experience: "",
@@ -80,6 +84,12 @@ export default function FreelancerProfilePage() {
         const data = await response.json();
         if (data.success && data.user) {
           setCurrentUser(data.user);
+          // Set name and email from user data
+          setFormData(prev => ({
+            ...prev,
+            name: data.user.name || "",
+            email: data.user.email || ""
+          }));
         } else {
           router.push("/auth/login");
         }
@@ -106,7 +116,11 @@ export default function FreelancerProfilePage() {
         if (data.success) {
           setProfile(data.profile);
           if (data.profile) {
-            setFormData({
+            setFormData(prev => ({
+              ...prev,
+              name: currentUser.name || "",
+              email: currentUser.email || "",
+              phoneNumber: data.profile.phoneNumber || "",
               title: data.profile.title || "",
               bio: data.profile.bio || "",
               skills: data.profile.skills || "",
@@ -122,7 +136,7 @@ export default function FreelancerProfilePage() {
               available: data.profile.available !== false,
               panNumber: data.profile.panNumber || "",
               gstNumber: data.profile.gstNumber || "",
-            });
+            }));
 
             if (data.profile.avatar || data.profile.user?.avatar) {
               setProfileImage(data.profile.avatar || data.profile.user.avatar);
@@ -157,6 +171,7 @@ export default function FreelancerProfilePage() {
     try {
       const submitData = {
         userId: currentUser.id,
+        name: formData.name,
         phoneNumber: formData.phoneNumber,
         title: formData.title || null,
         bio: formData.bio || null,
@@ -194,6 +209,10 @@ export default function FreelancerProfilePage() {
       if (response.ok) {
         setSuccess("Profile updated successfully!");
         setProfile(data.profile);
+        // Update current user with new name
+        if (data.user) {
+          setCurrentUser(prev => ({ ...prev, name: data.user.name }));
+        }
         await fetchProfile();
       } else {
         setError(data.error || "Failed to update profile");
@@ -427,6 +446,7 @@ export default function FreelancerProfilePage() {
   const calculateProfileCompletion = () => {
     let completed = 0;
     const fields = [
+      formData.name,
       formData.title,
       formData.bio,
       formData.skills,
@@ -633,24 +653,63 @@ export default function FreelancerProfilePage() {
                 </div>
               </div>
 
-              {/* Professional Title */}
+              {/* Personal Information */}
               <div className={styles.formGroup}>
-                <label htmlFor="phone">
-                  <FaBriefcase /> Phone Number
+                <label htmlFor="name">
+                  <FaUser /> Full Name
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  placeholder="Enter your full name"
+                  className={styles.formInput}
+                  required
+                />
+                <div className={styles.helpText}>
+                  Your full name as you want clients to see it
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="email">
+                  <FaEnvelope /> Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  placeholder="your.email@example.com"
+                  className={styles.formInput}
+                  disabled
+                />
+                <div className={styles.helpText}>
+                  Email cannot be changed from profile
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="phone">
+                  <FaPhone /> Phone Number
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
                   value={formData.phoneNumber}
                   onChange={(e) =>
                     handleInputChange("phoneNumber", e.target.value)
                   }
-                  placeholder="Please enter the phone number"
+                  placeholder="+1 234 567 8900"
                   className={styles.formInput}
                 />
                 <div className={styles.helpText}>
-                  Your professional headline (appears in search results)
+                  Your contact number for client communications
                 </div>
               </div>
+
+              {/* Professional Title */}
               <div className={styles.formGroup}>
                 <label htmlFor="title">
                   <FaBriefcase /> Professional Title
@@ -1036,13 +1095,13 @@ export default function FreelancerProfilePage() {
                     />
                   ) : (
                     <div className={styles.previewAvatarPlaceholder}>
-                      {currentUser?.name?.charAt(0).toUpperCase() || "U"}
+                      {formData.name?.charAt(0).toUpperCase() || "U"}
                     </div>
                   )}
                 </div>
                 <div className={styles.previewInfo}>
                   <h4>{formData.title || "Your Professional Title"}</h4>
-                  <p>{currentUser?.name || "User"}</p>
+                  <p>{formData.name || "Your Name"}</p>
                   {formData.location && (
                     <div className={styles.previewLocation}>
                       <FaMapMarkerAlt />
@@ -1137,6 +1196,7 @@ export default function FreelancerProfilePage() {
               <div className={styles.strengthTips}>
                 <p>Complete your profile to get more visibility:</p>
                 <ul>
+                  {!formData.name && <li>Add your full name</li>}
                   {!formData.title && <li>Add a professional title</li>}
                   {!formData.bio && <li>Write a compelling bio</li>}
                   {!formData.skills && <li>Add your skills</li>}
