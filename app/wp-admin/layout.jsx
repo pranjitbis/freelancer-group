@@ -20,7 +20,7 @@ import { FcAssistant } from "react-icons/fc";
 import { MdDashboard } from "react-icons/md";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-
+import { SiSentry } from "react-icons/si";
 export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -80,6 +80,11 @@ export default function AdminLayout({ children }) {
       path: "/wp-admin/virtual-assistance",
       icon: <FcAssistant />,
       label: "Virtual Assistance",
+    },
+    {
+      path: "/wp-admin/manual-project-entry",
+      icon: <SiSentry />,
+      label: "Manual Project Entry",
     },
     {
       path: "/wp-admin/jop-application",
