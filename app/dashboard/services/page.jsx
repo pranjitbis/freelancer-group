@@ -718,7 +718,6 @@ export default function ServicesPage() {
         <div className={styles.container}>
           <div className={styles.heroContent}>
             <div className={styles.logoSection}>
-              <img src="/logo/logo.png" alt="Aroliya" className={styles.logo} />
               <div className={styles.heroText}>
                 <h1>Professional Services</h1>
                 <p>

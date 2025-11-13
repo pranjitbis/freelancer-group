@@ -1,0 +1,116 @@
+.unauthorizedContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.unauthorizedContent {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.errorIcon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.message {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.reasonsList {
+  text-align: left;
+  color: #6b7280;
+  margin-bottom: 32px;
+  padding-left: 20px;
+}
+
+.reasonsList li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.loginButton {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.loginButton:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.homeButton {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.homeButton:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.redirectMessage {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .unauthorizedContent {
+    padding: 24px;
+    margin: 20px;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .loginButton,
+  .homeButton {
+    width: 100%;
+  }
+}
