@@ -32,6 +32,8 @@ import {
   FaChartLine,
   FaDatabase,
   FaRocket,
+  FaPlus,
+  FaMinus,
 } from "react-icons/fa";
 import styles from "./AdminProposals.module.css";
 
@@ -478,16 +480,6 @@ export default function AdminProposalsPage() {
             <span className={styles.statLabel}>Conversion Rate</span>
           </div>
         </div>
-
-        <div className={styles.stat}>
-          <div className={styles.statIcon} style={{ background: "#8b5cf6" }}>
-            <FaMoneyBillWave />
-          </div>
-          <div className={styles.statContent}>
-            <span className={styles.statNumber}>${stats.averageBidAmount}</span>
-            <span className={styles.statLabel}>Avg. Bid Amount</span>
-          </div>
-        </div>
       </motion.div>
 
       {/* Additional Platform Stats */}
@@ -819,12 +811,7 @@ export default function AdminProposalsPage() {
                   {stats.completedProjects}
                 </span>
               </div>
-              <div className={styles.summaryItem}>
-                <span className={styles.summaryLabel}>Conversion Rate:</span>
-                <span className={styles.summaryValue}>
-                  {stats.conversionRate}%
-                </span>
-              </div>
+  
               <div className={styles.summaryItem}>
                 <span className={styles.summaryLabel}>
                   Total Connects Used:

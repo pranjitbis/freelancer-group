@@ -32,7 +32,7 @@ import { FiChevronRight, FiChevronLeft, FiEye, FiCopy } from "react-icons/fi";
 import styles from "./ManualProjectEntry.module.css";
 
 export default function ManualProjectEntry() {
-  const [activeTab, setActiveTab] = useState("create"); // "create", "history", "edit"
+  const [activeTab, setActiveTab] = useState("create");
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -41,11 +41,12 @@ export default function ManualProjectEntry() {
   const [editingProject, setEditingProject] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [viewingProject, setViewingProject] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
   const router = useRouter();
 
   // Form state
   const [formData, setFormData] = useState({
-    // Step 1: Project Details
     title: "",
     description: "",
     category: "",
@@ -55,16 +56,12 @@ export default function ManualProjectEntry() {
     budget: "",
     timeframe: "",
     experienceLevel: "intermediate",
-
-    // Step 2: Client Information
     clientName: "",
     clientEmail: "",
     clientPhone: "",
     clientCompany: "",
     clientLocation: "",
     clientWebsite: "",
-
-    // Step 3: Additional Requirements
     attachments: [],
     specialRequirements: "",
     visibility: "public",
@@ -133,7 +130,7 @@ export default function ManualProjectEntry() {
     }));
   };
 
-  // Handle skills input
+  // Handle skills input - FIXED
   const handleSkillsChange = (e) => {
     const skillsArray = e.target.value
       .split(",")
@@ -267,7 +264,7 @@ export default function ManualProjectEntry() {
 
       setSuccess(true);
       resetForm();
-      fetchProjects(); // Refresh the projects list
+      fetchProjects();
     } catch (error) {
       console.error("Error creating project:", error);
       setError(error.message || "Failed to create project");
@@ -291,7 +288,11 @@ export default function ManualProjectEntry() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            ...formData,
+            budget: parseFloat(formData.budget),
+            timeframe: parseInt(formData.timeframe),
+          }),
         }
       );
 
@@ -338,58 +339,100 @@ export default function ManualProjectEntry() {
     }
   };
 
-  // Edit project
+  // Edit project - FIXED JSON.parse issue
   const handleEdit = (project) => {
     setEditingProject(project);
+
+    // Safely parse skills - handle both string and array formats
+    let skillsArray = [];
+    if (typeof project.skills === "string") {
+      try {
+        skillsArray = JSON.parse(project.skills);
+      } catch (e) {
+        // If parsing fails, try comma separation
+        skillsArray = project.skills
+          .split(",")
+          .map((skill) => skill.trim())
+          .filter((skill) => skill);
+      }
+    } else if (Array.isArray(project.skills)) {
+      skillsArray = project.skills;
+    }
+
     setFormData({
-      title: project.title,
-      description: project.description,
-      category: project.category,
+      title: project.title || "",
+      description: project.description || "",
+      category: project.category || "",
       subcategory: project.subcategory || "",
-      skills: JSON.parse(project.skills || "[]"),
-      budgetType: project.budgetType.toLowerCase(),
-      budget: project.budget.toString(),
-      timeframe: project.timeframe.toString(),
-      experienceLevel: project.experienceLevel.toLowerCase(),
-      clientName: project.clientName,
-      clientEmail: project.clientEmail,
+      skills: skillsArray,
+      budgetType: (project.budgetType || "fixed").toLowerCase(),
+      budget: project.budget?.toString() || "",
+      timeframe: project.timeframe?.toString() || "",
+      experienceLevel: (
+        project.experienceLevel || "intermediate"
+      ).toLowerCase(),
+      clientName: project.clientName || "",
+      clientEmail: project.clientEmail || "",
       clientPhone: project.clientPhone || "",
       clientCompany: project.clientCompany || "",
       clientLocation: project.clientLocation || "",
       clientWebsite: project.clientWebsite || "",
       attachments: [],
       specialRequirements: project.specialRequirements || "",
-      visibility: project.visibility.toLowerCase(),
-      urgent: project.urgent,
-      featured: project.featured,
+      visibility: (project.visibility || "public").toLowerCase(),
+      urgent: Boolean(project.urgent),
+      featured: Boolean(project.featured),
     });
     setActiveTab("create");
     setCurrentStep(1);
   };
 
-  // Duplicate project
+  // View project details
+  const handleView = (project) => {
+    setViewingProject(project);
+    setShowViewModal(true);
+  };
+
+  // Duplicate project - FIXED JSON.parse issue
   const handleDuplicate = (project) => {
+    // Safely parse skills for duplication
+    let skillsArray = [];
+    if (typeof project.skills === "string") {
+      try {
+        skillsArray = JSON.parse(project.skills);
+      } catch (e) {
+        skillsArray = project.skills
+          .split(",")
+          .map((skill) => skill.trim())
+          .filter((skill) => skill);
+      }
+    } else if (Array.isArray(project.skills)) {
+      skillsArray = project.skills;
+    }
+
     setFormData({
-      title: `${project.title} (Copy)`,
-      description: project.description,
-      category: project.category,
+      title: `${project.title} (Copy)` || "New Project (Copy)",
+      description: project.description || "",
+      category: project.category || "",
       subcategory: project.subcategory || "",
-      skills: JSON.parse(project.skills || "[]"),
-      budgetType: project.budgetType.toLowerCase(),
-      budget: project.budget.toString(),
-      timeframe: project.timeframe.toString(),
-      experienceLevel: project.experienceLevel.toLowerCase(),
-      clientName: project.clientName,
-      clientEmail: project.clientEmail,
+      skills: skillsArray,
+      budgetType: (project.budgetType || "fixed").toLowerCase(),
+      budget: project.budget?.toString() || "",
+      timeframe: project.timeframe?.toString() || "",
+      experienceLevel: (
+        project.experienceLevel || "intermediate"
+      ).toLowerCase(),
+      clientName: project.clientName || "",
+      clientEmail: project.clientEmail || "",
       clientPhone: project.clientPhone || "",
       clientCompany: project.clientCompany || "",
       clientLocation: project.clientLocation || "",
       clientWebsite: project.clientWebsite || "",
       attachments: [],
       specialRequirements: project.specialRequirements || "",
-      visibility: project.visibility.toLowerCase(),
-      urgent: project.urgent,
-      featured: project.featured,
+      visibility: (project.visibility || "public").toLowerCase(),
+      urgent: Boolean(project.urgent),
+      featured: Boolean(project.featured),
     });
     setActiveTab("create");
     setCurrentStep(1);
@@ -1087,10 +1130,10 @@ export default function ManualProjectEntry() {
                     <div className={styles.projectStatus}>
                       <span
                         className={`${styles.statusBadge} ${
-                          styles[project.status?.toLowerCase()]
+                          styles[project.status?.toLowerCase() || "active"]
                         }`}
                       >
-                        {project.status}
+                        {project.status || "Active"}
                       </span>
                     </div>
                   </div>
@@ -1123,37 +1166,41 @@ export default function ManualProjectEntry() {
                   </div>
 
                   <div className={styles.projectActions}>
-                    <div className={styles.compactActions}>
+                    <div className={styles.actionButtons}>
                       <button
                         onClick={() => handleEdit(project)}
-                        className={`${styles.compactBtn} ${styles.compactEdit}`}
+                        className={`${styles.actionBtn} ${styles.editBtn}`}
                         title="Edit Project"
                       >
                         <FaEdit />
+                        <span>Edit</span>
                       </button>
 
                       <button
                         onClick={() => handleView(project)}
-                        className={`${styles.compactBtn} ${styles.compactView}`}
+                        className={`${styles.actionBtn} ${styles.viewBtn}`}
                         title="View Details"
                       >
                         <FiEye />
+                        <span>View</span>
                       </button>
 
                       <button
                         onClick={() => handleDuplicate(project)}
-                        className={`${styles.compactBtn} ${styles.compactDuplicate}`}
+                        className={`${styles.actionBtn} ${styles.duplicateBtn}`}
                         title="Duplicate Project"
                       >
                         <FiCopy />
+                        <span>Duplicate</span>
                       </button>
 
                       <button
                         onClick={() => handleDelete(project.id)}
-                        className={`${styles.compactBtn} ${styles.compactDelete}`}
+                        className={`${styles.actionBtn} ${styles.deleteBtn}`}
                         title="Delete Project"
                       >
                         <FaTrash />
+                        <span>Delete</span>
                       </button>
                     </div>
                   </div>
@@ -1161,6 +1208,154 @@ export default function ManualProjectEntry() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* View Project Modal */}
+      {showViewModal && viewingProject && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowViewModal(false)}
+        >
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle}>Project Details</h2>
+              <button
+                className={styles.modalClose}
+                onClick={() => setShowViewModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className={styles.modalContent}>
+              <div className={styles.modalSection}>
+                <h3 className={styles.modalSectionTitle}>
+                  <FaFileAlt />
+                  Project Information
+                </h3>
+                <div className={styles.modalGrid}>
+                  <div className={styles.modalField}>
+                    <label>Title:</label>
+                    <span>{viewingProject.title}</span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Description:</label>
+                    <span>{viewingProject.description}</span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Category:</label>
+                    <span>{viewingProject.category}</span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Subcategory:</label>
+                    <span>{viewingProject.subcategory || "N/A"}</span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Budget:</label>
+                    <span>
+                      ${viewingProject.budget} ({viewingProject.budgetType})
+                    </span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Timeline:</label>
+                    <span>{viewingProject.timeframe} days</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.modalSection}>
+                <h3 className={styles.modalSectionTitle}>
+                  <FaUser />
+                  Client Information
+                </h3>
+                <div className={styles.modalGrid}>
+                  <div className={styles.modalField}>
+                    <label>Name:</label>
+                    <span>{viewingProject.clientName}</span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Email:</label>
+                    <span>{viewingProject.clientEmail}</span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Phone:</label>
+                    <span>{viewingProject.clientPhone || "N/A"}</span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Company:</label>
+                    <span>{viewingProject.clientCompany || "N/A"}</span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Location:</label>
+                    <span>{viewingProject.clientLocation || "N/A"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {viewingProject.specialRequirements && (
+                <div className={styles.modalSection}>
+                  <h3 className={styles.modalSectionTitle}>
+                    <FaBriefcase />
+                    Special Requirements
+                  </h3>
+                  <div className={styles.modalField}>
+                    <span>{viewingProject.specialRequirements}</span>
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.modalSection}>
+                <h3 className={styles.modalSectionTitle}>
+                  <FaTag />
+                  Project Settings
+                </h3>
+                <div className={styles.modalGrid}>
+                  <div className={styles.modalField}>
+                    <label>Status:</label>
+                    <span
+                      className={`${styles.statusBadge} ${
+                        styles[viewingProject.status?.toLowerCase() || "active"]
+                      }`}
+                    >
+                      {viewingProject.status || "Active"}
+                    </span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Visibility:</label>
+                    <span>{viewingProject.visibility}</span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Urgent:</label>
+                    <span>{viewingProject.urgent ? "Yes" : "No"}</span>
+                  </div>
+                  <div className={styles.modalField}>
+                    <label>Featured:</label>
+                    <span>{viewingProject.featured ? "Yes" : "No"}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button
+                onClick={() => {
+                  setShowViewModal(false);
+                  handleEdit(viewingProject);
+                }}
+                className={styles.editButton}
+              >
+                <FaEdit />
+                Edit Project
+              </button>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className={styles.closeButton}
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
