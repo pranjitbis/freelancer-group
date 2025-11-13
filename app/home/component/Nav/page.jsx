@@ -18,6 +18,7 @@ export default function Nav() {
   const [dropdown, setDropdown] = useState({
     services: false,
     freelancer: false,
+    learnMore: false,
   });
   const [user, setUser] = useState(null);
   const [userName, setUserName] = useState("");
@@ -78,6 +79,14 @@ export default function Nav() {
   const toggleDropdown = (name) =>
     setDropdown((prev) => ({ ...prev, [name]: !prev[name] }));
 
+  const closeAllDropdowns = () => {
+    setDropdown({
+      services: false,
+      freelancer: false,
+      learnMore: false,
+    });
+  };
+
   const getDashboardLink = () => {
     if (!userRole) return "/login";
 
@@ -93,7 +102,10 @@ export default function Nav() {
     }
   };
 
-  const closeMenu = () => setIsOpen(false);
+  const closeMenu = () => {
+    setIsOpen(false);
+    closeAllDropdowns();
+  };
 
   return (
     <header className={`${styles.header} ${isFixed ? styles.fixed : ""}`}>
@@ -147,6 +159,7 @@ export default function Nav() {
               Our Team
             </Link>
           </li>
+          
           {/* 💼 Services Dropdown */}
           <li className={styles.dropdown}>
             <button onClick={() => toggleDropdown("services")}>
@@ -175,11 +188,14 @@ export default function Nav() {
               </div>
             )}
           </li>
+          
           <li>
             <Link href="/find-work" onClick={closeMenu}>
               Find Work
             </Link>
           </li>
+          
+          {/* 👥 Freelancer Hub Dropdown */}
           <li className={styles.dropdown}>
             <button onClick={() => toggleDropdown("freelancer")}>
               Freelancer Hub <IoChevronDown />
@@ -196,7 +212,33 @@ export default function Nav() {
                   href="/services/freelancer-hub/hire-freelancer"
                   onClick={closeMenu}
                 >
-                  Hire freelancer
+                  Hire Freelancer
+                </Link>
+              </div>
+            )}
+          </li>
+
+          {/* 📚 Learn More Dropdown */}
+          <li className={styles.dropdown}>
+            <button onClick={() => toggleDropdown("learnMore")}>
+              Learn More <IoChevronDown />
+            </button>
+            {dropdown.learnMore && (
+              <div className={styles.dropdownMenu}>
+                <Link href="/learn-more/how-its-work" onClick={closeMenu}>
+                  How It Works
+                </Link>
+                <Link href="/learn-more/terms-and-conditions" onClick={closeMenu}>
+                  Terms & Conditions
+                </Link>
+                <Link href="/learn-more/privacy-policy" onClick={closeMenu}>
+                  Privacy Policy
+                </Link>
+                <Link href="/learn-more/faq" onClick={closeMenu}>
+                  FAQ
+                </Link>
+                <Link href="/learn-more/blog" onClick={closeMenu}>
+                  Blog
                 </Link>
               </div>
             )}

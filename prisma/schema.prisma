@@ -1,4 +1,3 @@
-// schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -50,6 +49,32 @@ enum TransactionType {
   CONNECT_USAGE
 }
 
+// ADD THESE MISSING ENUMS
+enum BudgetType {
+  FIXED
+  HOURLY
+}
+
+enum ExperienceLevel {
+  ENTRY
+  INTERMEDIATE
+  EXPERT
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+  INVITE_ONLY
+}
+
+enum ProjectStatus {
+  DRAFT
+  ACTIVE
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
 /*
   Models
 */
@@ -96,6 +121,24 @@ model User {
   receivedContactRequests ContactRequest[] @relation("FreelancerContactRequests")
   sentProposals          ClientToFreelancerProposal[] @relation("ClientProposals")
   receivedProposals      ClientToFreelancerProposal[] @relation("FreelancerProposals")
+}
+
+model ContactSubmission {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  service   String
+  message   String
+  type      String   @default("website_contact")
+  source    String?
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model ContactRequest {
@@ -518,6 +561,7 @@ model ConnectTransaction {
   
   @@map("connect_transactions")
 }
+
 model OTP {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -584,7 +628,7 @@ model ProfileImage {
 
 model PlanSubscription {
   id           Int      @id @default(autoincrement())
-  planName     String?  // ✅ FIXED: Made optional to prevent migration error
+  planName     String?
   amount       Float
   currency     String   @default("USD")
   status       String   @default("active")
@@ -610,4 +654,51 @@ model SavedJob {
   job       JobPost  @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
   @@unique([userId, jobId])
+}
+
+// MANUAL PROJECT MODELS - FIXED FOR MYSQL
+model ManualProject {
+  id                  Int       @id @default(autoincrement())
+  title               String
+  description         String    @db.Text
+  category            String
+  subcategory         String?
+  skills              String    @db.Text // Store as JSON string for MySQL
+  budgetType          BudgetType
+  budget              Float
+  timeframe           Int
+  experienceLevel     ExperienceLevel
+  clientName          String
+  clientEmail         String
+  clientPhone         String?
+  clientCompany       String?
+  clientLocation      String?
+  clientWebsite       String?
+  specialRequirements String?   @db.Text
+  visibility          Visibility
+  urgent              Boolean   @default(false)
+  featured            Boolean   @default(false)
+  status              ProjectStatus @default(ACTIVE)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  attachments ManualProjectAttachment[]
+  
+  @@map("manual_projects")
+}
+
+model ManualProjectAttachment {
+  id        Int      @id @default(autoincrement())
+  name      String
+  size      Int
+  type      String
+  url       String
+  projectId Int
+  
+  createdAt DateTime @default(now())
+  
+  project ManualProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@map("manual_project_attachments")
 }

@@ -275,7 +275,7 @@
 
 /* Features Section */
 .features {
-  padding: 100px 0;
+  padding: 70px 0;
   background: #ffffff;
 }
 
@@ -342,7 +342,7 @@
 
 /* Industries Section */
 .industries {
-  padding: 100px 0;
+  padding: 70px 0;
   background: #f8fafc;
 }
 
@@ -413,7 +413,7 @@
 
 /* Pricing Section */
 .pricing {
-  padding: 100px 0;
+  padding: 70px 0;
   background: #ffffff;
 }
 
@@ -534,7 +534,7 @@
 
 /* Testimonials Section */
 .testimonials {
-  padding: 100px 0;
+  padding: 70px 0;
   background: #f8fafc;
 }
 
@@ -602,7 +602,7 @@
 
 /* CTA Section */
 .cta {
-  padding: 100px 0;
+  padding: 70px 0;
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: white;
 }
@@ -939,14 +939,21 @@
 
 /* Optional: Add a subtle gradient background to testimonials */
 .testimonials::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(5, 150, 105, 0.03) 0%, transparent 50%);
+  background: radial-gradient(
+      circle at 10% 20%,
+      rgba(37, 99, 235, 0.03) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(5, 150, 105, 0.03) 0%,
+      transparent 50%
+    );
   pointer-events: none;
 }

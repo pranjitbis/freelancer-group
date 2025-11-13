@@ -13,6 +13,7 @@ import {
   FaLinkedin,
   FaTwitter,
   FaFacebook,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import { MdEmail, MdSupportAgent, MdBusinessCenter } from "react-icons/md";
 import { FcServices, FcBusinessContact } from "react-icons/fc";
@@ -32,6 +33,7 @@ export default function Contact() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,20 +41,42 @@ export default function Contact() {
       ...prevState,
       [name]: value,
     }));
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Form submitted:", formData);
-      setIsSubmitted(true);
-      setIsLoading(false);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          service: formData.service,
+          message: formData.message,
+          type: "website_contact", // To distinguish from freelancer contact requests
+          source: "website_contact_page",
+          timestamp: new Date().toISOString(),
+        }),
+      });
 
-      // Reset form after submission
-      setTimeout(() => {
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send message");
+      }
+
+      if (data.success) {
+        setIsSubmitted(true);
+        // Reset form
         setFormData({
           name: "",
           email: "",
@@ -60,9 +84,18 @@ export default function Contact() {
           service: "",
           message: "",
         });
-        setIsSubmitted(false);
-      }, 5000);
-    }, 2000);
+
+        // Optional: Send to analytics or CRM
+        console.log("Contact form submitted successfully:", data);
+      } else {
+        throw new Error(data.error || "Failed to send message");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setError(error.message || "Failed to send message. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const services = [
@@ -224,6 +257,23 @@ export default function Contact() {
                   </p>
                 </div>
 
+                {error && (
+                  <motion.div
+                    className={styles.errorMessage}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    <FaExclamationTriangle className={styles.errorIcon} />
+                    <span>{error}</span>
+                    <button
+                      onClick={() => setError("")}
+                      className={styles.errorClose}
+                    >
+                      ×
+                    </button>
+                  </motion.div>
+                )}
+
                 {isSubmitted ? (
                   <motion.div
                     className={styles.successMessage}
@@ -269,6 +319,7 @@ export default function Contact() {
                           required
                           className={styles.formInput}
                           placeholder="Enter your full name"
+                          disabled={isLoading}
                         />
                       </motion.div>
 
@@ -292,6 +343,7 @@ export default function Contact() {
                           required
                           className={styles.formInput}
                           placeholder="Enter your email address"
+                          disabled={isLoading}
                         />
                       </motion.div>
                     </div>
@@ -313,6 +365,7 @@ export default function Contact() {
                           onChange={handleChange}
                           className={styles.formInput}
                           placeholder="Enter your phone number"
+                          disabled={isLoading}
                         />
                       </motion.div>
 
@@ -334,6 +387,7 @@ export default function Contact() {
                           onChange={handleChange}
                           required
                           className={styles.formInput}
+                          disabled={isLoading}
                         >
                           <option value="">Select a service</option>
                           {services.map((service, index) => (
@@ -365,12 +419,15 @@ export default function Contact() {
                         required
                         className={styles.formTextarea}
                         placeholder="Tell us about your project requirements, timeline, and any specific needs..."
+                        disabled={isLoading}
                       ></textarea>
                     </motion.div>
 
                     <motion.button
                       type="submit"
-                      className={styles.submitButton}
+                      className={`${styles.submitButton} ${
+                        isLoading ? styles.loading : ""
+                      }`}
                       disabled={isLoading}
                       initial={{ opacity: 0 }}
                       whileInView={{ opacity: 1 }}
@@ -390,6 +447,14 @@ export default function Contact() {
                         </>
                       )}
                     </motion.button>
+
+                    <div className={styles.formFooter}>
+                      <p>
+                        <span className={styles.required}>*</span> Required
+                        fields
+                      </p>
+                      <p>We respect your privacy and protect your data</p>
+                    </div>
                   </form>
                 )}
               </motion.div>
@@ -479,6 +544,8 @@ export default function Contact() {
                       className={styles.socialLink}
                       whileHover={{ scale: 1.1, y: -2 }}
                       whileTap={{ scale: 0.95 }}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
                       <FaWhatsapp />
                     </motion.a>
@@ -487,6 +554,8 @@ export default function Contact() {
                       className={styles.socialLink}
                       whileHover={{ scale: 1.1, y: -2 }}
                       whileTap={{ scale: 0.95 }}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
                       <FaLinkedin />
                     </motion.a>
@@ -495,6 +564,8 @@ export default function Contact() {
                       className={styles.socialLink}
                       whileHover={{ scale: 1.1, y: -2 }}
                       whileTap={{ scale: 0.95 }}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
                       <FaTwitter />
                     </motion.a>
@@ -503,13 +574,13 @@ export default function Contact() {
                       className={styles.socialLink}
                       whileHover={{ scale: 1.1, y: -2 }}
                       whileTap={{ scale: 0.95 }}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
                       <FaFacebook />
                     </motion.a>
                   </div>
                 </div>
-
-           
               </motion.div>
             </div>
           </div>

@@ -89,7 +89,7 @@ export default function EnterpriseCTA() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.4 }}
           >
-            <Link href="/contact" className={styles.ctaLink}>
+            <Link href="/contact-us" className={styles.ctaLink}>
               <motion.button
                 className={styles.primaryCta}
                 whileHover={{ scale: 1.05, y: -2 }}

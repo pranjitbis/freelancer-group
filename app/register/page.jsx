@@ -249,6 +249,12 @@ export default function Register() {
       const data = await res.json();
 
       if (res.ok) {
+        // ✅ FIX: Store the complete user data including createdAt in localStorage
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+          console.log("✅ User data stored in localStorage:", data.user);
+        }
+
         setStep("success");
         setMessage("Account created successfully! Redirecting to login...");
 
@@ -276,6 +282,9 @@ export default function Register() {
 
       console.log(`Starting Google registration as: ${selectedUserType}`);
 
+      // ✅ FIX: Store user type in localStorage so Google callback can use it
+      localStorage.setItem("pendingUserType", selectedUserType);
+
       // Redirect to Google OAuth with user type parameter
       window.location.href = `/api/auth/google?userType=${selectedUserType}`;
     } catch (error) {
@@ -290,7 +299,18 @@ export default function Register() {
     setOtp(["", "", "", "", "", ""]);
     setMessage("");
   };
-
+useEffect(() => {
+  // Check for URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const userTypeFromUrl = urlParams.get('userType');
+  
+  if (userTypeFromUrl && ['client', 'freelancer', 'user'].includes(userTypeFromUrl)) {
+    setForm(prev => ({
+      ...prev,
+      userType: userTypeFromUrl
+    }));
+  }
+}, []);
   return (
     <>
       <Nav />

@@ -71,11 +71,11 @@ export default function DashboardLayout({ children }) {
       bgColor: "#f0f9ff",
     },
     {
-      id: "messages",
-      label: "Messages",
-      icon: <FiMessageSquare size={20} />,
-      path: "/freelancer-dashboard/messages",
-      bgColor: "#faf5ff",
+      id: "find-work",
+      label: "Find Work",
+      icon: <FiUser size={20} />,
+      path: "/freelancer-dashboard/find-work",
+      bgColor: "#f0fdf4",
     },
     {
       id: "proposals",
@@ -106,17 +106,17 @@ export default function DashboardLayout({ children }) {
       bgColor: "#fffbeb",
     },
     {
-      id: "profile",
-      label: "Profile",
-      icon: <FiUser size={20} />,
-      path: "/freelancer-dashboard/profile",
-      bgColor: "#f0fdf4",
+      id: "messages",
+      label: "Messages",
+      icon: <FiMessageSquare size={20} />,
+      path: "/freelancer-dashboard/messages",
+      bgColor: "#faf5ff",
     },
     {
-      id: "find-work",
-      label: "Find Work",
-      icon: <FiUser size={20} />,
-      path: "/freelancer-dashboard/find-work",
+      id: "Save-Jobs",
+      label: "Save Jobs",
+      icon: <FaRegSave size={20} />,
+      path: "/freelancer-dashboard/saved-jobs",
       bgColor: "#f0fdf4",
     },
     {
@@ -126,6 +126,15 @@ export default function DashboardLayout({ children }) {
       path: "/freelancer-dashboard/refunds",
       bgColor: "#f0fdf4",
     },
+
+    {
+      id: "profile",
+      label: "Profile",
+      icon: <FiUser size={20} />,
+      path: "/freelancer-dashboard/profile",
+      bgColor: "#f0fdf4",
+    },
+
     {
       id: "Analytics",
       label: "Analytics",
@@ -133,13 +142,7 @@ export default function DashboardLayout({ children }) {
       path: "/freelancer-dashboard/analytics",
       bgColor: "#f0fdf4",
     },
-    {
-      id: "Save-Jobs",
-      label: "Save Jobs",
-      icon: <FaRegSave size={20} />,
-      path: "/freelancer-dashboard/save-jobs",
-      bgColor: "#f0fdf4",
-    },
+
     {
       id: "Support",
       label: "Support",

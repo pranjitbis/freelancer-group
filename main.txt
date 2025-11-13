@@ -1,29 +1,3 @@
-
-
-
-
-///Today//// remove /s/  /saved-job/ 
-
-
-
-/wp-admin/
-
-admin dashbord i scroll then website are showing are scroll like left side menu so you can make are like fix llike using ++++=: position:fix
-
-
-
--   wp-admin -- contact page is not wroking 
-
-//website//
-
-post a project  /// join as client
-
-
-
-
-
-
-
 [term of services]  & [pravice and police]  & [how it work] & [trus and sefty]
 
 project entry [wp-admin]
@@ -33,12 +7,26 @@ project entry [wp-admin]
 
 
 
-Join as client mention:/// explain how it's work
+
+# wp-admin 
+
+1.add in wp-admin add professional icons  
+2.fixed the layout like user are move then stable one postion.:: postion: fixed;
+3.add btn view dasbord like admin are see the freelancer & client dashbord.
+4.menual project upload explain are like data entry type.
 
 
+/user dashbord
+1.make into professional user dashbord like add color and others. 
 
-Join as client // Hire freelancer
+
+/service /2/
+order/3
 
 
-check the client dashbord are showing the invaild date so you can fix the problem
+add box the user dashbord like send the money like field the input field.
 
+add user user dashbord support btn
+
+add profile - add name phone number,
+and logout btn is not working so you can fix the bug.

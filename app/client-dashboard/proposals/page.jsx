@@ -418,13 +418,7 @@ export default function ClientProposalsPage() {
                     </span>
                   </div>
                 )}
-                <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Rating</span>
-                  <div className={styles.rating}>
-                    <FaStar />
-                    <span>4.8</span>
-                  </div>
-                </div>
+           
               </div>
             )}
           </div>
@@ -483,7 +477,7 @@ export default function ClientProposalsPage() {
               ) : (
                 <div className={styles.resumeNotAvailable}>
                   <FaFileAlt className={styles.noResumeIcon} />
-                  <span>No resume uploaded</span>
+                  <span>No attachment uploaded</span>
                 </div>
               )}
             </div>

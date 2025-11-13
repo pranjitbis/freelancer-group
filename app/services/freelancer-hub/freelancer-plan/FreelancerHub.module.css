@@ -880,7 +880,149 @@
   margin-bottom: 4px;
   color: white;
 }
+.currencyToggle {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
 
+.currencyButton {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+}
+.testimonialsSlider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+  position: relative;
+}
+
+.navButton {
+  background: #2563eb;
+  color: white;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.navButton:hover {
+  background: #1d4ed8;
+  transform: scale(1.1);
+}
+
+.testimonialsContainer {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.testimonialsTrack {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.testimonialSlide {
+  flex: 0 0 33.333%;
+  padding: 0 1rem;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.testimonialIndicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.indicator.active {
+  background: #2563eb;
+  transform: scale(1.2);
+}
+
+.indicator:hover {
+  background: #2563eb;
+}
+
+/* Responsive Design for Testimonials */
+@media (max-width: 1024px) {
+  .testimonialSlide {
+    flex: 0 0 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonialsSlider {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .navButton {
+    order: 2;
+    margin-top: 1rem;
+  }
+
+  .testimonialsContainer {
+    order: 1;
+    width: 100%;
+  }
+
+  .testimonialSlide {
+    flex: 0 0 100%;
+    padding: 0 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonialCard {
+    padding: 1.5rem;
+  }
+
+  .testimonialIndicators {
+    gap: 0.5rem;
+  }
+}
+.currencyButton:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.currencyNote {
+  font-size: 0.75rem;
+  color: #64748b;
+}
 .ctaStat span:last-child {
   font-size: 0.875rem;
   color: #cbd5e1;

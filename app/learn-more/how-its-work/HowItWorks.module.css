@@ -1,0 +1,546 @@
+.container {
+  min-height: 100vh;
+  margin: 5rem 0 0;
+  background-color: #ffffff;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  padding: 100px 20px;
+  text-align: center;
+  color: white;
+}
+
+.heroContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+  color: #cbd5e1;
+}
+
+/* Tab Section */
+.tabSection {
+  padding: 60px 20px 0;
+  background: white;
+}
+
+.tabContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tabButtons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 60px;
+}
+
+.tabButton {
+  padding: 16px 32px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tabButton:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.tabButton.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+/* Steps Section */
+.stepsSection {
+  padding: 80px 20px;
+  background: #f8fafc;
+}
+
+.stepsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  justify-items: center; /* centers items horizontally in their grid cell */
+}
+
+.stepsGridBhai {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  justify-items: center; /* centers items horizontally in their grid cell */
+}
+
+.stepsGrid > div:last-of-type {
+  position: relative;
+  left: 115%;
+}
+
+.stepCard {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.stepCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+}
+
+.stepHeader {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.stepIconContainer {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepIcon {
+  font-size: 2rem;
+  color: white;
+}
+
+.stepNumber {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #1e293b;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.stepTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.stepDescription {
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  color: #475569;
+  line-height: 1.5;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.featureItem:last-child {
+  border-bottom: none;
+}
+
+.featureIcon {
+  color: #3b82f6;
+  font-size: 0.875rem;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.connector {
+  position: absolute;
+  top: 50%;
+  right: -20px;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 2px;
+  z-index: 0;
+}
+
+.connectorLine {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  transform-origin: left center;
+}
+
+/* Tips Section */
+.tipsSection {
+  padding: 80px 20px;
+  background: white;
+}
+
+.tipsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tipsHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.tipsTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.tipsSubtitle {
+  font-size: 1.125rem;
+  color: #64748b;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.tipsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 30px;
+}
+
+.tipCard {
+  background: #f8fafc;
+  padding: 30px 25px;
+  border-radius: 16px;
+  border: 4px solid #eeeeee;
+  transition: all 0.3s ease;
+}
+
+.tipCard:hover {
+  background: #f0f9ff;
+  transform: translateY(-3px);
+}
+
+.tipIconWrapper {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tipIcon {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.tipTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+.tipDescription {
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Features Section */
+.featuresSection {
+  padding: 100px 20px;
+  background: #f8fafc;
+}
+
+.featuresContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.featuresHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.featuresTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.featuresSubtitle {
+  font-size: 1.125rem;
+  color: #64748b;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+}
+
+.featureCard {
+  text-align: center;
+  padding: 40px 30px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+}
+
+.featureIconWrapper {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 25px;
+}
+
+.featureMainIcon {
+  font-size: 2rem;
+  color: white;
+}
+
+.featureCardTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.featureCardDescription {
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* CTA Section */
+.ctaSection {
+  padding: 100px 20px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+}
+
+.ctaContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.ctaTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ctaDescription {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ctaButtonPrimary {
+  padding: 16px 40px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ctaButtonPrimary:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+.ctaButtonSecondary {
+  padding: 16px 40px;
+  background: transparent;
+  color: white;
+  border: 2px solid #475569;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ctaButtonSecondary:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .connector {
+    display: none;
+  }
+
+  .stepsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+  .stepsGrid > div:last-of-type {
+    position: relative;
+    left: 55%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 80px 20px;
+  }
+
+  .stepsGrid > div:last-of-type {
+    position: relative;
+    left: 0%;
+  }
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .tabButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tabButton {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .stepsGrid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .stepCard {
+    padding: 30px 20px;
+  }
+
+  .tipsGrid,
+  .featuresGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .ctaButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ctaButtonPrimary,
+  .ctaButtonSecondary {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.125rem;
+  }
+
+  .stepTitle {
+    font-size: 1.375rem;
+  }
+
+  .tipsTitle,
+  .featuresTitle,
+  .ctaTitle {
+    font-size: 2rem;
+  }
+
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+.actives{
+  background-color: red !important;
+}

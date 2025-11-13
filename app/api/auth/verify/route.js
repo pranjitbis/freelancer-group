@@ -4,26 +4,76 @@ import prisma from "../../../../lib/prisma";
 
 export async function GET(request) {
   try {
-    // Get token from cookie
-    const cookieHeader = request.headers.get("cookie");
-    const tokenCookie = cookieHeader
-      ?.split(";")
-      .find((c) => c.trim().startsWith("token="));
-    const token = tokenCookie?.split("=")[1];
+    // Get token from multiple sources (cookie or header)
+    let token;
 
-    if (!token) {
-      return NextResponse.json({ error: "No token provided" }, { status: 401 });
+    // First try to get from cookie
+    const cookieHeader = request.headers.get("cookie");
+    if (cookieHeader) {
+      const tokenCookie = cookieHeader
+        ?.split(";")
+        .find((c) => c.trim().startsWith("token="));
+      token = tokenCookie?.split("=")[1];
     }
 
-    // Verify JWT token
-    const decoded = jwt.verify(
-      token,
-      process.env.NEXTAUTH_SECRET || "your-fallback-secret"
-    );
+    // If not in cookie, try from header
+    if (!token) {
+      token = request.headers.get("x-auth-token");
+    }
+
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No token provided",
+        },
+        { status: 401 }
+      );
+    }
+
+    // Verify JWT token with multiple secret options
+    let decoded;
+    try {
+      const secret =
+        process.env.JWT_SECRET ||
+        process.env.NEXTAUTH_SECRET ||
+        "your-fallback-secret";
+      decoded = jwt.verify(token, secret);
+    } catch (jwtError) {
+      console.error("JWT verification error:", jwtError);
+
+      if (jwtError.name === "JsonWebTokenError") {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Invalid token",
+          },
+          { status: 401 }
+        );
+      }
+
+      if (jwtError.name === "TokenExpiredError") {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Token expired",
+          },
+          { status: 401 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Token verification failed",
+        },
+        { status: 401 }
+      );
+    }
 
     // Get user from database to ensure they still exist and are active
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+      where: { id: parseInt(decoded.userId) },
       select: {
         id: true,
         email: true,
@@ -31,16 +81,26 @@ export async function GET(request) {
         role: true,
         status: true,
         avatar: true,
+        profile: true,
       },
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 401 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "User not found",
+        },
+        { status: 401 }
+      );
     }
 
     if (user.status !== "active") {
       return NextResponse.json(
-        { error: "Account is not active" },
+        {
+          success: false,
+          error: "Account is not active",
+        },
         { status: 401 }
       );
     }
@@ -52,19 +112,14 @@ export async function GET(request) {
       user: user,
     });
   } catch (error) {
-    console.error("❌ Token verification error:", error);
-
-    if (error.name === "JsonWebTokenError") {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-    }
-
-    if (error.name === "TokenExpiredError") {
-      return NextResponse.json({ error: "Token expired" }, { status: 401 });
-    }
+    console.error("❌ Auth verify error:", error);
 
     return NextResponse.json(
-      { error: "Token verification failed" },
-      { status: 401 }
+      {
+        success: false,
+        error: "Authentication failed",
+      },
+      { status: 500 }
     );
   }
 }

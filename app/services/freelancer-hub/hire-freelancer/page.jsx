@@ -529,14 +529,14 @@ const ClientServices = () => {
                 className={styles.heroBadge}
                 variants={itemVariants}
                 whileHover={{ scale: 1.05, rotate: [-1, 1, -1] }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.2 }}
               >
                 <FaAward className={styles.badgeIcon} />
                 Enterprise-Grade Talent Platform
               </motion.div>
 
               <motion.h1 className={styles.heroTitle} variants={itemVariants}>
-                Hire Top Talent —
+                Find Top Freelancers —
                 <motion.span
                   className={styles.accentText}
                   animate={{
@@ -548,7 +548,7 @@ const ClientServices = () => {
                     ease: "easeInOut",
                   }}
                 >
-                  Without Breaking the Bank
+                  Affordable and Reliable
                 </motion.span>
               </motion.h1>
 
@@ -618,6 +618,27 @@ const ClientServices = () => {
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
                     Start Hiring Today
+                    <motion.div
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <FaArrowRight className={styles.buttonIcon} />
+                    </motion.div>
+                  </motion.button>
+                </Link>
+                <Link href="/register">
+                  <motion.button
+                    className={styles.primaryButtonss}
+                    
+                    whileHover={{
+                      scale: 1.05,
+                      y: -2,
+                      boxShadow: "0 10px 25px rgba(59, 130, 246, 0.4)",
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  >
+                    Post A Project
                     <motion.div
                       animate={{ x: [0, 5, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}

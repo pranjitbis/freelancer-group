@@ -1,45 +1,49 @@
-import fs from "fs";
-import path from "path";
+import { NextResponse } from "next/server";
+import { uploadToS3 } from "@/lib/s3-upload";
 
-export const config = {
-  api: {
-    bodyParser: false, // Required for FormData file uploads
-  },
-};
-
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const formData = await req.formData();
+    const formData = await request.formData();
     const file = formData.get("resume");
 
-    if (!file || typeof file.arrayBuffer !== "function") {
-      return new Response(
-        JSON.stringify({ error: "No file uploaded or invalid file" }),
+    if (!file) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    }
+
+    // Validate file type
+    const allowedTypes = [".pdf", ".doc", ".docx"];
+    const fileExtension = "." + file.name.split(".").pop().toLowerCase();
+
+    if (!allowedTypes.includes(fileExtension)) {
+      return NextResponse.json(
+        { error: "Invalid file type. Only PDF, DOC, DOCX files are allowed." },
         { status: 400 }
       );
     }
 
-    const uploadDir = path.join(process.cwd(), "public", "serviceRs");
+    // Validate file size (5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: "File size too large. Maximum size is 5MB." },
+        { status: 400 }
+      );
+    }
 
-    // Ensure folder exists
-    fs.mkdirSync(uploadDir, { recursive: true });
+    // Upload to AWS S3
+    const fileUrl = await uploadToS3(file, "resumes");
 
-    // Convert file to buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
-
-    // Generate unique filename to avoid overwriting
-    const timestamp = Date.now();
-    const safeName = file.name.replace(/\s+/g, "_");
-    const filePath = path.join(uploadDir, `${timestamp}_${safeName}`);
-
-    fs.writeFileSync(filePath, buffer);
-
-    const fileUrl = `/serviceRs/${timestamp}_${safeName}`;
-    return new Response(JSON.stringify({ url: fileUrl }), { status: 200 });
-  } catch (err) {
-    console.error("Upload error:", err);
-    return new Response(JSON.stringify({ error: "File upload failed" }), {
-      status: 500,
+    return NextResponse.json({
+      success: true,
+      url: fileUrl,
+      filename: file.name,
+      size: file.size,
     });
+  } catch (error) {
+    console.error("Resume upload error:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
   }
 }

@@ -624,7 +624,7 @@ const Services = () => {
               Join thousands of developers who trust our platform to build
               amazing software
             </p>
-            <Link href="/register">
+            <Link href="/contact-us">
               {" "}
               <motion.button
                 className={styles.ctaButton}

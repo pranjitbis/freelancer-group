@@ -79,6 +79,15 @@ export async function POST(req) {
         role: userType,
         registrationMethod: "email", // Track as email registration
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        registrationMethod: true,
+        createdAt: true, // ADD THIS LINE
+        updatedAt: true, // ADD THIS LINE
+      },
     });
 
     // Create user profile
@@ -107,6 +116,8 @@ export async function POST(req) {
           email: newUser.email,
           role: newUser.role,
           registrationMethod: newUser.registrationMethod,
+          createdAt: newUser.createdAt, // ADD THIS LINE
+          updatedAt: newUser.updatedAt, // ADD THIS LINE
         },
       }),
       {

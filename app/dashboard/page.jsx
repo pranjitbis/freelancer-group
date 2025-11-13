@@ -12,12 +12,13 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    console.log("Stored user:", storedUser); // Debug
+    console.log("Stored user:", storedUser);
+console.log(user);
 
     if (storedUser) {
       try {
         const userData = JSON.parse(storedUser);
-        console.log("Parsed user data:", userData); // Debug
+        console.log("Parsed user data:", userData);
         setUser(userData);
         setUserRole(userData.role || "user");
       } catch (error) {
@@ -30,12 +31,12 @@ export default function DashboardPage() {
     if (user) {
       fetchData();
     }
-  }, [user, userRole]); // Added userRole to dependencies
+  }, [user, userRole]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      console.log("Fetching data for user:", user); // Debug
+      console.log("Fetching data for user:", user);
 
       if (userRole === "admin") {
         const ordersRes = await fetch("/api/orders");

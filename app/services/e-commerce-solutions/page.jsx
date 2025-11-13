@@ -1,7 +1,7 @@
 "use client";
 
 import Head from "next/head";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import WhatsApp from "../../whatsapp_icon/page";
 import {
   FaShoppingCart,
@@ -28,10 +28,11 @@ import {
   FaStar,
   FaArrowRight,
   FaQuoteLeft,
+  FaExchangeAlt,
 } from "react-icons/fa";
 import Link from "next/link";
 import Footer from "@/app/home/footer/page";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import styles from "./EcommerceSolutions.module.css";
 import Nav from "@/app/home/component/Nav/page";
@@ -67,8 +68,12 @@ const slideInRight = {
   animate: { opacity: 1, x: 0 },
 };
 
-// Testimonials Grid Component
-const TestimonialsGrid = () => {
+// Testimonials Carousel Component
+const TestimonialsCarousel = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const intervalRef = useRef(null);
+
   const testimonials = [
     {
       id: 1,
@@ -136,6 +141,21 @@ const TestimonialsGrid = () => {
     },
   ];
 
+  // Auto-play functionality
+  useEffect(() => {
+    if (isAutoPlaying) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+      }, 3000); // Change testimonial every 3 seconds
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isAutoPlaying, testimonials.length]);
+
   const RatingStars = ({ rating }) => (
     <div className={styles.ratingStars}>
       {[...Array(5)].map((_, i) => (
@@ -148,43 +168,108 @@ const TestimonialsGrid = () => {
   );
 
   return (
-    <div className={styles.testimonialsGrid}>
-      {testimonials.map((testimonial, index) => (
-        <motion.div
-          key={testimonial.id}
-          className={styles.testimonialCard}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: index * 0.1 }}
-          whileHover={{ y: -5, transition: { duration: 0.3 } }}
-        >
-          <div className={styles.testimonialContent}>
-            <div className={styles.quoteIcon}>
-              <FaQuoteLeft />
-            </div>
-            <RatingStars rating={testimonial.rating} />
-            <p className={styles.testimonialText}>"{testimonial.text}"</p>
-            <div className={styles.testimonialAuthor}>
-              <div className={styles.authorInfo}>
-                <strong>{testimonial.author}</strong>
-                <span>{testimonial.company}</span>
-                <div className={styles.industryTag}>{testimonial.industry}</div>
+    <div className={styles.carouselContainer}>
+      <div className={styles.sectionHeader}>
+        <h2>Client Success Stories</h2>
+        <p>
+          See what our satisfied clients say about their experience with Aroliya
+        </p>
+      </div>
+
+      {/* Single Testimonial Display */}
+      <div className={styles.carouselWrapper}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            className={styles.testimonialCard}
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.9 }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ y: -5, transition: { duration: 0.3 } }}
+          >
+            <div className={styles.testimonialContent}>
+              <div className={styles.quoteIcon}>
+                <FaQuoteLeft />
+              </div>
+              <RatingStars rating={testimonials[currentIndex].rating} />
+              <p className={styles.testimonialText}>
+                "{testimonials[currentIndex].text}"
+              </p>
+              <div className={styles.testimonialAuthor}>
+                <div className={styles.authorInfo}>
+                  <strong>{testimonials[currentIndex].author}</strong>
+                  <span>{testimonials[currentIndex].company}</span>
+                  <div className={styles.industryTag}>
+                    {testimonials[currentIndex].industry}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
-      ))}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Progress Indicators */}
+      <div className={styles.progressContainer}>
+        <div className={styles.progressBar}>
+          <motion.div
+            className={styles.progressFill}
+            key={currentIndex}
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 3, ease: "linear" }}
+          />
+        </div>
+        <div className={styles.carouselIndicators}>
+          {testimonials.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                setCurrentIndex(index);
+                setIsAutoPlaying(false);
+                setTimeout(() => setIsAutoPlaying(true), 5000);
+              }}
+              className={`${styles.indicator} ${
+                index === currentIndex ? styles.indicatorActive : ""
+              }`}
+              aria-label={`Go to testimonial ${index + 1}`}
+            />
+          ))}
+        </div>
+        <div className={styles.slideCounter}>
+          {currentIndex + 1} / {testimonials.length}
+        </div>
+      </div>
     </div>
   );
 };
 
 const EcommerceSolutions = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [currency, setCurrency] = useState("INR"); // 'INR' or 'USD'
+  const [exchangeRate, setExchangeRate] = useState(83); // Default exchange rate
 
   useEffect(() => {
     setIsVisible(true);
+    // You can fetch real exchange rate from an API here
+    // fetch('https://api.exchangerate-api.com/v4/latest/INR')
+    //   .then(response => response.json())
+    //   .then(data => setExchangeRate(data.rates.USD));
   }, []);
+
+  // Currency conversion function
+  const convertPrice = (inrPrice) => {
+    if (currency === "USD") {
+      const usdAmount = parseFloat(inrPrice.replace('₹', '').replace(',', '')) / exchangeRate;
+      return `$${usdAmount.toFixed(2)}`;
+    }
+    return inrPrice;
+  };
+
+  const toggleCurrency = () => {
+    setCurrency(currency === "INR" ? "USD" : "INR");
+  };
 
   const features = [
     {
@@ -233,7 +318,7 @@ const EcommerceSolutions = () => {
         { text: "Mobile-Responsive Design", included: true },
         { text: "Basic SEO Tools", included: false },
         { text: "Abandoned Cart Recovery", included: false },
-        { text: "Inventory & Order Management", included: true },
+        { text: "Inventory & Order Management", included: false },
         { text: "Automatic Backups", included: false },
       ],
       button: "Get Started",
@@ -252,7 +337,8 @@ const EcommerceSolutions = () => {
         { text: "Mobile-Responsive Design", included: true },
         { text: "Advanced SEO Tools", included: true },
         { text: "Abandoned Cart Recovery", included: true },
-        { text: "Up to 3 Admin Accounts", included: true },
+        { text: "Up to 3 Admin Accounts", included: false },
+        { text: "Inventory & Order Management", included: false },
         { text: "Automatic Backups (Daily)", included: false },
       ],
       button: "Get Started",
@@ -453,6 +539,26 @@ const EcommerceSolutions = () => {
       </Head>
       <Nav />
       <WhatsApp />
+
+      {/* Currency Converter Button */}
+      <motion.div
+        className={styles.currencyConverter}
+        initial={{ opacity: 0, x: 100 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 1 }}
+      >
+        <button
+          onClick={toggleCurrency}
+          className={styles.currencyButton}
+          title={`Switch to ${currency === "INR" ? "USD" : "INR"}`}
+        >
+          <FaExchangeAlt className={styles.currencyIcon} />
+          <span>{currency === "INR" ? "₹ INR" : "$ USD"}</span>
+        </button>
+        <div className={styles.currencyNote}>
+          Prices shown in {currency}
+        </div>
+      </motion.div>
 
       {/* Hero Section */}
       <section className={styles.hero}>
@@ -716,7 +822,9 @@ const EcommerceSolutions = () => {
                 <div className={styles.pricingHeader}>
                   <h3>{plan.name}</h3>
                   <div className={styles.price}>
-                    <span className={styles.priceAmount}>{plan.price}</span>
+                    <span className={styles.priceAmount}>
+                      {convertPrice(plan.price)}
+                    </span>
                     <span className={styles.pricePeriod}>{plan.period}</span>
                   </div>
                 </div>
@@ -769,14 +877,7 @@ const EcommerceSolutions = () => {
       {/* Testimonials Section */}
       <section className={styles.testimonials}>
         <div className={styles.container}>
-          <div className={styles.sectionHeader}>
-            <h2>Client Success Stories</h2>
-            <p>
-              See what our satisfied clients say about their experience with
-              Aroliya
-            </p>
-          </div>
-          <TestimonialsGrid />
+          <TestimonialsCarousel />
         </div>
       </section>
 

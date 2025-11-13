@@ -567,62 +567,269 @@
   font-size: 14px;
 }
 
-/* Testimonials Section */
-.testimonials {
-  padding: 100px 0;
-  background: #f1f5f9;
+/* Testimonials Carousel Styles */
+.carouselContainer {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 0;
 }
 
-.testimonialsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 30px;
+.carouselWrapper {
+  position: relative;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .testimonialCard {
   background: white;
-  padding: 40px 30px;
-  border-radius: 12px;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
 }
 
-.testimonialCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+.testimonialContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 }
 
-.rating {
+.quoteIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  margin-bottom: 20px;
+}
+
+.ratingStars {
   display: flex;
   gap: 4px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  justify-content: center;
 }
 
 .starFilled {
-  color: #f59e0b;
-  font-size: 16px;
+  color: #fbbf24;
+  font-size: 18px;
 }
 
 .starEmpty {
-  color: #d1d5db;
-  font-size: 16px;
+  color: #e5e7eb;
+  font-size: 18px;
 }
 
 .testimonialText {
+  font-size: 18px;
+  line-height: 1.7;
+  color: #4a5568;
+  margin-bottom: 30px;
   font-style: italic;
-  color: #475569;
-  margin-bottom: 20px;
-  line-height: 1.6;
-  font-size: 16px;
+  font-weight: 500;
 }
 
 .testimonialAuthor {
-  color: #1e293b;
-  font-weight: 600;
-  font-size: 15px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 25px;
+  width: 100%;
 }
 
+.authorInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.authorInfo strong {
+  font-size: 20px;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.authorInfo span {
+  font-size: 16px;
+  color: #718096;
+}
+
+.industryTag {
+  background: #edf2f7;
+  color: #4a5568;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+/* Progress Bar */
+.progressContainer {
+  margin-top: 40px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px;
+}
+
+.carouselIndicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: #cbd5e0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicatorActive {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transform: scale(1.2);
+}
+
+.indicator:hover {
+  background: #667eea;
+  transform: scale(1.1);
+}
+
+.slideCounter {
+  text-align: center;
+  font-size: 14px;
+  color: #718096;
+  font-weight: 500;
+}
+
+/* Currency Converter Styles */
+.currencyConverter {
+  position: fixed;
+  top: 120px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.currencyButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.currencyButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.currencyIcon {
+  font-size: 16px;
+}
+
+.currencyNote {
+  font-size: 12px;
+  color: #666;
+  background: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .carouselContainer {
+    padding: 20px 0;
+  }
+
+  .testimonialCard {
+    padding: 30px 20px;
+    margin: 0 15px;
+  }
+
+  .testimonialText {
+    font-size: 16px;
+  }
+
+  .quoteIcon {
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .currencyConverter {
+    top: 100px;
+    right: 10px;
+  }
+  
+  .currencyButton {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  
+  .currencyNote {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonialCard {
+    padding: 25px 15px;
+  }
+
+  .testimonialText {
+    font-size: 15px;
+  }
+
+  .authorInfo strong {
+    font-size: 18px;
+  }
+
+  .authorInfo span {
+    font-size: 14px;
+  }
+}
 /* CTA Section */
 .cta {
   padding: 100px 0;
@@ -978,4 +1185,66 @@
 .testimonialCard:hover .ratingStars {
   transform: translateX(5px);
   transition: transform 0.3s ease;
+}
+/* Currency Converter Styles */
+.currencyConverter {
+  position: fixed;
+  top: 120px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.currencyButton {
+  background: black;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.currencyButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.currencyIcon {
+  font-size: 16px;
+}
+
+.currencyNote {
+  font-size: 12px;
+  color: #666;
+  background: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .currencyConverter {
+    top: 100px;
+    right: 10px;
+  }
+  
+  .currencyButton {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  
+  .currencyNote {
+    font-size: 10px;
+  }
 }

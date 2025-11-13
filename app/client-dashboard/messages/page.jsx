@@ -743,33 +743,6 @@ export default function ClientMessagesPage() {
                 </p>
               </div>
             </div>
-            <div className={styles.walletSection}>
-              <div className={styles.walletInfo}>
-                <FaWallet className={styles.walletIcon} />
-                <div className={styles.walletBalanceContainer}>
-                  <div className={styles.walletBalancePrimary}>
-                    {formatCurrency(
-                      getWalletBalanceInDisplayCurrency(),
-                      displayCurrency
-                    )}
-                  </div>
-                  <div className={styles.walletBalanceSecondary}>
-                    {formatCurrency(
-                      getWalletBalanceInOtherCurrency(),
-                      displayCurrency === "INR" ? "USD" : "INR"
-                    )}
-                  </div>
-                </div>
-              </div>
-              <button
-                className={styles.currencyToggle}
-                onClick={toggleDisplayCurrency}
-                title={`Switch to ${displayCurrency === "INR" ? "USD" : "INR"}`}
-              >
-                <FaExchangeAlt />
-              </button>
-              {isLoadingRates && <FiRefreshCw className={styles.refreshIcon} />}
-            </div>
           </motion.div>
 
           {/* Error Display */}

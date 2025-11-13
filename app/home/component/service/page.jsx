@@ -17,6 +17,7 @@ const Services = () => {
       ],
       buttonText: "Join Platform",
       stat: "5K+ Freelancers",
+      link: "/register?userType=freelancer",
     },
     {
       image: "/icons/online-form-filling.png",
@@ -29,7 +30,7 @@ const Services = () => {
       ],
       buttonText: "Start Submission",
       stat: "10K+ Forms",
-      link: "/services/form-filling"
+      link: "/services/form-filling",
     },
     {
       image: "/icons/virtual-assistant.png",

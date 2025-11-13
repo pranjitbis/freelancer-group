@@ -31,6 +31,8 @@ import {
   FaPaintBrush,
   FaMobile,
   FaCloud,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
 import Nav from "../../../home/component/Nav/page.jsx";
 import Footer from "@/app/home/footer/page";
@@ -38,7 +40,13 @@ import Footer from "@/app/home/footer/page";
 const FreelancerHub = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(null);
+  const [currency, setCurrency] = useState("INR");
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const heroRef = useRef(null);
+  const testimonialIntervalRef = useRef(null);
+
+  // Exchange rate (approximate)
+  const exchangeRate = 0.012; // 1 INR = 0.012 USD
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -47,8 +55,69 @@ const FreelancerHub = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Auto-slide testimonials
+  useEffect(() => {
+    testimonialIntervalRef.current = setInterval(() => {
+      setCurrentTestimonialIndex((prev) => 
+        prev === testimonials.length - 1 ? 0 : prev + 1
+      );
+    }, 4000);
+
+    return () => {
+      if (testimonialIntervalRef.current) {
+        clearInterval(testimonialIntervalRef.current);
+      }
+    };
+  }, []);
+
+  const toggleCurrency = () => {
+    setCurrency(currency === "INR" ? "USD" : "INR");
+  };
+
+  const convertPrice = (inrPrice) => {
+    if (currency === "USD") {
+      const numericPrice = parseFloat(inrPrice.replace('₹', '').replace(',', ''));
+      if (!isNaN(numericPrice)) {
+        const usdAmount = numericPrice * exchangeRate;
+        return `$${usdAmount.toFixed(0)}`;
+      }
+      return inrPrice;
+    }
+    return inrPrice;
+  };
+
   const toggleFAQ = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
+  };
+
+  const nextTestimonial = () => {
+    setCurrentTestimonialIndex((prev) => 
+      prev === testimonials.length - 1 ? 0 : prev + 1
+    );
+    // Reset auto-slide timer
+    if (testimonialIntervalRef.current) {
+      clearInterval(testimonialIntervalRef.current);
+      testimonialIntervalRef.current = setInterval(() => {
+        setCurrentTestimonialIndex((prev) => 
+          prev === testimonials.length - 1 ? 0 : prev + 1
+        );
+      }, 4000);
+    }
+  };
+
+  const prevTestimonial = () => {
+    setCurrentTestimonialIndex((prev) => 
+      prev === 0 ? testimonials.length - 1 : prev - 1
+    );
+    // Reset auto-slide timer
+    if (testimonialIntervalRef.current) {
+      clearInterval(testimonialIntervalRef.current);
+      testimonialIntervalRef.current = setInterval(() => {
+        setCurrentTestimonialIndex((prev) => 
+          prev === testimonials.length - 1 ? 0 : prev + 1
+        );
+      }, 4000);
+    }
   };
 
   // 3D floating elements data
@@ -355,6 +424,87 @@ const FreelancerHub = () => {
       avatar: "SJ",
       projects: 35,
     },
+    // Additional Indian testimonials
+    {
+      rating: 5,
+      text: "As a freelance writer from Pune, this platform helped me double my income in just 3 months!",
+      author: "Priya Deshpande",
+      role: "Content Writer",
+      avatar: "PD",
+      projects: 28,
+    },
+    {
+      rating: 5,
+      text: "The Pro plan's priority support helped me land my first international client from the US.",
+      author: "Rahul Verma",
+      role: "Mobile App Developer",
+      avatar: "RV",
+      projects: 45,
+    },
+    {
+      rating: 5,
+      text: "From Bangalore to global clients - this platform transformed my freelance business completely.",
+      author: "Arjun Kumar",
+      role: "DevOps Engineer",
+      avatar: "AK",
+      projects: 52,
+    },
+    {
+      rating: 5,
+      text: "The community support and learning resources helped me transition from corporate to freelance successfully.",
+      author: "Neha Patel",
+      role: "Digital Marketing Specialist",
+      avatar: "NP",
+      projects: 33,
+    },
+    {
+      rating: 5,
+      text: "Secured 15 long-term clients within 6 months. Best decision of my freelance career!",
+      author: "Sanjay Gupta",
+      role: "SEO Consultant",
+      avatar: "SG",
+      projects: 40,
+    },
+    {
+      rating: 5,
+      text: "The escrow payment system gives me peace of mind while working with new clients.",
+      author: "Meera Iyer",
+      role: "Graphic Designer",
+      avatar: "MI",
+      projects: 27,
+    },
+    {
+      rating: 5,
+      text: "Started as a beginner, now I'm mentoring others. This platform grows with you!",
+      author: "Karan Malhotra",
+      role: "Full Stack Developer",
+      avatar: "KM",
+      projects: 48,
+    },
+    {
+      rating: 5,
+      text: "The skill certification helped me stand out and command higher rates.",
+      author: "Pooja Reddy",
+      role: "UI/UX Designer",
+      avatar: "PR",
+      projects: 31,
+    },
+    {
+      rating: 5,
+      text: "Perfect for Indian freelancers looking to work with international clients.",
+      author: "Aditya Joshi",
+      role: "WordPress Developer",
+      avatar: "AJ",
+      projects: 36,
+    },
+    {
+      rating: 5,
+      text: "The mobile app keeps me connected with clients even when I'm traveling.",
+      author: "Divya Sharma",
+      role: "Social Media Manager",
+      avatar: "DS",
+      projects: 29,
+    },
   ];
 
   const stats = [
@@ -540,19 +690,19 @@ const FreelancerHub = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.9 }}
               >
-                <motion.button
-                  className={styles.primaryButton}
-                  whileHover={{
-                    scale: 1.05,
-                    boxShadow: "0 10px 30px rgba(37, 99, 235, 0.3)",
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Link href="/register">
+                <Link href="/register?userType=freelancer">
+                  <motion.button
+                    className={styles.primaryButton}
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: "0 10px 30px rgba(37, 99, 235, 0.3)",
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                  >
                     <span>Start Your Journey Free</span>
-                  </Link>
-                  <FaArrowRight className={styles.buttonIcon} />
-                </motion.button>
+                    <FaArrowRight className={styles.buttonIcon} />
+                  </motion.button>
+                </Link>
               </motion.div>
             </div>
 
@@ -654,7 +804,7 @@ const FreelancerHub = () => {
           </motion.div>
         </section>
 
-        {/* Rest of your existing sections remain the same */}
+        {/* Features Section */}
         <motion.section
           className={styles.featuresSection}
           variants={containerVariants}
@@ -690,7 +840,7 @@ const FreelancerHub = () => {
           </div>
         </motion.section>
 
-        {/* Pricing Section */}
+        {/* Pricing Section with Currency Converter */}
         <motion.section
           className={styles.pricingSection}
           variants={containerVariants}
@@ -701,6 +851,16 @@ const FreelancerHub = () => {
               Flexible plans that grow with your business. No hidden fees, no
               surprises.
             </p>
+            
+            {/* Currency Toggle */}
+            <div className={styles.currencyToggle}>
+              <button onClick={toggleCurrency} className={styles.currencyButton}>
+                Show Prices in {currency === "INR" ? "USD" : "INR"}
+              </button>
+              <span className={styles.currencyNote}>
+                Currently showing prices in {currency}
+              </span>
+            </div>
           </motion.div>
 
           <div className={styles.plansGrid}>
@@ -720,7 +880,9 @@ const FreelancerHub = () => {
                 <div className={styles.planHeader}>
                   <h3>{plan.name}</h3>
                   <div className={styles.planPrice}>
-                    <span className={styles.price}>{plan.price}</span>
+                    <span className={styles.price}>
+                      {convertPrice(plan.price)}
+                    </span>
                     <span className={styles.period}>/{plan.period}</span>
                   </div>
                   <p className={styles.planDescription}>{plan.bestFor}</p>
@@ -771,7 +933,7 @@ const FreelancerHub = () => {
           </div>
         </motion.section>
 
-        {/* Testimonials Section */}
+        {/* Enhanced Testimonials Section with Auto-slide */}
         <motion.section
           className={styles.testimonialsSection}
           variants={containerVariants}
@@ -784,31 +946,61 @@ const FreelancerHub = () => {
             </p>
           </motion.div>
 
-          <div className={styles.testimonialsGrid}>
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                className={styles.testimonialCard}
-                variants={cardVariants}
-                whileHover="hover"
+          <div className={styles.testimonialsSlider}>
+            <button className={styles.navButton} onClick={prevTestimonial}>
+              <FaChevronLeft />
+            </button>
+
+            <div className={styles.testimonialsContainer}>
+              <div
+                className={styles.testimonialsTrack}
+                style={{
+                  transform: `translateX(-${currentTestimonialIndex * (100 / 3)}%)`,
+                }}
               >
-                <div className={styles.testimonialHeader}>
-                  <div className={styles.avatar}>{testimonial.avatar}</div>
-                  <div className={styles.authorInfo}>
-                    <h4>{testimonial.author}</h4>
-                    <span>{testimonial.role}</span>
-                    <div className={styles.projectCount}>
-                      {testimonial.projects} projects completed
-                    </div>
+                {testimonials.map((testimonial, index) => (
+                  <div key={index} className={styles.testimonialSlide}>
+                    <motion.div
+                      className={styles.testimonialCard}
+                      variants={cardVariants}
+                      whileHover="hover"
+                    >
+                      <div className={styles.testimonialHeader}>
+                        <div className={styles.avatar}>{testimonial.avatar}</div>
+                        <div className={styles.authorInfo}>
+                          <h4>{testimonial.author}</h4>
+                          <span>{testimonial.role}</span>
+                          <div className={styles.projectCount}>
+                            {testimonial.projects} projects completed
+                          </div>
+                        </div>
+                      </div>
+                      <div className={styles.testimonialRating}>
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <FaStar key={i} className={styles.starIcon} />
+                        ))}
+                      </div>
+                      <p className={styles.testimonialText}>"{testimonial.text}"</p>
+                    </motion.div>
                   </div>
-                </div>
-                <div className={styles.testimonialRating}>
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <FaStar key={i} className={styles.starIcon} />
-                  ))}
-                </div>
-                <p className={styles.testimonialText}>"{testimonial.text}"</p>
-              </motion.div>
+                ))}
+              </div>
+            </div>
+
+            <button className={styles.navButton} onClick={nextTestimonial}>
+              <FaChevronRight />
+            </button>
+          </div>
+
+          <div className={styles.testimonialIndicators}>
+            {testimonials.slice(0, 6).map((_, index) => (
+              <button
+                key={index}
+                className={`${styles.indicator} ${
+                  index === currentTestimonialIndex % 6 ? styles.active : ""
+                }`}
+                onClick={() => setCurrentTestimonialIndex(index)}
+              />
             ))}
           </div>
         </motion.section>
@@ -833,7 +1025,6 @@ const FreelancerHub = () => {
               </p>
               <div className={styles.ctaButtons}>
                 <Link href="/register">
-                  {" "}
                   <motion.button
                     className={styles.ctaPrimary}
                     whileHover={{ scale: 1.02 }}

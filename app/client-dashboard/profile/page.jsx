@@ -25,24 +25,31 @@ export default function ProfilePage() {
   const [message, setMessage] = useState({ type: "", text: "" });
   const router = useRouter();
 
-  // Safe date formatting function
-  const formatMemberSince = (dateString) => {
-    if (!dateString) return "Not available";
+  // Enhanced date formatting function
+  const formatMemberSince = (dateInput) => {
+    if (!dateInput) return "Not available";
 
     try {
-      const date = new Date(dateString);
-
-      // Check if date is valid
-      if (isNaN(date.getTime())) {
-        // If direct parsing fails, try alternative formats
-        const timestamp = Date.parse(dateString);
-        if (!isNaN(timestamp)) {
-          const validDate = new Date(timestamp);
-          return validDate.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-          });
+      let date;
+      
+      if (typeof dateInput === 'string') {
+        date = new Date(dateInput);
+        
+        if (isNaN(date.getTime())) {
+          const timestamp = Date.parse(dateInput);
+          if (!isNaN(timestamp)) {
+            date = new Date(timestamp);
+          } else {
+            return "Not available";
+          }
         }
+      } else if (dateInput instanceof Date) {
+        date = dateInput;
+      } else {
+        return "Not available";
+      }
+
+      if (isNaN(date.getTime())) {
         return "Not available";
       }
 
@@ -56,28 +63,73 @@ export default function ProfilePage() {
     }
   };
 
+  // Fetch user data from API to ensure we have createdAt
+  const fetchUserData = async (userId) => {
+    try {
+      const response = await fetch(`/api/client/profile?userId=${userId}`);
+      const result = await response.json();
+      
+      if (result.success) {
+        return result.user;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      return null;
+    }
+  };
+
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        const userObj = JSON.parse(userData);
-        setUser(userObj);
-        setFormData({
-          name: userObj.name || "",
-          email: userObj.email || "",
-          businessName: userObj.businessName || "",
-          avatar: null,
-        });
-        if (userObj.avatar) {
-          setPreviewUrl(userObj.avatar);
+    const initializeUser = async () => {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        try {
+          const userObj = JSON.parse(userData);
+          console.log("User data from localStorage:", userObj);
+          
+          // If createdAt is missing, fetch from API
+          if (!userObj.createdAt && userObj.id) {
+            console.log("CreatedAt missing, fetching from API...");
+            const freshUserData = await fetchUserData(userObj.id);
+            if (freshUserData) {
+              // Update localStorage with complete user data
+              const completeUser = { ...userObj, ...freshUserData };
+              localStorage.setItem("user", JSON.stringify(completeUser));
+              setUser(completeUser);
+              setFormData({
+                name: completeUser.name || "",
+                email: completeUser.email || "",
+                businessName: completeUser.businessName || "",
+                avatar: null,
+              });
+              if (completeUser.avatar) {
+                setPreviewUrl(completeUser.avatar);
+              }
+              return;
+            }
+          }
+          
+          // Use existing data if we have createdAt
+          setUser(userObj);
+          setFormData({
+            name: userObj.name || "",
+            email: userObj.email || "",
+            businessName: userObj.businessName || "",
+            avatar: null,
+          });
+          if (userObj.avatar) {
+            setPreviewUrl(userObj.avatar);
+          }
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+          router.push("/login");
         }
-      } catch (error) {
-        console.error("Error parsing user data:", error);
+      } else {
         router.push("/login");
       }
-    } else {
-      router.push("/login");
-    }
+    };
+
+    initializeUser();
   }, [router]);
 
   const handleInputChange = (e) => {
@@ -91,7 +143,6 @@ export default function ProfilePage() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file type
       if (!file.type.startsWith("image/")) {
         setMessage({
           type: "error",
@@ -100,7 +151,6 @@ export default function ProfilePage() {
         return;
       }
 
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setMessage({ type: "error", text: "Image size must be less than 5MB" });
         return;
@@ -111,7 +161,6 @@ export default function ProfilePage() {
         avatar: file,
       }));
 
-      // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
         setPreviewUrl(e.target.result);
@@ -142,8 +191,12 @@ export default function ProfilePage() {
       const result = await response.json();
 
       if (result.success) {
-        // Update local storage
-        const updatedUser = { ...user, ...result.user };
+        // Update local storage with complete user data including createdAt
+        const updatedUser = { 
+          ...user, 
+          ...result.user,
+          createdAt: user.createdAt || result.user.createdAt 
+        };
         localStorage.setItem("user", JSON.stringify(updatedUser));
         setUser(updatedUser);
 
@@ -152,7 +205,6 @@ export default function ProfilePage() {
           text: "Profile updated successfully!",
         });
 
-        // Refresh the page to show updated data
         setTimeout(() => {
           window.location.reload();
         }, 1500);
@@ -180,6 +232,20 @@ export default function ProfilePage() {
     }));
     setPreviewUrl("");
   };
+
+  // Debug: Log user data to see what's available
+  useEffect(() => {
+    if (user) {
+      console.log("Current user data:", {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        businessName: user.businessName,
+        createdAt: user.createdAt,
+        role: user.role
+      });
+    }
+  }, [user]);
 
   if (!user) {
     return (
@@ -216,6 +282,17 @@ export default function ProfilePage() {
                       <img
                         src={previewUrl}
                         alt="Profile preview"
+                        className={styles.avatarImage}
+                      />
+                      <div className={styles.avatarOverlay}>
+                        <FaCamera className={styles.cameraIcon} />
+                      </div>
+                    </div>
+                  ) : user.avatar ? (
+                    <div className={styles.avatarWithOverlay}>
+                      <img
+                        src={user.avatar}
+                        alt="Profile"
                         className={styles.avatarImage}
                       />
                       <div className={styles.avatarOverlay}>
@@ -390,6 +467,7 @@ export default function ProfilePage() {
                   </span>
                 </div>
               )}
+
             </div>
           </div>
         </div>

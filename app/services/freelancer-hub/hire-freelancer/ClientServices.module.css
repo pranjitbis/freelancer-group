@@ -28,6 +28,8 @@
   opacity: 0.97;
 }
 
+
+
 .heroContent {
   max-width: 1200px;
   margin: 0 auto;
@@ -144,6 +146,23 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
+
+.primaryButtonss {
+  background: linear-gradient(135deg, #09dfee, #3b82f6);
+  color: white;
+  border: none;
+  padding: 0.875rem 1.75rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
 
 .primaryButton:hover {
   transform: translateY(-1px);

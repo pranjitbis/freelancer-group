@@ -1,11 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
-import styles from "../dashboard.module.css";
+import { motion, AnimatePresence } from "framer-motion";
+import styles from "./orders.module.css";
 import {
   FiSearch,
   FiRefreshCw,
   FiClock,
   FiCheck,
+  FiUser,
+  FiMail,
+  FiCalendar,
+  FiPackage,
+  FiChevronDown,
 } from "react-icons/fi";
 
 export default function OrdersPage() {
@@ -68,7 +74,6 @@ export default function OrdersPage() {
             order.id === updatedOrder.id ? updatedOrder : order
           )
         );
-        alert(`Order #${orderId} status updated to ${newStatus}`);
       } else {
         alert("Failed to update order status");
       }
@@ -97,20 +102,56 @@ export default function OrdersPage() {
     return matchesSearch && matchesStatus;
   });
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+
   return (
     <div className={styles.ordersContent}>
-      <div className={styles.pageHeader}>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className={styles.pageHeader}
+      >
+        <div className={styles.headerTitle}>
+          <h1>Order Management</h1>
+          <p>Manage and track all customer orders</p>
+        </div>
+        
         <div className={styles.headerActions}>
-          <div className={styles.searchBox}>
+          <motion.div 
+            whileFocus={{ scale: 1.02 }}
+            className={styles.searchBox}
+          >
             <FiSearch className={styles.searchIcon} />
             <input
               type="text"
-              placeholder="Search orders..."
+              placeholder="Search orders by name, email, or service..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </div>
-          <select
+          </motion.div>
+          
+          <motion.select
+            whileFocus={{ scale: 1.02 }}
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className={styles.filterSelect}
@@ -118,83 +159,154 @@ export default function OrdersPage() {
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
             <option value="completed">Completed</option>
-          </select>
-          <button onClick={fetchData} className={styles.refreshButton}>
+          </motion.select>
+          
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={fetchData} 
+            className={styles.refreshButton}
+          >
             <FiRefreshCw /> Refresh
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
-      <div className={styles.ordersTable}>
-        <div className={styles.tableHeader}>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className={styles.ordersTable}
+      >
+        <motion.div 
+          variants={itemVariants}
+          className={styles.tableHeader}
+        >
           <span>Order ID</span>
           {userRole === "admin" && <span>Customer</span>}
           <span>Service</span>
           <span>Date</span>
           <span>Status</span>
           {userRole === "admin" && <span>Actions</span>}
-        </div>
+        </motion.div>
 
-        {loading ? (
-          <div className={styles.loading}>Loading orders...</div>
-        ) : filteredOrders.length === 0 ? (
-          <div className={styles.noData}>
-            {userRole === "admin"
-              ? "No orders found"
-              : "You haven't placed any orders yet"}
-          </div>
-        ) : (
-          filteredOrders.map((order) => (
-            <div key={order.id} className={styles.tableRow}>
-              <span>#{order.id}</span>
-              {userRole === "admin" && (
-                <span>
-                  <div className={styles.customerName}>{order.name}</div>
-                  <div className={styles.customerEmail}>
-                    {order.email}
-                  </div>
-                </span>
-              )}
-              <span>{order.category}</span>
-              <span>
-                {new Date(order.createdAt).toLocaleDateString()}
-              </span>
-              <span>
-                <div
-                  className={`${styles.statusBadge} ${
-                    styles[order.status]
-                  }`}
-                >
-                  {order.status === "pending" ? (
-                    <FiClock className={styles.statusIcon} />
-                  ) : (
-                    <FiCheck className={styles.statusIcon} />
-                  )}
-                  <span className={styles.statusText}>
-                    {order.status}
+        <AnimatePresence>
+          {loading ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={styles.loading}
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className={styles.loadingSpinner}
+              >
+                <FiRefreshCw />
+              </motion.div>
+              Loading orders...
+            </motion.div>
+          ) : filteredOrders.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={styles.noData}
+            >
+              <FiPackage className={styles.noDataIcon} />
+              <h3>No orders found</h3>
+              <p>
+                {userRole === "admin"
+                  ? "No orders match your search criteria"
+                  : "You haven't placed any orders yet"}
+              </p>
+            </motion.div>
+          ) : (
+            filteredOrders.map((order, index) => (
+              <motion.div
+                key={order.id}
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                transition={{ delay: index * 0.1 }}
+                className={styles.tableRow}
+              >
+                <span className={styles.orderId}>#{order.id}</span>
+                
+                {userRole === "admin" && (
+                  <span className={styles.customerInfo}>
+                    <div className={styles.customerName}>
+                      <FiUser className={styles.infoIcon} />
+                      {order.name}
+                    </div>
+                    <div className={styles.customerEmail}>
+                      <FiMail className={styles.infoIcon} />
+                      {order.email}
+                    </div>
                   </span>
-                </div>
-              </span>
-              {userRole === "admin" && (
+                )}
+                
+                <span className={styles.service}>
+                  <FiPackage className={styles.infoIcon} />
+                  {order.category}
+                </span>
+                
+                <span className={styles.date}>
+                  <FiCalendar className={styles.infoIcon} />
+                  {new Date(order.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </span>
+                
                 <span>
-                  <select
-                    value={order.status}
-                    onChange={(e) =>
-                      handleStatusChange(order.id, e.target.value)
-                    }
-                    className={`${styles.statusSelect} ${
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className={`${styles.statusBadge} ${
                       styles[order.status]
                     }`}
                   >
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
-                  </select>
+                    {order.status === "pending" ? (
+                      <FiClock className={styles.statusIcon} />
+                    ) : (
+                      <FiCheck className={styles.statusIcon} />
+                    )}
+                    <span className={styles.statusText}>
+                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    </span>
+                  </motion.div>
                 </span>
-              )}
-            </div>
-          ))
-        )}
-      </div>
+                
+                {userRole === "admin" && (
+                  <span>
+                    <motion.div 
+                      className={styles.selectWrapper}
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      <select
+                        value={order.status}
+                        onChange={(e) =>
+                          handleStatusChange(order.id, e.target.value)
+                        }
+                        className={`${styles.statusSelect} ${
+                          styles[order.status]
+                        }`}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                      <FiChevronDown className={styles.selectArrow} />
+                    </motion.div>
+                  </span>
+                )}
+              </motion.div>
+            ))
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }

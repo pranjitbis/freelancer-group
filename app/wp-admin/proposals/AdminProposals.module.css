@@ -119,7 +119,7 @@
 .statNumber {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #ffffff;
   line-height: 1;
 }
 
@@ -128,7 +128,141 @@
   font-size: 0.9rem;
   font-weight: 500;
 }
+/* Add these new styles to your existing CSS file */
 
+.platformStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.platformStat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.platformStatIcon {
+  font-size: 24px;
+  color: #2563eb;
+}
+
+.platformStatNumber {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.platformStatLabel {
+  display: block;
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.headerRight {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.projectBadge {
+  background: #7c3aed;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.platformSummary {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+  margin-top: 20px;
+}
+
+.summaryList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.summaryItem:last-child {
+  border-bottom: none;
+}
+
+.summaryLabel {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.summaryValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.totalConnects {
+  background: #2563eb;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Ensure the main content area has proper spacing */
+.mainContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar {
+  width: 350px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    width: 100%;
+  }
+  
+  .platformStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .platformStats {
+    grid-template-columns: 1fr;
+  }
+}
 /* Content Grid */
 .contentGrid {
   display: grid;

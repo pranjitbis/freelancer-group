@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -72,6 +72,19 @@ const MarketingIcon = () => (
   </svg>
 );
 
+const StarIcon = ({ filled }) => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill={filled ? "#fbbf24" : "#e5e7eb"}
+    stroke="#f59e0b"
+    strokeWidth="1"
+  >
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </svg>
+);
+
 const VirtualAssistance = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -82,6 +95,10 @@ const VirtualAssistance = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [activeService, setActiveService] = useState(0);
+  const [currency, setCurrency] = useState("INR");
+  const [exchangeRate, setExchangeRate] = useState(0.012); // Approximate INR to USD rate
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+  const reviewsContainerRef = useRef(null);
 
   // Animation variants
   const fadeInUp = {
@@ -134,6 +151,29 @@ const VirtualAssistance = () => {
     }
   };
 
+  const toggleCurrency = () => {
+    setCurrency(currency === "INR" ? "USD" : "INR");
+  };
+
+  const convertPrice = (inrPrice) => {
+    if (currency === "USD") {
+      const usdAmount = parseFloat(inrPrice.replace("₹", "")) * exchangeRate;
+      return `$${usdAmount.toFixed(2)}`;
+    }
+    return inrPrice;
+  };
+
+  // Auto-scroll testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentReviewIndex((prevIndex) => 
+        prevIndex === reviews.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const services = [
     {
       id: "administrative",
@@ -179,26 +219,12 @@ const VirtualAssistance = () => {
         "Software Support",
       ],
     },
-    {
-      id: "marketing",
-      title: "Marketing Assistance",
-      icon: <MarketingIcon />,
-      description: "Strategic marketing support to grow your business",
-      features: [
-        "Market Research",
-        "Campaign Management",
-        "Email Marketing",
-        "CRM Management",
-        "Analytics Reporting",
-        "Lead Generation",
-      ],
-    },
   ];
 
   const plans = [
     {
       name: "Starter",
-      price: "$299",
+      price: "₹299",
       period: "month",
       description: "Perfect for small businesses and startups",
       features: [
@@ -214,7 +240,7 @@ const VirtualAssistance = () => {
     },
     {
       name: "Professional",
-      price: "$599",
+      price: "₹599",
       period: "month",
       description: "Ideal for growing businesses",
       features: [
@@ -230,7 +256,7 @@ const VirtualAssistance = () => {
     },
     {
       name: "Enterprise",
-      price: "$999",
+      price: "₹999",
       period: "month",
       description: "For businesses needing comprehensive support",
       features: [
@@ -268,6 +294,85 @@ const VirtualAssistance = () => {
       description: "Your virtual assistant starts delivering immediate value",
     },
   ];
+
+  const reviews = [
+    {
+      id: 1,
+      name: "Priya Sharma",
+      company: "TechStart Inc",
+      rating: 5,
+      comment: "The administrative support has been exceptional. My virtual assistant handles everything from email management to scheduling, allowing me to focus on business growth.",
+      service: "Administrative Support",
+      avatar: "PS"
+    },
+    {
+      id: 2,
+      name: "Raj Patel",
+      company: "DesignStudio",
+      rating: 5,
+      comment: "Creative services team delivered outstanding graphics and content for our social media. Engagement has increased by 200% since we started working with them.",
+      service: "Creative Services",
+      avatar: "RP"
+    },
+    {
+      id: 3,
+      name: "Anita Desai",
+      company: "E-Commerce Pro",
+      rating: 4,
+      comment: "Technical support has been reliable and efficient. They handle our WordPress maintenance and SEO, which has significantly improved our website performance.",
+      service: "Technical Support",
+      avatar: "AD"
+    },
+    {
+      id: 4,
+      name: "Michael Chen",
+      company: "Global Solutions",
+      rating: 5,
+      comment: "The marketing assistance transformed our lead generation process. Professional plan gives us everything we need at an affordable price.",
+      service: "Marketing Assistance",
+      avatar: "MC"
+    },
+    {
+      id: 5,
+      name: "Sarah Johnson",
+      company: "StartUp Ventures",
+      rating: 5,
+      comment: "As a startup, the Starter plan was perfect for our budget. The support team is responsive and the quality of work exceeds expectations.",
+      service: "Administrative Support",
+      avatar: "SJ"
+    },
+    {
+      id: 6,
+      name: "David Wilson",
+      company: "Enterprise Corp",
+      rating: 4,
+      comment: "Comprehensive enterprise solution that handles all our virtual assistance needs. The dedicated account manager makes coordination seamless.",
+      service: "Multiple Services",
+      avatar: "DW"
+    }
+  ];
+
+  const StarRating = ({ rating }) => {
+    return (
+      <div className={styles.starRating}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <StarIcon key={star} filled={star <= rating} />
+        ))}
+      </div>
+    );
+  };
+
+  const nextReview = () => {
+    setCurrentReviewIndex((prevIndex) => 
+      prevIndex === reviews.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevReview = () => {
+    setCurrentReviewIndex((prevIndex) => 
+      prevIndex === 0 ? reviews.length - 1 : prevIndex - 1
+    );
+  };
 
   return (
     <>
@@ -516,6 +621,25 @@ const VirtualAssistance = () => {
             >
               Choose the perfect plan for your business needs
             </motion.p>
+            
+            {/* Currency Toggle Button */}
+            <motion.div
+              className={styles.currencyToggle}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
+              <button
+                onClick={toggleCurrency}
+                className={styles.currencyButton}
+              >
+                Show Prices in {currency === "INR" ? "USD" : "INR"}
+              </button>
+              <span className={styles.currencyNote}>
+                Currently showing prices in {currency}
+              </span>
+            </motion.div>
           </div>
 
           <motion.div
@@ -540,7 +664,9 @@ const VirtualAssistance = () => {
                 <div className={styles.planHeader}>
                   <h3 className={styles.planName}>{plan.name}</h3>
                   <div className={styles.planPrice}>
-                    <span className={styles.price}>{plan.price}</span>
+                    <span className={styles.price}>
+                      {convertPrice(plan.price)}
+                    </span>
                     <span className={styles.period}>/{plan.period}</span>
                   </div>
                   <p className={styles.planDescription}>{plan.description}</p>
@@ -584,6 +710,104 @@ const VirtualAssistance = () => {
               </motion.div>
             ))}
           </motion.div>
+        </section>
+
+        {/* Reviews Section */}
+        <section className={styles.reviews}>
+          <div className={styles.sectionHeader}>
+            <motion.h2
+              className={styles.sectionTitle}
+              initial="initial"
+              whileInView="animate"
+              variants={fadeInUp}
+              viewport={{ once: true }}
+            >
+              What Our Clients Say
+            </motion.h2>
+            <motion.p
+              className={styles.sectionSubtitle}
+              initial="initial"
+              whileInView="animate"
+              variants={fadeInUp}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              Discover how our virtual assistance services have helped businesses grow
+            </motion.p>
+          </div>
+
+          <div className={styles.reviewsContainer}>
+            <button 
+              className={styles.navButton} 
+              onClick={prevReview}
+              aria-label="Previous review"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+            </button>
+
+            <div className={styles.reviewsFlexContainer}>
+              <motion.div
+                className={styles.reviewsFlex}
+                key={currentReviewIndex}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5 }}
+              >
+                {reviews.slice(currentReviewIndex, currentReviewIndex + 3).map((review, index) => (
+                  <motion.div
+                    key={review.id}
+                    className={styles.reviewCard}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -5 }}
+                  >
+                    <div className={styles.reviewHeader}>
+                      <div className={styles.avatar}>
+                        {review.avatar}
+                      </div>
+                      <div className={styles.reviewerInfo}>
+                        <h4 className={styles.reviewerName}>{review.name}</h4>
+                        <p className={styles.reviewerCompany}>{review.company}</p>
+                        <p className={styles.reviewService}>{review.service}</p>
+                      </div>
+                    </div>
+                    <div className={styles.reviewContent}>
+                      <StarRating rating={review.rating} />
+                      <p className={styles.reviewComment}>"{review.comment}"</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+
+            <button 
+              className={styles.navButton} 
+              onClick={nextReview}
+              aria-label="Next review"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Review Indicators */}
+          <div className={styles.reviewIndicators}>
+            {reviews.map((_, index) => (
+              <button
+                key={index}
+                className={`${styles.indicator} ${
+                  index === currentReviewIndex ? styles.active : ""
+                }`}
+                onClick={() => setCurrentReviewIndex(index)}
+                aria-label={`Go to review ${index + 1}`}
+              />
+            ))}
+          </div>
         </section>
 
         {/* Contact Section */}
