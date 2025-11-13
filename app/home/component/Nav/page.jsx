@@ -218,31 +218,8 @@ export default function Nav() {
             )}
           </li>
 
-          {/* 📚 Learn More Dropdown */}
-          <li className={styles.dropdown}>
-            <button onClick={() => toggleDropdown("learnMore")}>
-              Learn More <IoChevronDown />
-            </button>
-            {dropdown.learnMore && (
-              <div className={styles.dropdownMenu}>
-                <Link href="/learn-more/how-its-work" onClick={closeMenu}>
-                  How It Works
-                </Link>
-                <Link href="/learn-more/terms-and-conditions" onClick={closeMenu}>
-                  Terms & Conditions
-                </Link>
-                <Link href="/learn-more/privacy-policy" onClick={closeMenu}>
-                  Privacy Policy
-                </Link>
-                <Link href="/learn-more/faq" onClick={closeMenu}>
-                  FAQ
-                </Link>
-                <Link href="/learn-more/blog" onClick={closeMenu}>
-                  Blog
-                </Link>
-              </div>
-            )}
-          </li>
+  
+       
 
           <li>
             <Link href="/career" onClick={closeMenu}>
