@@ -27,8 +27,11 @@ import {
   FaPlusCircle,
   FaSearch,
   FaFilter,
+  FaEye,
+  FaCopy,
+  FaChevronRight,
+  FaChevronLeft,
 } from "react-icons/fa";
-import { FiChevronRight, FiChevronLeft, FiEye, FiCopy } from "react-icons/fi";
 import styles from "./ManualProjectEntry.module.css";
 
 export default function ManualProjectEntry() {
@@ -83,21 +86,21 @@ export default function ManualProjectEntry() {
   ];
 
   const experienceLevels = [
-    { value: "entry", label: "Entry Level" },
-    { value: "intermediate", label: "Intermediate" },
-    { value: "expert", label: "Expert" },
+    { value: "entry", label: "Entry Level", color: "#10b981" },
+    { value: "intermediate", label: "Intermediate", color: "#3b82f6" },
+    { value: "expert", label: "Expert", color: "#8b5cf6" },
   ];
 
   const budgetTypes = [
-    { value: "fixed", label: "Fixed Price" },
-    { value: "hourly", label: "Hourly Rate" },
+    { value: "fixed", label: "Fixed Price", icon: FaDollarSign },
+    { value: "hourly", label: "Hourly Rate", icon: FaClock },
   ];
 
   const statusOptions = [
     { value: "all", label: "All Status" },
-    { value: "active", label: "Active" },
-    { value: "completed", label: "Completed" },
-    { value: "draft", label: "Draft" },
+    { value: "active", label: "Active", color: "#10b981" },
+    { value: "completed", label: "Completed", color: "#6b7280" },
+    { value: "draft", label: "Draft", color: "#f59e0b" },
   ];
 
   // Load projects on component mount
@@ -130,7 +133,7 @@ export default function ManualProjectEntry() {
     }));
   };
 
-  // Handle skills input - FIXED
+  // Handle skills input
   const handleSkillsChange = (e) => {
     const skillsArray = e.target.value
       .split(",")
@@ -221,35 +224,16 @@ export default function ManualProjectEntry() {
       const formDataToSend = new FormData();
 
       // Append all text fields
-      formDataToSend.append("title", formData.title);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("category", formData.category);
-      formDataToSend.append("subcategory", formData.subcategory);
-      formDataToSend.append("skills", JSON.stringify(formData.skills));
-      formDataToSend.append("budgetType", formData.budgetType);
-      formDataToSend.append("budget", formData.budget.toString());
-      formDataToSend.append("timeframe", formData.timeframe.toString());
-      formDataToSend.append("experienceLevel", formData.experienceLevel);
-      formDataToSend.append("clientName", formData.clientName);
-      formDataToSend.append("clientEmail", formData.clientEmail);
-      formDataToSend.append("clientPhone", formData.clientPhone || "");
-      formDataToSend.append("clientCompany", formData.clientCompany || "");
-      formDataToSend.append("clientLocation", formData.clientLocation || "");
-      formDataToSend.append("clientWebsite", formData.clientWebsite || "");
-      formDataToSend.append(
-        "specialRequirements",
-        formData.specialRequirements || ""
-      );
-      formDataToSend.append("visibility", formData.visibility);
-      formDataToSend.append("urgent", formData.urgent.toString());
-      formDataToSend.append("featured", formData.featured.toString());
+      Object.keys(formData).forEach((key) => {
+        if (key !== 'attachments') {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
 
       // Append files
-      if (formData.attachments) {
-        formData.attachments.forEach((file) => {
-          formDataToSend.append("attachments", file);
-        });
-      }
+      formData.attachments.forEach((file) => {
+        formDataToSend.append("attachments", file);
+      });
 
       const response = await fetch("/api/projects/manual-create", {
         method: "POST",
@@ -288,11 +272,7 @@ export default function ManualProjectEntry() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            ...formData,
-            budget: parseFloat(formData.budget),
-            timeframe: parseInt(formData.timeframe),
-          }),
+          body: JSON.stringify(formData),
         }
       );
 
@@ -339,38 +319,19 @@ export default function ManualProjectEntry() {
     }
   };
 
-  // Edit project - FIXED JSON.parse issue
+  // Edit project
   const handleEdit = (project) => {
     setEditingProject(project);
-
-    // Safely parse skills - handle both string and array formats
-    let skillsArray = [];
-    if (typeof project.skills === "string") {
-      try {
-        skillsArray = JSON.parse(project.skills);
-      } catch (e) {
-        // If parsing fails, try comma separation
-        skillsArray = project.skills
-          .split(",")
-          .map((skill) => skill.trim())
-          .filter((skill) => skill);
-      }
-    } else if (Array.isArray(project.skills)) {
-      skillsArray = project.skills;
-    }
-
     setFormData({
       title: project.title || "",
       description: project.description || "",
       category: project.category || "",
       subcategory: project.subcategory || "",
-      skills: skillsArray,
-      budgetType: (project.budgetType || "fixed").toLowerCase(),
+      skills: Array.isArray(project.skills) ? project.skills : [],
+      budgetType: project.budgetType || "fixed",
       budget: project.budget?.toString() || "",
       timeframe: project.timeframe?.toString() || "",
-      experienceLevel: (
-        project.experienceLevel || "intermediate"
-      ).toLowerCase(),
+      experienceLevel: project.experienceLevel || "intermediate",
       clientName: project.clientName || "",
       clientEmail: project.clientEmail || "",
       clientPhone: project.clientPhone || "",
@@ -379,7 +340,7 @@ export default function ManualProjectEntry() {
       clientWebsite: project.clientWebsite || "",
       attachments: [],
       specialRequirements: project.specialRequirements || "",
-      visibility: (project.visibility || "public").toLowerCase(),
+      visibility: project.visibility || "public",
       urgent: Boolean(project.urgent),
       featured: Boolean(project.featured),
     });
@@ -393,35 +354,18 @@ export default function ManualProjectEntry() {
     setShowViewModal(true);
   };
 
-  // Duplicate project - FIXED JSON.parse issue
+  // Duplicate project
   const handleDuplicate = (project) => {
-    // Safely parse skills for duplication
-    let skillsArray = [];
-    if (typeof project.skills === "string") {
-      try {
-        skillsArray = JSON.parse(project.skills);
-      } catch (e) {
-        skillsArray = project.skills
-          .split(",")
-          .map((skill) => skill.trim())
-          .filter((skill) => skill);
-      }
-    } else if (Array.isArray(project.skills)) {
-      skillsArray = project.skills;
-    }
-
     setFormData({
       title: `${project.title} (Copy)` || "New Project (Copy)",
       description: project.description || "",
       category: project.category || "",
       subcategory: project.subcategory || "",
-      skills: skillsArray,
-      budgetType: (project.budgetType || "fixed").toLowerCase(),
+      skills: Array.isArray(project.skills) ? project.skills : [],
+      budgetType: project.budgetType || "fixed",
       budget: project.budget?.toString() || "",
       timeframe: project.timeframe?.toString() || "",
-      experienceLevel: (
-        project.experienceLevel || "intermediate"
-      ).toLowerCase(),
+      experienceLevel: project.experienceLevel || "intermediate",
       clientName: project.clientName || "",
       clientEmail: project.clientEmail || "",
       clientPhone: project.clientPhone || "",
@@ -430,7 +374,7 @@ export default function ManualProjectEntry() {
       clientWebsite: project.clientWebsite || "",
       attachments: [],
       specialRequirements: project.specialRequirements || "",
-      visibility: (project.visibility || "public").toLowerCase(),
+      visibility: project.visibility || "public",
       urgent: Boolean(project.urgent),
       featured: Boolean(project.featured),
     });
@@ -550,6 +494,12 @@ export default function ManualProjectEntry() {
               </p>
             </div>
           </div>
+          <div className={styles.headerStats}>
+            <div className={styles.statItem}>
+              <span className={styles.statNumber}>{projects.length}</span>
+              <span className={styles.statLabel}>Total Projects</span>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -634,11 +584,15 @@ export default function ManualProjectEntry() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
+                className={styles.stepContent}
               >
                 <h2 className={styles.sectionTitle}>
                   <FaFileAlt className={styles.sectionIcon} />
                   Project Details
                 </h2>
+                <p className={styles.sectionDescription}>
+                  Provide basic information about your project
+                </p>
 
                 <div className={styles.formGrid}>
                   <div className={styles.fullWidth}>
@@ -720,19 +674,24 @@ export default function ManualProjectEntry() {
 
                   <div className={styles.formGroup}>
                     <label className={styles.label}>Budget Type</label>
-                    <select
-                      value={formData.budgetType}
-                      onChange={(e) =>
-                        handleInputChange("budgetType", e.target.value)
-                      }
-                      className={styles.select}
-                    >
+                    <div className={styles.radioGroup}>
                       {budgetTypes.map((type) => (
-                        <option key={type.value} value={type.value}>
-                          {type.label}
-                        </option>
+                        <label key={type.value} className={styles.radioLabel}>
+                          <input
+                            type="radio"
+                            value={type.value}
+                            checked={formData.budgetType === type.value}
+                            onChange={(e) =>
+                              handleInputChange("budgetType", e.target.value)
+                            }
+                            className={styles.radioInput}
+                          />
+                          <span className={styles.radioCustom}></span>
+                          <type.icon className={styles.radioIcon} />
+                          <span>{type.label}</span>
+                        </label>
                       ))}
-                    </select>
+                    </div>
                   </div>
 
                   <div className={styles.formGroup}>
@@ -754,38 +713,50 @@ export default function ManualProjectEntry() {
                         placeholder={
                           formData.budgetType === "fixed" ? "5000" : "50"
                         }
+                        min="0"
                       />
                     </div>
                   </div>
 
                   <div className={styles.formGroup}>
                     <label className={styles.label}>Timeframe (days) *</label>
-                    <input
-                      type="number"
-                      value={formData.timeframe}
-                      onChange={(e) =>
-                        handleInputChange("timeframe", e.target.value)
-                      }
-                      className={styles.input}
-                      placeholder="30"
-                    />
+                    <div className={styles.inputWithIcon}>
+                      <FaCalendar className={styles.inputIcon} />
+                      <input
+                        type="number"
+                        value={formData.timeframe}
+                        onChange={(e) =>
+                          handleInputChange("timeframe", e.target.value)
+                        }
+                        className={styles.input}
+                        placeholder="30"
+                        min="1"
+                      />
+                    </div>
                   </div>
 
                   <div className={styles.formGroup}>
                     <label className={styles.label}>Experience Level</label>
-                    <select
-                      value={formData.experienceLevel}
-                      onChange={(e) =>
-                        handleInputChange("experienceLevel", e.target.value)
-                      }
-                      className={styles.select}
-                    >
+                    <div className={styles.experienceLevels}>
                       {experienceLevels.map((level) => (
-                        <option key={level.value} value={level.value}>
-                          {level.label}
-                        </option>
+                        <label key={level.value} className={styles.radioLabel}>
+                          <input
+                            type="radio"
+                            value={level.value}
+                            checked={formData.experienceLevel === level.value}
+                            onChange={(e) =>
+                              handleInputChange("experienceLevel", e.target.value)
+                            }
+                            className={styles.radioInput}
+                          />
+                          <span 
+                            className={styles.radioCustom}
+                            style={{ borderColor: level.color }}
+                          ></span>
+                          <span>{level.label}</span>
+                        </label>
                       ))}
-                    </select>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -797,89 +768,111 @@ export default function ManualProjectEntry() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
+                className={styles.stepContent}
               >
                 <h2 className={styles.sectionTitle}>
                   <FaUser className={styles.sectionIcon} />
                   Client Information
                 </h2>
+                <p className={styles.sectionDescription}>
+                  Provide details about the client
+                </p>
 
                 <div className={styles.formGrid}>
                   <div className={styles.formGroup}>
                     <label className={styles.label}>Client Name *</label>
-                    <input
-                      type="text"
-                      value={formData.clientName}
-                      onChange={(e) =>
-                        handleInputChange("clientName", e.target.value)
-                      }
-                      className={styles.input}
-                      placeholder="John Doe"
-                    />
+                    <div className={styles.inputWithIcon}>
+                      <FaUser className={styles.inputIcon} />
+                      <input
+                        type="text"
+                        value={formData.clientName}
+                        onChange={(e) =>
+                          handleInputChange("clientName", e.target.value)
+                        }
+                        className={styles.input}
+                        placeholder="John Doe"
+                      />
+                    </div>
                   </div>
 
                   <div className={styles.formGroup}>
                     <label className={styles.label}>Client Email *</label>
-                    <input
-                      type="email"
-                      value={formData.clientEmail}
-                      onChange={(e) =>
-                        handleInputChange("clientEmail", e.target.value)
-                      }
-                      className={styles.input}
-                      placeholder="john@example.com"
-                    />
+                    <div className={styles.inputWithIcon}>
+                      <FaEnvelope className={styles.inputIcon} />
+                      <input
+                        type="email"
+                        value={formData.clientEmail}
+                        onChange={(e) =>
+                          handleInputChange("clientEmail", e.target.value)
+                        }
+                        className={styles.input}
+                        placeholder="john@example.com"
+                      />
+                    </div>
                   </div>
 
                   <div className={styles.formGroup}>
                     <label className={styles.label}>Phone Number</label>
-                    <input
-                      type="tel"
-                      value={formData.clientPhone}
-                      onChange={(e) =>
-                        handleInputChange("clientPhone", e.target.value)
-                      }
-                      className={styles.input}
-                      placeholder="+1 (555) 123-4567"
-                    />
+                    <div className={styles.inputWithIcon}>
+                      <FaPhone className={styles.inputIcon} />
+                      <input
+                        type="tel"
+                        value={formData.clientPhone}
+                        onChange={(e) =>
+                          handleInputChange("clientPhone", e.target.value)
+                        }
+                        className={styles.input}
+                        placeholder="+1 (555) 123-4567"
+                      />
+                    </div>
                   </div>
 
                   <div className={styles.formGroup}>
                     <label className={styles.label}>Company</label>
-                    <input
-                      type="text"
-                      value={formData.clientCompany}
-                      onChange={(e) =>
-                        handleInputChange("clientCompany", e.target.value)
-                      }
-                      className={styles.input}
-                      placeholder="Acme Inc."
-                    />
+                    <div className={styles.inputWithIcon}>
+                      <FaBriefcase className={styles.inputIcon} />
+                      <input
+                        type="text"
+                        value={formData.clientCompany}
+                        onChange={(e) =>
+                          handleInputChange("clientCompany", e.target.value)
+                        }
+                        className={styles.input}
+                        placeholder="Acme Inc."
+                      />
+                    </div>
                   </div>
 
                   <div className={styles.formGroup}>
                     <label className={styles.label}>Location</label>
-                    <input
-                      type="text"
-                      value={formData.clientLocation}
-                      onChange={(e) =>
-                        handleInputChange("clientLocation", e.target.value)
-                      }
-                      className={styles.input}
-                      placeholder="New York, USA"
-                    />
+                    <div className={styles.inputWithIcon}>
+                      <FaMapMarkerAlt className={styles.inputIcon} />
+                      <input
+                        type="text"
+                        value={formData.clientLocation}
+                        onChange={(e) =>
+                          handleInputChange("clientLocation", e.target.value)
+                        }
+                        className={styles.input}
+                        placeholder="New York, USA"
+                      />
+                    </div>
                   </div>
 
                   <div className={styles.formGroup}>
                     <label className={styles.label}>Website</label>
-                    <input
-                      type="url"
-                      value={formData.clientWebsite}
-                      onChange={(e) =>
-                        handleInputChange("clientWebsite", e.target.value)
-                      }
-                      className={styles.input}
-                      placeholder="https://example.com"
-                    />
+                    <div className={styles.inputWithIcon}>
+                      <FaGlobe className={styles.inputIcon} />
+                      <input
+                        type="url"
+                        value={formData.clientWebsite}
+                        onChange={(e) =>
+                          handleInputChange("clientWebsite", e.target.value)
+                        }
+                        className={styles.input}
+                        placeholder="https://example.com"
+                      />
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -891,11 +884,15 @@ export default function ManualProjectEntry() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
+                className={styles.stepContent}
               >
                 <h2 className={styles.sectionTitle}>
                   <FaBriefcase className={styles.sectionIcon} />
                   Additional Requirements
                 </h2>
+                <p className={styles.sectionDescription}>
+                  Add any special requirements and project settings
+                </p>
 
                 <div className={styles.fullWidthGrid}>
                   <div className={styles.formGroup}>
@@ -929,7 +926,7 @@ export default function ManualProjectEntry() {
                         Choose Files
                       </label>
                       <p className={styles.fileUploadText}>
-                        Upload project files, images, or documents
+                        Upload project files, images, or documents (Max: 10MB per file)
                       </p>
                     </div>
 
@@ -944,7 +941,7 @@ export default function ManualProjectEntry() {
                                   {file.name}
                                 </p>
                                 <p className={styles.attachmentSize}>
-                                  {(file.size / 1024).toFixed(2)} KB
+                                  {(file.size / 1024 / 1024).toFixed(2)} MB
                                 </p>
                               </div>
                             </div>
@@ -987,6 +984,7 @@ export default function ManualProjectEntry() {
                         className={styles.checkbox}
                       />
                       <label htmlFor="urgent" className={styles.checkboxLabel}>
+                        <span className={styles.checkboxCustom}></span>
                         Mark as Urgent
                       </label>
                     </div>
@@ -1005,6 +1003,7 @@ export default function ManualProjectEntry() {
                         htmlFor="featured"
                         className={styles.checkboxLabel}
                       >
+                        <span className={styles.checkboxCustom}></span>
                         Featured Project
                       </label>
                     </div>
@@ -1022,9 +1021,13 @@ export default function ManualProjectEntry() {
                   currentStep === 1 ? styles.disabledButton : ""
                 }`}
               >
-                <FiChevronLeft size={18} />
+                <FaChevronLeft size={16} />
                 Previous
               </button>
+
+              <div className={styles.stepIndicator}>
+                Step {currentStep} of 3
+              </div>
 
               {currentStep < 3 ? (
                 <button
@@ -1032,7 +1035,7 @@ export default function ManualProjectEntry() {
                   className={`${styles.navButton} ${styles.nextButton}`}
                 >
                   Next
-                  <FiChevronRight size={18} />
+                  <FaChevronRight size={16} />
                 </button>
               ) : (
                 <button
@@ -1069,7 +1072,7 @@ export default function ManualProjectEntry() {
                 <FaSearch className={styles.searchIcon} />
                 <input
                   type="text"
-                  placeholder="Search projects..."
+                  placeholder="Search projects by title, client name, or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={styles.searchInput}
@@ -1126,7 +1129,20 @@ export default function ManualProjectEntry() {
               {filteredProjects.map((project) => (
                 <div key={project.id} className={styles.projectCard}>
                   <div className={styles.projectHeader}>
-                    <h3 className={styles.projectTitle}>{project.title}</h3>
+                    <div className={styles.projectTitleSection}>
+                      <h3 className={styles.projectTitle}>{project.title}</h3>
+                      <div className={styles.projectMeta}>
+                        <span className={styles.projectCategory}>
+                          {project.category}
+                        </span>
+                        {project.urgent && (
+                          <span className={styles.urgentBadge}>Urgent</span>
+                        )}
+                        {project.featured && (
+                          <span className={styles.featuredBadge}>Featured</span>
+                        )}
+                      </div>
+                    </div>
                     <div className={styles.projectStatus}>
                       <span
                         className={`${styles.statusBadge} ${
@@ -1138,30 +1154,40 @@ export default function ManualProjectEntry() {
                     </div>
                   </div>
 
+                  <div className={styles.projectDescription}>
+                    {project.description.length > 150
+                      ? `${project.description.substring(0, 150)}...`
+                      : project.description}
+                  </div>
+
                   <div className={styles.projectDetails}>
                     <div className={styles.detailRow}>
-                      <span className={styles.detailLabel}>Client:</span>
-                      <span className={styles.detailValue}>
-                        {project.clientName}
-                      </span>
+                      <div className={styles.detailItem}>
+                        <FaUser className={styles.detailIcon} />
+                        <span className={styles.detailValue}>
+                          {project.clientName}
+                        </span>
+                      </div>
+                      <div className={styles.detailItem}>
+                        <FaDollarSign className={styles.detailIcon} />
+                        <span className={styles.detailValue}>
+                          ${project.budget} ({project.budgetType})
+                        </span>
+                      </div>
                     </div>
                     <div className={styles.detailRow}>
-                      <span className={styles.detailLabel}>Budget:</span>
-                      <span className={styles.detailValue}>
-                        ${project.budget} ({project.budgetType})
-                      </span>
-                    </div>
-                    <div className={styles.detailRow}>
-                      <span className={styles.detailLabel}>Timeline:</span>
-                      <span className={styles.detailValue}>
-                        {project.timeframe} days
-                      </span>
-                    </div>
-                    <div className={styles.detailRow}>
-                      <span className={styles.detailLabel}>Created:</span>
-                      <span className={styles.detailValue}>
-                        {new Date(project.createdAt).toLocaleDateString()}
-                      </span>
+                      <div className={styles.detailItem}>
+                        <FaCalendar className={styles.detailIcon} />
+                        <span className={styles.detailValue}>
+                          {project.timeframe} days
+                        </span>
+                      </div>
+                      <div className={styles.detailItem}>
+                        <FaClock className={styles.detailIcon} />
+                        <span className={styles.detailValue}>
+                          {new Date(project.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -1173,7 +1199,6 @@ export default function ManualProjectEntry() {
                         title="Edit Project"
                       >
                         <FaEdit />
-                        <span>Edit</span>
                       </button>
 
                       <button
@@ -1181,8 +1206,7 @@ export default function ManualProjectEntry() {
                         className={`${styles.actionBtn} ${styles.viewBtn}`}
                         title="View Details"
                       >
-                        <FiEye />
-                        <span>View</span>
+                        <FaEye />
                       </button>
 
                       <button
@@ -1190,8 +1214,7 @@ export default function ManualProjectEntry() {
                         className={`${styles.actionBtn} ${styles.duplicateBtn}`}
                         title="Duplicate Project"
                       >
-                        <FiCopy />
-                        <span>Duplicate</span>
+                        <FaCopy />
                       </button>
 
                       <button
@@ -1200,7 +1223,6 @@ export default function ManualProjectEntry() {
                         title="Delete Project"
                       >
                         <FaTrash />
-                        <span>Delete</span>
                       </button>
                     </div>
                   </div>
@@ -1212,152 +1234,167 @@ export default function ManualProjectEntry() {
       )}
 
       {/* View Project Modal */}
-      {showViewModal && viewingProject && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowViewModal(false)}
-        >
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2 className={styles.modalTitle}>Project Details</h2>
-              <button
-                className={styles.modalClose}
-                onClick={() => setShowViewModal(false)}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className={styles.modalContent}>
-              <div className={styles.modalSection}>
-                <h3 className={styles.modalSectionTitle}>
-                  <FaFileAlt />
-                  Project Information
-                </h3>
-                <div className={styles.modalGrid}>
-                  <div className={styles.modalField}>
-                    <label>Title:</label>
-                    <span>{viewingProject.title}</span>
-                  </div>
-                  <div className={styles.modalField}>
-                    <label>Description:</label>
-                    <span>{viewingProject.description}</span>
-                  </div>
-                  <div className={styles.modalField}>
-                    <label>Category:</label>
-                    <span>{viewingProject.category}</span>
-                  </div>
-                  <div className={styles.modalField}>
-                    <label>Subcategory:</label>
-                    <span>{viewingProject.subcategory || "N/A"}</span>
-                  </div>
-                  <div className={styles.modalField}>
-                    <label>Budget:</label>
-                    <span>
-                      ${viewingProject.budget} ({viewingProject.budgetType})
-                    </span>
-                  </div>
-                  <div className={styles.modalField}>
-                    <label>Timeline:</label>
-                    <span>{viewingProject.timeframe} days</span>
-                  </div>
-                </div>
+      <AnimatePresence>
+        {showViewModal && viewingProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.modalOverlay}
+            onClick={() => setShowViewModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className={styles.modal}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modalHeader}>
+                <h2 className={styles.modalTitle}>Project Details</h2>
+                <button
+                  className={styles.modalClose}
+                  onClick={() => setShowViewModal(false)}
+                >
+                  ×
+                </button>
               </div>
 
-              <div className={styles.modalSection}>
-                <h3 className={styles.modalSectionTitle}>
-                  <FaUser />
-                  Client Information
-                </h3>
-                <div className={styles.modalGrid}>
-                  <div className={styles.modalField}>
-                    <label>Name:</label>
-                    <span>{viewingProject.clientName}</span>
-                  </div>
-                  <div className={styles.modalField}>
-                    <label>Email:</label>
-                    <span>{viewingProject.clientEmail}</span>
-                  </div>
-                  <div className={styles.modalField}>
-                    <label>Phone:</label>
-                    <span>{viewingProject.clientPhone || "N/A"}</span>
-                  </div>
-                  <div className={styles.modalField}>
-                    <label>Company:</label>
-                    <span>{viewingProject.clientCompany || "N/A"}</span>
-                  </div>
-                  <div className={styles.modalField}>
-                    <label>Location:</label>
-                    <span>{viewingProject.clientLocation || "N/A"}</span>
-                  </div>
-                </div>
-              </div>
-
-              {viewingProject.specialRequirements && (
+              <div className={styles.modalContent}>
                 <div className={styles.modalSection}>
                   <h3 className={styles.modalSectionTitle}>
-                    <FaBriefcase />
-                    Special Requirements
+                    <FaFileAlt />
+                    Project Information
                   </h3>
-                  <div className={styles.modalField}>
-                    <span>{viewingProject.specialRequirements}</span>
+                  <div className={styles.modalGrid}>
+                    <div className={styles.modalField}>
+                      <label>Title:</label>
+                      <span>{viewingProject.title}</span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Description:</label>
+                      <span>{viewingProject.description}</span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Category:</label>
+                      <span>{viewingProject.category}</span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Subcategory:</label>
+                      <span>{viewingProject.subcategory || "N/A"}</span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Budget:</label>
+                      <span>
+                        ${viewingProject.budget} ({viewingProject.budgetType})
+                      </span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Timeline:</label>
+                      <span>{viewingProject.timeframe} days</span>
+                    </div>
                   </div>
                 </div>
-              )}
 
-              <div className={styles.modalSection}>
-                <h3 className={styles.modalSectionTitle}>
-                  <FaTag />
-                  Project Settings
-                </h3>
-                <div className={styles.modalGrid}>
-                  <div className={styles.modalField}>
-                    <label>Status:</label>
-                    <span
-                      className={`${styles.statusBadge} ${
-                        styles[viewingProject.status?.toLowerCase() || "active"]
-                      }`}
-                    >
-                      {viewingProject.status || "Active"}
-                    </span>
+                <div className={styles.modalSection}>
+                  <h3 className={styles.modalSectionTitle}>
+                    <FaUser />
+                    Client Information
+                  </h3>
+                  <div className={styles.modalGrid}>
+                    <div className={styles.modalField}>
+                      <label>Name:</label>
+                      <span>{viewingProject.clientName}</span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Email:</label>
+                      <span>{viewingProject.clientEmail}</span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Phone:</label>
+                      <span>{viewingProject.clientPhone || "N/A"}</span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Company:</label>
+                      <span>{viewingProject.clientCompany || "N/A"}</span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Location:</label>
+                      <span>{viewingProject.clientLocation || "N/A"}</span>
+                    </div>
                   </div>
-                  <div className={styles.modalField}>
-                    <label>Visibility:</label>
-                    <span>{viewingProject.visibility}</span>
+                </div>
+
+                {viewingProject.specialRequirements && (
+                  <div className={styles.modalSection}>
+                    <h3 className={styles.modalSectionTitle}>
+                      <FaBriefcase />
+                      Special Requirements
+                    </h3>
+                    <div className={styles.modalField}>
+                      <span>{viewingProject.specialRequirements}</span>
+                    </div>
                   </div>
-                  <div className={styles.modalField}>
-                    <label>Urgent:</label>
-                    <span>{viewingProject.urgent ? "Yes" : "No"}</span>
-                  </div>
-                  <div className={styles.modalField}>
-                    <label>Featured:</label>
-                    <span>{viewingProject.featured ? "Yes" : "No"}</span>
+                )}
+
+                <div className={styles.modalSection}>
+                  <h3 className={styles.modalSectionTitle}>
+                    <FaTag />
+                    Project Settings
+                  </h3>
+                  <div className={styles.modalGrid}>
+                    <div className={styles.modalField}>
+                      <label>Status:</label>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          styles[viewingProject.status?.toLowerCase() || "active"]
+                        }`}
+                      >
+                        {viewingProject.status || "Active"}
+                      </span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Visibility:</label>
+                      <span>{viewingProject.visibility}</span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Urgent:</label>
+                      <span className={viewingProject.urgent ? styles.urgentText : styles.normalText}>
+                        {viewingProject.urgent ? "Yes" : "No"}
+                      </span>
+                    </div>
+                    <div className={styles.modalField}>
+                      <label>Featured:</label>
+                      <span className={viewingProject.featured ? styles.featuredText : styles.normalText}>
+                        {viewingProject.featured ? "Yes" : "No"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className={styles.modalFooter}>
-              <button
-                onClick={() => {
-                  setShowViewModal(false);
-                  handleEdit(viewingProject);
-                }}
-                className={styles.editButton}
-              >
-                <FaEdit />
-                Edit Project
-              </button>
-              <button
-                onClick={() => setShowViewModal(false)}
-                className={styles.closeButton}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className={styles.modalFooter}>
+                <button
+                  onClick={() => {
+                    setShowViewModal(false);
+                    handleEdit(viewingProject);
+                  }}
+                  className={styles.editButton}
+                >
+                  <FaEdit />
+                  Edit Project
+                </button>
+                <button
+                  onClick={() => setShowViewModal(false)}
+                  className={styles.closeButton}
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

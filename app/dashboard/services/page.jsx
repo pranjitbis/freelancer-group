@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./service.module.css";
 import {
   FiEdit,
@@ -20,6 +20,13 @@ import {
   FiFileText,
   FiRefreshCw,
   FiGlobe as FiWorld,
+  FiMessageCircle,
+  FiSend,
+  FiUser,
+  FiClock,
+  FiMail,
+  FiFile,
+  FiDatabase,
 } from "react-icons/fi";
 
 export default function ServicesPage() {
@@ -28,10 +35,23 @@ export default function ServicesPage() {
   const [showServiceForm, setShowServiceForm] = useState(false);
   const [notification, setNotification] = useState(null);
   const [currency, setCurrency] = useState("INR");
-  const [exchangeRate, setExchangeRate] = useState(83); // 1 USD = 83 INR
+  const [exchangeRate, setExchangeRate] = useState(83);
   const [loadingRate, setLoadingRate] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [userCountry, setUserCountry] = useState("IN");
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [messageInput, setMessageInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -41,6 +61,7 @@ export default function ServicesPage() {
     }
     fetchExchangeRate();
     detectUserCountry();
+    initializeChat();
   }, []);
 
   const detectUserCountry = async () => {
@@ -73,9 +94,115 @@ export default function ServicesPage() {
     setLoadingRate(false);
   };
 
+  // Virtual Assistant Functions
+  const initializeChat = () => {
+    const welcomeMessage = {
+      id: 1,
+      text: "Hello! I'm your virtual assistant. I can help you with:\n\n• Service information and pricing\n• Order processing assistance\n• Document requirements\n• Payment queries\n• Technical support\n\nHow can I assist you today?",
+      sender: "assistant",
+      timestamp: new Date(),
+    };
+    setChatMessages([welcomeMessage]);
+  };
+
+  const sendMessage = async () => {
+    if (!messageInput.trim() || isTyping) return;
+
+    const userMessage = {
+      id: Date.now(),
+      text: messageInput,
+      sender: "user",
+      timestamp: new Date(),
+    };
+
+    setChatMessages((prev) => [...prev, userMessage]);
+    setMessageInput("");
+
+    setIsTyping(true);
+
+    setTimeout(() => {
+      const aiResponse = generateAIResponse(messageInput);
+      const assistantMessage = {
+        id: Date.now() + 1,
+        text: aiResponse,
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+
+      setChatMessages((prev) => [...prev, assistantMessage]);
+      setIsTyping(false);
+    }, 1500);
+  };
+
+  const generateAIResponse = (userMessage) => {
+    const lowerMessage = userMessage.toLowerCase();
+
+    if (lowerMessage.includes("price") || lowerMessage.includes("cost")) {
+      return `Our services start from ₹299. Here are our current prices:\n\n• Online Form Filling: ₹299\n• Web Development: ₹999\n• E-commerce Solutions: ₹499\n• Travel & Hotel Booking: ₹599\n• Data & AI Solutions: ₹699\n• Virtual Assistant: Custom pricing\n\nWould you like details about a specific service?`;
+    }
+
+    if (
+      lowerMessage.includes("virtual assistant") ||
+      lowerMessage.includes("assistant")
+    ) {
+      return `🤖 **Virtual Assistant Service**\n\nOur virtual assistant service provides:\n• Administrative task management\n• Email and calendar organization\n• Document preparation support\n• Data entry and organization\n• Custom workflow automation\n\nPerfect for busy professionals and businesses!`;
+    }
+
+    if (lowerMessage.includes("form filling")) {
+      return `Our Online Form Filling service (₹299) includes:\n\n✓ Exam & Job Applications\n✓ Education & Admission Forms\n✓ Banking & Financial Forms\n✓ Travel & Other Services\n\nRequired: Resume and supporting documents\nDelivery: 1-2 business days`;
+    }
+
+    if (lowerMessage.includes("web development")) {
+      return `Our Web Development service (₹999) includes:\n\n✓ Custom website development\n✓ Responsive mobile-friendly design\n✓ E-commerce solutions\n✓ Payment integration\n✓ SEO optimization\n\nPerfect for businesses looking to establish their online presence.`;
+    }
+
+    if (lowerMessage.includes("document") || lowerMessage.includes("resume")) {
+      return `Document requirements:\n\n• Form Filling: Resume + supporting documents\n• Travel Booking: ID proofs, travel documents\n• Data & AI: Resume for consultation\n• Virtual Assistant: Project discussion\n• Others: Varies by service`;
+    }
+
+    if (lowerMessage.includes("payment")) {
+      return `We accept:\n\n• Credit/Debit Cards (Visa, MasterCard, Amex)\n• UPI Payments\n• Net Banking\n• International Cards (for USD)\n• Digital Wallets\n\nAll payments are secure with Razorpay.`;
+    }
+
+    if (lowerMessage.includes("support")) {
+      return `Support options:\n\n💬 Live Chat (Current)\n📧 Email: support@aroliya.com\n📞 Phone: +91-XXXXX-XXXXX\n🕒 Hours: 9 AM - 6 PM (Mon-Sat)`;
+    }
+
+    if (lowerMessage.includes("time")) {
+      return `Service completion estimates:\n\n• Form Filling: 1-2 days\n• Web Development: 2-4 weeks\n• E-commerce: 1-2 weeks\n• Travel: Instant confirmation\n• Data & AI: 1-3 weeks\n• Virtual Assistant: Ongoing support`;
+    }
+
+    if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
+      return "Hello! I'm your virtual assistant. I can help you with service information, pricing, document requirements, and order processing. What would you like to know?";
+    }
+
+    return `Thank you for your message! I understand you're asking about "${userMessage}". Our team specializes in professional services and would be happy to assist you. Could you provide more details about your specific needs?`;
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const quickActions = [
+    { label: "Service Pricing", query: "What are your service prices?" },
+    {
+      label: "Virtual Assistant",
+      query: "Tell me about virtual assistant service",
+    },
+    { label: "Form Filling", query: "Tell me about form filling service" },
+    { label: "Support", query: "How can I get support?" },
+  ];
+
+  const handleQuickAction = (query) => {
+    setMessageInput(query);
+  };
+
+  // Your existing service functions remain the same
   const convertPrice = (price, fromCurrency, toCurrency) => {
     if (fromCurrency === toCurrency) return price;
-
     if (fromCurrency === "INR" && toCurrency === "USD") {
       return price / exchangeRate;
     } else if (fromCurrency === "USD" && toCurrency === "INR") {
@@ -182,6 +309,24 @@ export default function ServicesPage() {
       requiresResume: true,
       requiresDocuments: false,
     },
+    {
+      icon: <FiUser size={40} color="#2563eb" />,
+      title: "Virtual Assistant",
+      features: [
+        "Administrative task management",
+        "Email & calendar organization",
+        "Document preparation support",
+        "Data entry & organization",
+      ],
+      price: 399,
+      actualPrice: 399,
+      rating: 4.8,
+      reviews: 156,
+      buttonText: "Get Started",
+      popular: true,
+      requiresResume: false,
+      requiresDocuments: false,
+    },
   ];
 
   const [formData, setFormData] = useState({
@@ -228,7 +373,7 @@ export default function ServicesPage() {
       ...prev,
       name: user?.name || "",
       email: user?.email || "",
-      price: service.actualPrice, // Always store base price in INR
+      price: service.actualPrice,
       displayPrice:
         currency === "USD"
           ? Number(displayPrice.toFixed(2))
@@ -374,7 +519,6 @@ export default function ServicesPage() {
       let resumeUrl = "";
       let documentUrls = [];
 
-      // Upload resume if required
       if (selectedService?.requiresResume && formData.resume) {
         try {
           setNotification({
@@ -395,7 +539,6 @@ export default function ServicesPage() {
         }
       }
 
-      // Upload documents if required
       if (selectedService?.requiresDocuments && formData.documents.length > 0) {
         try {
           setNotification({
@@ -419,11 +562,9 @@ export default function ServicesPage() {
         }
       }
 
-      const amount = getPaymentAmount();
       const displayTotal = calculateDisplayTotal();
       const inrTotal = calculateINRTotal();
 
-      // Use the new payment API that supports USD
       const orderRes = await fetch("/api/payments/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -445,13 +586,11 @@ export default function ServicesPage() {
 
       if (!order.id) throw new Error("Failed to create Razorpay order");
 
-      // Initialize Razorpay
       const isRazorpayLoaded = await initializeRazorpay();
       if (!isRazorpayLoaded) {
         throw new Error("Razorpay SDK failed to load");
       }
 
-      // Configure Razorpay options
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: order.amount,
@@ -517,12 +656,6 @@ export default function ServicesPage() {
         },
         theme: {
           color: "#2563eb",
-          hide_topbar: false,
-        },
-        notes: {
-          display_currency: currency,
-          display_amount: displayTotal.toFixed(2),
-          exchange_rate: exchangeRate.toString(),
         },
       };
 
@@ -540,15 +673,8 @@ export default function ServicesPage() {
     }
   };
 
-  // Custom INR Icon Component
   const InrIcon = ({ size = 16 }) => (
-    <span
-      style={{
-        fontSize: size,
-        fontWeight: "bold",
-        color: "currentColor",
-      }}
-    >
+    <span style={{ fontSize: size, fontWeight: "bold", color: "currentColor" }}>
       ₹
     </span>
   );
@@ -591,15 +717,17 @@ export default function ServicesPage() {
       <section className={styles.heroSection}>
         <div className={styles.container}>
           <div className={styles.heroContent}>
-            <div className={styles.heroText}>
-              <h1>Professional Services</h1>
-              <p>
-                Choose from our wide range of professional services designed to
-                meet your business needs
-              </p>
+            <div className={styles.logoSection}>
+              <img src="/logo/logo.png" alt="Aroliya" className={styles.logo} />
+              <div className={styles.heroText}>
+                <h1>Professional Services</h1>
+                <p>
+                  Choose from our wide range of professional services including
+                  virtual assistant, web development, form filling, and more
+                </p>
+              </div>
             </div>
 
-            {/* Enhanced Currency Section */}
             <div className={styles.currencySection}>
               <div className={styles.currencyCard}>
                 <div className={styles.currencyHeader}>
@@ -664,8 +792,10 @@ export default function ServicesPage() {
       <section className={styles.servicesSection}>
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
-            <h2>Our Services</h2>
-            <p>Professional solutions tailored to your specific requirements</p>
+            <h2>Our Professional Services</h2>
+            <p>
+              Comprehensive solutions tailored to your specific requirements
+            </p>
           </div>
 
           <div className={styles.servicesGrid}>
@@ -731,7 +861,6 @@ export default function ServicesPage() {
                   ))}
                 </ul>
 
-                {/* Requirements Info */}
                 <div className={styles.requirementsInfo}>
                   {service.requiresResume && (
                     <div className={styles.requirementTag}>
@@ -760,6 +889,106 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
+
+      {/* Virtual Assistant Chat */}
+      <div
+        className={`${styles.chatWidget} ${showChat ? styles.chatOpen : ""}`}
+      >
+        {showChat && (
+          <div className={styles.chatContainer}>
+            <div className={styles.chatHeader}>
+              <div className={styles.chatTitle}>
+                <div className={styles.assistantAvatar}>
+                  <FiUser size={20} />
+                </div>
+                <div className={styles.assistantInfo}>
+                  <span className={styles.assistantName}>
+                    Virtual Assistant
+                  </span>
+                  <span className={styles.assistantStatus}>
+                    {isTyping ? "Typing..." : "Online"}
+                  </span>
+                </div>
+              </div>
+              <button
+                className={styles.closeChat}
+                onClick={() => setShowChat(false)}
+              >
+                <FiX size={18} />
+              </button>
+            </div>
+
+            <div className={styles.chatMessages}>
+              {chatMessages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`${styles.message} ${styles[message.sender]}`}
+                >
+                  <div className={styles.messageContent}>
+                    <p>{message.text}</p>
+                    <span className={styles.timestamp}>
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {isTyping && (
+                <div className={`${styles.message} ${styles.assistant}`}>
+                  <div className={styles.typingIndicator}>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            <div className={styles.quickActions}>
+              {quickActions.map((action, index) => (
+                <button
+                  key={index}
+                  className={styles.quickActionBtn}
+                  onClick={() => handleQuickAction(action.query)}
+                  disabled={isTyping}
+                >
+                  {action.label}
+                </button>
+              ))}
+            </div>
+
+            <div className={styles.chatInput}>
+              <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask about our services, pricing, or support..."
+                className={styles.messageInput}
+                disabled={isTyping}
+              />
+              <button
+                onClick={sendMessage}
+                className={styles.sendButton}
+                disabled={isTyping || !messageInput.trim()}
+              >
+                <FiSend size={18} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        <button
+          className={styles.chatToggle}
+          onClick={() => setShowChat(!showChat)}
+        >
+          <FiMessageCircle size={24} />
+          {!showChat && <span className={styles.notificationDot}></span>}
+        </button>
+      </div>
 
       {/* Service Form Modal */}
       {showServiceForm && selectedService && (
@@ -837,7 +1066,6 @@ export default function ServicesPage() {
                 />
               </div>
 
-              {/* Resume Upload - Only for services that require it */}
               {selectedService.requiresResume && (
                 <div className={styles.formGroup}>
                   <label htmlFor="resume">
@@ -859,7 +1087,7 @@ export default function ServicesPage() {
                       disabled={uploading}
                     />
                     <label htmlFor="resume" className={styles.fileLabel}>
-                      <FiUpload size={20} className={styles.uploadFiles} />
+                      <FiUpload size={20} />
                       <span>Choose Resume File</span>
                       {formData.resume && (
                         <span className={styles.fileName}>
@@ -871,7 +1099,6 @@ export default function ServicesPage() {
                 </div>
               )}
 
-              {/* Documents Upload - Only for services that require it */}
               {selectedService.requiresDocuments && (
                 <div className={styles.formGroup}>
                   <label htmlFor="documents">
@@ -894,7 +1121,7 @@ export default function ServicesPage() {
                       disabled={uploading}
                     />
                     <label htmlFor="documents" className={styles.fileLabel}>
-                      <FiUpload size={20} className={styles.uploadFiles} />
+                      <FiUpload size={20} />
                       <span>Choose Documents</span>
                     </label>
                   </div>
@@ -920,7 +1147,6 @@ export default function ServicesPage() {
                 </div>
               )}
 
-              {/* Price Input */}
               <div className={styles.formGroup}>
                 <label htmlFor="price">
                   Service Price *
@@ -931,7 +1157,7 @@ export default function ServicesPage() {
                 </label>
                 <div className={styles.priceInputContainer}>
                   <div className={styles.priceInputWrapper}>
-                    <div className={styles.icons}>
+                    <div className={styles.currencyIcon}>
                       {currency === "INR" ? (
                         <InrIcon size={20} />
                       ) : (
@@ -969,7 +1195,6 @@ export default function ServicesPage() {
                 </div>
               </div>
 
-              {/* Quantity Selector */}
               <div className={styles.formGroup}>
                 <label htmlFor="quantity">Quantity</label>
                 <div className={styles.quantitySelector}>
@@ -995,7 +1220,6 @@ export default function ServicesPage() {
                 </div>
               </div>
 
-              {/* Requirements */}
               <div className={styles.formGroup}>
                 <label htmlFor="requirements">
                   Project Requirements *
@@ -1016,7 +1240,6 @@ export default function ServicesPage() {
                 />
               </div>
 
-              {/* Price Summary */}
               <div className={styles.priceSummary}>
                 <h4>Order Summary</h4>
                 <div className={styles.priceRow}>
@@ -1041,7 +1264,6 @@ export default function ServicesPage() {
                 )}
               </div>
 
-              {/* Form Actions */}
               <div className={styles.formActions}>
                 <button
                   type="button"

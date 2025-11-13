@@ -113,8 +113,8 @@ export default function DashboardLayout({ children }) {
       bgColor: "#faf5ff",
     },
     {
-      id: "Save-Jobs",
-      label: "Save Jobs",
+      id: "Saved-Jobs",
+      label: "Saved Jobs",
       icon: <FaRegSave size={20} />,
       path: "/freelancer-dashboard/saved-jobs",
       bgColor: "#f0fdf4",

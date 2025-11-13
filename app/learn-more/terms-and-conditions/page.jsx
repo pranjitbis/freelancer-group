@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Nav from '../../home/component/Nav/page';
+import Footer from '../../home/footer/page';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaBalanceScale, 
@@ -127,38 +129,7 @@ export default function TermsAndConditions() {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
 
-      {/* Header */}
-      <motion.header 
-        className={styles.header}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className={styles.headerContent}>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link href="/" className={styles.logo}>
-              <FaShieldAlt /> Aroliya
-            </Link>
-          </motion.div>
-          <nav className={styles.nav}>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/" className={styles.navLink}>
-                <FaHome /> Home
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/services" className={styles.navLink}>
-                <FaCogs /> Services
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/contact" className={styles.navLink}>
-                <FaEnvelope /> Contact
-              </Link>
-            </motion.div>
-          </nav>
-        </div>
-      </motion.header>
+    <Nav />
 
       {/* Main Content */}
       <main className={styles.main}>
@@ -515,15 +486,11 @@ export default function TermsAndConditions() {
                     <div className={styles.contactSection}>
                       <div className={styles.contactItem}>
                         <FaEnvelope className={styles.contactIcon} />
-                        <span>legal@aroliya.com</span>
+                        <span>info@aroliya.com</span>
                       </div>
                       <div className={styles.contactItem}>
                         <FaPhone className={styles.contactIcon} />
-                        <span>+1 (555) 123-AROL (2765)</span>
-                      </div>
-                      <div className={styles.contactItem}>
-                        <FaGlobe className={styles.contactIcon} />
-                        <span>support.aroliya.com</span>
+                        <span>+91-9870519002</span>
                       </div>
                     </div>
                   </motion.div>
@@ -534,71 +501,7 @@ export default function TermsAndConditions() {
         </div>
       </main>
 
-      {/* Footer */}
-      <motion.footer 
-        className={styles.footer}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.6 }}
-      >
-        <div className={styles.footerContent}>
-          <div className={styles.footerBrand}>
-            <div className={styles.footerLogo}>
-              <FaShieldAlt /> Aroliya
-            </div>
-            <p className={styles.footerText}>
-              Your trusted partner for comprehensive digital solutions. 
-              From form filling to global travel bookings, e-commerce to freelancer services - 
-              we connect you with quality services worldwide.
-            </p>
-            <div className={styles.socialLinks}>
-              <motion.a href="#" className={styles.socialLink} whileHover={{ scale: 1.2 }}>
-                <FaLinkedin />
-              </motion.a>
-              <motion.a href="#" className={styles.socialLink} whileHover={{ scale: 1.2 }}>
-                <FaTwitter />
-              </motion.a>
-              <motion.a href="#" className={styles.socialLink} whileHover={{ scale: 1.2 }}>
-                <FaGithub />
-              </motion.a>
-            </div>
-          </div>
-          
-          <div className={styles.footerLinks}>
-            <h4>Our Services</h4>
-            <div className={styles.footerLinkGroup}>
-              <Link href="/services/forms" className={styles.footerLink}>
-                <FaArrowRight /> Form Filling
-              </Link>
-              <Link href="/services/travel" className={styles.footerLink}>
-                <FaArrowRight /> Travel Booking
-              </Link>
-              <Link href="/services/hotel" className={styles.footerLink}>
-                <FaArrowRight /> Hotel Booking
-              </Link>
-            </div>
-          </div>
-
-          <div className={styles.footerLinks}>
-            <h4>Legal</h4>
-            <div className={styles.footerLinkGroup}>
-              <Link href="/privacy" className={styles.footerLink}>
-                <FaArrowRight /> Privacy Policy
-              </Link>
-              <Link href="/terms" className={styles.footerLink}>
-                <FaArrowRight /> Terms of Service
-              </Link>
-              <Link href="/refund" className={styles.footerLink}>
-                <FaArrowRight /> Refund Policy
-              </Link>
-            </div>
-          </div>
-
-          <div className={styles.copyright}>
-            &copy; {new Date().getFullYear()} Aroliya Digital Solutions Pvt. Ltd. All rights reserved.
-          </div>
-        </div>
-      </motion.footer>
+    <Footer />
     </motion.div>
   );
 }

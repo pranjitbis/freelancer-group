@@ -13,7 +13,7 @@ import {
   FaMoneyCheckAlt,
   FaStar,
   FaArrowRight,
-  FaShield,
+  FaShieldAlt,
   FaClock,
   FaUsers,
   FaFilter,
@@ -182,7 +182,7 @@ const HowItWorks = () => {
 
   const features = [
     {
-      icon: FaShield,
+      icon: FaShieldAlt,
       title: "Secure Payments",
       description:
         "Protected transactions with escrow protection and secure payment processing",
@@ -241,7 +241,8 @@ const HowItWorks = () => {
     return <IconComponent className={className} />;
   };
 
-  const currentSteps = activeTab === "freelancers" ? freelancerSteps : clientSteps;
+  const currentSteps =
+    activeTab === "freelancers" ? freelancerSteps : clientSteps;
 
   return (
     <>
@@ -303,7 +304,11 @@ const HowItWorks = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className={activeTab === "clients" ? styles.stepsGridBhai : styles.stepsGrid}
+              className={
+                activeTab === "clients"
+                  ? styles.stepsGridBhai
+                  : styles.stepsGrid
+              }
               data-item-count={currentSteps.length}
             >
               {currentSteps.map((step, index) => (
