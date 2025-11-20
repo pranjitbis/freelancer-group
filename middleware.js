@@ -18,6 +18,7 @@ const PUBLIC_PATHS = [
   "/api/auth/logout",
   "/api/auth/callback",
   "/_next",
+  "/api/jobs",
   "/favicon.ico",
   "/find-work",
   "/home",
@@ -31,7 +32,7 @@ const PUBLIC_PATHS = [
   "/services/travel-bookings",
   "/services/data-visualization",
   "/services/freelancer-hub/freelancer-plan",
-  "/freelancer-hub/hire-freelancer",
+  "/services/freelancer-hub/hire-freelancer",
   "/career",
   "/unauthorized",
 ];
