@@ -8,7 +8,7 @@ import Footer from "../home/footer/page";
 import founderImage from "../../public/about/sir-image.png";
 import teamImage from "../../public/about/team2.jpeg";
 import teamTow from "../../public/about/tem3.jpg";
-import Whasapp from '../whatsapp_icon/page'
+import Whasapp from "../whatsapp_icon/page";
 import Image from "next/image";
 import {
   FaShieldAlt,
@@ -386,7 +386,7 @@ export default function About() {
         </section>
 
         {/* Founder Section */}
-        <section className={styles.section}>
+        <section className={`${styles.section} ${styles.FounderSection}`}>
           <div className={styles.container}>
             <motion.div
               className={styles.sectionHeader}
@@ -791,41 +791,37 @@ export default function About() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <div className={styles.container}>
-            <motion.div
-              className={styles.ctaContent}
-              initial={{ scale: 0.9 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 100 }}
-            >
-              <h2>Ready to Start Your Project?</h2>
-              <p>
-                Let's discuss how we can help you achieve your digital goals
-              </p>
-              <div className={styles.ctaButtons}>
-                <Link href="/register">
-                  {" "}
-                  <motion.button
-                    className={styles.primaryButton}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Get Started
-                  </motion.button>
-                </Link>
-                <Link href="/contact">
-                  <motion.button
-                    className={styles.secondaryButton}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Contact Us
-                  </motion.button>
-                </Link>
-              </div>
-            </motion.div>
-          </div>
+          <motion.div
+            className={styles.ctaContent}
+            initial={{ scale: 0.9 }}
+            whileInView={{ scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ type: "spring", stiffness: 100 }}
+          >
+            <h2>Ready to Start Your Project?</h2>
+            <p>Let's discuss how we can help you achieve your digital goals</p>
+            <div className={styles.ctaButtons}>
+              <Link href="/register">
+                {" "}
+                <motion.button
+                  className={styles.primaryButton}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Get Started
+                </motion.button>
+              </Link>
+              <Link href="/contact">
+                <motion.button
+                  className={styles.secondaryButton}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Contact Us
+                </motion.button>
+              </Link>
+            </div>
+          </motion.div>
         </motion.section>
 
         <Footer />

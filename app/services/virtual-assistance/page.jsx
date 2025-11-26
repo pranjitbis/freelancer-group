@@ -416,7 +416,7 @@ const VirtualAssistance = () => {
                 variants={fadeInUp}
                 transition={{ delay: 0.4 }}
               >
-                <Link href="/register" className={styles.ctaButton}>
+                <Link href="/register?userType=user" className={styles.ctaButton}>
                   Get Started Today
                 </Link>
                 <Link href="#services" className={styles.secondaryButton}>
@@ -537,7 +537,7 @@ const VirtualAssistance = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Link href="/register" className={styles.serviceButton}>
+                  <Link href="/register?userType=user" className={styles.serviceButton}>
                     Start This Service
                   </Link>
                 </motion.div>
@@ -697,7 +697,7 @@ const VirtualAssistance = () => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Link
-                    href="/register"
+                    href="/register?userType=user"
                     className={
                       plan.recommended
                         ? styles.primaryButton

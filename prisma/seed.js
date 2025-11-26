@@ -36,3 +36,14 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+export async function GET() {
+  try {
+    const leads = await prisma.WebDev.findMany({
+      orderBy: { createdAt: "desc" }, // newest first
+    });
+
+    return NextResponse.json({ success: true, leads });
+  } catch (err) {
+    return NextResponse.json({ success: false, error: err.message });
+  }
+}

@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FiCode,
   FiCloud,
@@ -16,7 +16,10 @@ import {
   FiServer,
   FiShield,
   FiZap,
+  FiMail,
+  FiMessageSquare,
 } from "react-icons/fi";
+
 import { DiPhp } from "react-icons/di";
 import Nav from "../../home/component/Nav/page";
 import Footer from "../../home/footer/page";
@@ -47,12 +50,82 @@ const Services = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
-    alert("Form submitted successfully!");
+
+    const res = await fetch("/api/webdev", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Your request was submitted successfully! 🚀");
+      setFormData({ name: "", email: "", message: "" });
+    } else {
+      alert("Submission failed ❌");
+    }
   };
 
+  const TypeWriter = ({ text, speed }) => {
+    const [displayedText, setDisplayedText] = useState("");
+
+    useEffect(() => {
+      let index = 0;
+      const interval = setInterval(() => {
+        setDisplayedText(text.slice(0, index));
+        index++;
+        if (index > text.length) clearInterval(interval);
+      }, speed);
+
+      return () => clearInterval(interval);
+    }, [text]);
+
+    return <span>{displayedText}</span>;
+  };
+
+  const TypeWriterTerminal = ({ lines, speed = 60, delay = 600 }) => {
+    const [display, setDisplay] = useState([]);
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+      if (index >= lines.length) return;
+
+      let [command, output] = lines[index].split("|");
+      let typed = "";
+      let i = 0;
+
+      const typing = setInterval(() => {
+        typed = command.slice(0, i);
+        setDisplay((prev) => [...prev.slice(0, index), typed]);
+        i++;
+
+        if (i > command.length) {
+          clearInterval(typing);
+          if (output) {
+            setTimeout(() => {
+              setDisplay((prev) => [...prev.slice(0, index), command, output]);
+              setIndex(index + 1);
+            }, delay);
+          } else {
+            setTimeout(() => setIndex(index + 1), delay / 2);
+          }
+        }
+      }, speed);
+
+      return () => clearInterval(typing);
+    }, [index]);
+
+    return (
+      <pre>
+        {display.map((line, i) => (
+          <div key={i}>{line}</div>
+        ))}
+      </pre>
+    );
+  };
   const features = [
     {
       icon: <FiCode />,
@@ -344,7 +417,7 @@ const Services = () => {
 
   return (
     <>
-    <Nav />
+      <Nav />
       <div className={styles.container}>
         <WhatsApp />
         <section className={styles.hero}>
@@ -399,8 +472,37 @@ const Services = () => {
                   </div>
                   <span className={styles.fileName}>service-controller.js</span>
                 </div>
+
                 <div className={styles.codeContent}>
-                  <pre>{`import { motion } from 'framer-motion';\nimport { useState } from 'react';\n\nconst ServiceController = () => {\n  const [features, setFeatures] = useState([\n    'Code', 'Build', 'Debug', 'Deploy',\n    'Collaborate', 'Analyze', 'Learn'\n  ]);\n\n  return (\n    <motion.div\n      initial={{ opacity: 0 }}\n      animate={{ opacity: 1 }}\n    >\n      <YourInterface />\n    </motion.div>\n  );\n};\n\nexport default ServiceController;`}</pre>
+                  <motion.pre
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <TypeWriter
+                      text={`import { motion } from 'framer-motion';
+import { useState } from 'react';
+
+const ServiceController = () => {
+  const [features, setFeatures] = useState([
+    'Code', 'Build', 'Debug', 'Deploy',
+    'Collaborate', 'Analyze', 'Learn'
+  ]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      <YourInterface />
+    </motion.div>
+  );
+};
+
+export default ServiceController;`}
+                      speed={25}
+                    />
+                  </motion.pre>
                 </div>
               </div>
             </motion.div>
@@ -512,7 +614,18 @@ const Services = () => {
                 <span>terminal — bash</span>
               </div>
               <div className={styles.terminalContent}>
-                <pre>{`$ git init\nInitialized empty Git repository\n\n$ git add .\n$ git commit -m "Initial commit"\n\n$ git push origin main\nEverything up-to-date\n\n$ git branch feature/new-ui\n$ git checkout feature/new-ui\nSwitched to branch 'feature/new-ui'`}</pre>
+                <TypeWriterTerminal
+                  lines={[
+                    "$ git init|Initialized empty Git repository",
+                    "$ git add .",
+                    `$ git commit -m "Initial commit"|[main (root-commit) abc1234] Initial commit`,
+                    "$ git push origin main|Everything up-to-date",
+                    "$ git branch feature/new-ui",
+                    "$ git checkout feature/new-ui|Switched to branch 'feature/new-ui'",
+                  ]}
+                  speed={70}
+                  delay={700}
+                />
               </div>
             </motion.div>
           </div>
@@ -609,7 +722,8 @@ const Services = () => {
           </div>
         </section>
 
-        {/* Final CTA */}
+        {/* Contact Form CTA  */}
+        {/* Contact Form CTA  */}
         <section className={styles.finalCTA}>
           <motion.div
             className={styles.ctaContent}
@@ -619,26 +733,65 @@ const Services = () => {
             viewport={{ once: true }}
           >
             <FiZap className={styles.ctaIcon} />
-            <h2>Ready to Start Your Project?</h2>
+
+            <h2>Let's Build Something Great</h2>
             <p>
-              Join thousands of developers who trust our platform to build
-              amazing software
+              Share your project details — our team will get back within 24
+              hours.
             </p>
-            <Link href="/contact-us">
-              {" "}
+
+            <form onSubmit={handleSubmit} className={styles.proForm}>
+              {/* NAME FIELD */}
+              <div className={styles.formRow}>
+                <FiUsers className={styles.fieldIcon} />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Full Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              {/* EMAIL FIELD */}
+              <div className={styles.formRow}>
+                <FiMail className={styles.fieldIcon} />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              {/* PROJECT MESSAGE */}
+              <div className={styles.formRowText}>
+                <FiMessageSquare className={styles.fieldIconText} />
+                <textarea
+                  name="message"
+                  placeholder="Describe your project..."
+                  rows="5"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                ></textarea>
+              </div>
+
               <motion.button
-                className={styles.ctaButton}
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 10px 30px rgba(102, 126, 234, 0.3)",
-                }}
-                whileTap={{ scale: 0.95 }}
+                type="submit"
+                className={styles.proSubmitBtn}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.96 }}
               >
-                Get Started Now
+                🚀 Submit & Get Quote
               </motion.button>
-            </Link>
+            </form>
           </motion.div>
         </section>
+
         <Footer />
       </div>
     </>

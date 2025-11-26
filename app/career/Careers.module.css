@@ -73,7 +73,7 @@
 }
 
 .hero h1 {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 700;
   line-height: 1.1;
   margin-bottom: 24px;
@@ -87,7 +87,7 @@
 }
 
 .hero p {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #cbd5e1;
   line-height: 1.6;
   margin-bottom: 32px;
@@ -106,14 +106,14 @@
 
 .statItem strong {
   display: block;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #60a5fa;
   margin-bottom: 4px;
 }
 
 .statItem span {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: #94a3b8;
   font-weight: 500;
 }
@@ -127,10 +127,10 @@
 .primaryButton {
   background: #2563eb;
   color: white;
-  padding: 16px 32px;
+  padding: 5px 22px;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
@@ -149,10 +149,10 @@
 .secondaryButton {
   background: transparent;
   color: white;
-  padding: 16px 32px;
+  padding: 16px 25px;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -254,7 +254,7 @@
 
 /* Culture Section */
 .culture {
-  padding: 100px 0;
+  padding: 70px 0 ;
   background: #ffffff;
 }
 
@@ -321,7 +321,7 @@
 
 /* Opportunities Section */
 .opportunities {
-  padding: 100px 0;
+  padding: 70px 0;
   background: #f8fafc;
 }
 
@@ -575,7 +575,7 @@
 
 /* Process Section */
 .process {
-  padding: 100px 0;
+  padding: 70px 0;
   background: #ffffff;
 }
 
@@ -644,7 +644,7 @@
 
 /* Testimonials Section */
 .testimonials {
-  padding: 100px 0;
+  padding: 70px 0;
   background: #f8fafc;
 }
 

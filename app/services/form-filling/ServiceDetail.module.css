@@ -9,7 +9,7 @@
 /* Hero Section */
 .hero {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 120px 0 80px;
+  padding: 70px 0 80px;
   position: relative;
   overflow: hidden;
 }
@@ -51,7 +51,7 @@
 }
 
 .hero h1 {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 700;
   color: #1e293b;
   line-height: 1.1;
@@ -66,17 +66,17 @@
 }
 
 .hero p {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #64748b;
   line-height: 1.6;
-  margin-bottom: 32px;
+  margin-bottom: 12px;
 }
 
 .heroStats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
-  margin-bottom: 40px;
+  margin-bottom: 12px;
   padding: 24px 0;
 }
 
@@ -507,7 +507,7 @@
 
 /* CTA Section */
 .cta {
-  padding: 100px 0;
+  padding: 70px 0;
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: white;
 }

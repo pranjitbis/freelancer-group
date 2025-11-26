@@ -92,6 +92,11 @@ const Footer = () => {
                   Contact Us
                 </Link>
               </li>
+              <li>
+                <Link href="/how-its-work" className={styles.link}>
+                  How Its Work
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -117,7 +122,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link href="/services/travel-bookings" className={styles.link}>
-                  Travel Booking
+                  Travel & Hotel Booking
                 </Link>
               </li>
               <li>
@@ -125,7 +130,17 @@ const Footer = () => {
                   href="/services/data-visualization"
                   className={styles.link}
                 >
-                  Data Visualization
+                  Data & AI Solutions
+                </Link>
+              </li>
+              <li>
+                <Link href="/register" className={styles.link}>
+                  Freelancer Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/services/form-filling" className={styles.link}>
+                  Online Form Filling
                 </Link>
               </li>
             </ul>
@@ -168,14 +183,11 @@ const Footer = () => {
               © {currentYear} Aroliya. All rights reserved.
             </p>
             <div className={styles.legalLinks}>
-              <Link href="/privacy-policy" className={styles.legalLink}>
-                Privacy Policy
-              </Link>
               <Link href="/terms-and-conditions" className={styles.legalLink}>
-                Terms and Conditions
+                Terms & Conditions
               </Link>
-              <Link href="/how-its-work">
-                How It Works
+              <Link href="/terms-and-privacy" className={styles.legalLink}>
+                Terms & Privacy
               </Link>
             </div>
           </div>

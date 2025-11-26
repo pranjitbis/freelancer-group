@@ -3,7 +3,7 @@
   min-height: 100vh;
   background: #0f0f23;
   color: white;
-  margin: 8rem 0 0;
+  margin: 4rem 0 0;
 }
 
 .navbar {
@@ -758,5 +758,114 @@
   .heroSubtitle {
     text-align: center;
     margin: 10px;
+  }
+}
+.finalCTA {
+  padding: 110px 20px;
+  display: flex;
+  justify-content: center;
+  background: radial-gradient(circle at top, #111429, #090b14);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ctaContent {
+  width: 100%;
+  max-width: 650px;
+  text-align: center;
+  padding: 55px 45px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 18px;
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ctaIcon {
+  font-size: 52px;
+  color: #6c8bff;
+  margin-bottom: 12px;
+}
+
+.ctaContent h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.ctaContent p {
+  color: #c5c8d4;
+  margin-bottom: 35px;
+  font-size: 16px;
+}
+
+/* --- Form Styling --- */
+
+.proForm {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.formRow,
+.formRowText {
+  position: relative;
+}
+
+.fieldIcon,
+.fieldIconText {
+  position: absolute;
+  font-size: 20px;
+  color: #6e8bff;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.fieldIconText {
+  top: 22%;
+}
+
+.formRow input,
+.formRowText textarea {
+  width: 100%;
+  padding: 14px 18px 14px 50px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.formRow input:focus,
+.formRowText textarea:focus {
+  border-color: #7d90ff;
+  box-shadow: 0 0 12px rgba(110, 139, 255, 0.45);
+}
+
+.proSubmitBtn {
+  margin-top: 10px;
+  padding: 15px;
+  background: linear-gradient(125deg, #6e8bff, #a062ff);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.proSubmitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(110, 139, 255, 0.4);
+}
+
+@media (max-width: 600px) {
+  .ctaContent {
+    padding: 40px 25px;
+  }
+  .ctaContent h2 {
+    font-size: 26px;
   }
 }

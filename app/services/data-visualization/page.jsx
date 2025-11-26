@@ -14,7 +14,7 @@ import Footer from "@/app/home/footer/page";
 import styles from "./DataVisualization.module.css";
 import Image from "next/image";
 import Nav from "@/app/home/component/Nav/page";
-import WhatsApp from '../../whatsapp_icon/page'
+import WhatsApp from "../../whatsapp_icon/page";
 import {
   FaChartLine,
   FaShoppingCart,
@@ -26,6 +26,7 @@ import {
   FaCheck,
   FaStar,
   FaRocket,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 import data from "../../../public/icons/data-visualization.png";
 import Link from "next/link";
@@ -34,6 +35,31 @@ import { useState, useEffect } from "react";
 
 const DataVisualization = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [currency, setCurrency] = useState("INR");
+  const [exchangeRate, setExchangeRate] = useState(83); // Default INR to USD rate
+  const [isConverting, setIsConverting] = useState(false);
+
+  // Fetch exchange rate
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      try {
+        setIsConverting(true);
+        // Using a free exchange rate API
+        const response = await fetch(
+          "https://api.exchangerate-api.com/v4/latest/INR"
+        );
+        const data = await response.json();
+        setExchangeRate(data.rates.USD || 0.012); // Fallback rate
+      } catch (error) {
+        console.error("Error fetching exchange rate:", error);
+        setExchangeRate(0.012); // Fallback rate
+      } finally {
+        setIsConverting(false);
+      }
+    };
+
+    fetchExchangeRate();
+  }, []);
 
   const features = [
     {
@@ -78,42 +104,66 @@ const DataVisualization = () => {
     {
       icon: <FaChartLine />,
       title: "Finance & Investment",
-      features: ["Real-time portfolio tracking", "Risk & compliance monitoring", "Predictive investment insights"],
+      features: [
+        "Real-time portfolio tracking",
+        "Risk & compliance monitoring",
+        "Predictive investment insights",
+      ],
       color: "#2563eb",
     },
     {
       icon: <FaShoppingCart />,
       title: "E-commerce & Retail",
-      features: ["Sales & revenue dashboards", "Customer behavior analytics", "Inventory & demand forecasting"],
+      features: [
+        "Sales & revenue dashboards",
+        "Customer behavior analytics",
+        "Inventory & demand forecasting",
+      ],
       color: "#059669",
     },
     {
       icon: <FaHospital />,
       title: "Healthcare",
-      features: ["Patient health analytics", "Clinical data dashboards", "Compliance & secure access"],
+      features: [
+        "Patient health analytics",
+        "Clinical data dashboards",
+        "Compliance & secure access",
+      ],
       color: "#dc2626",
     },
     {
       icon: <FaBullhorn />,
       title: "Marketing & Media",
-      features: ["Campaign performance tracking", "Customer engagement insights", "ROI-driven reporting"],
+      features: [
+        "Campaign performance tracking",
+        "Customer engagement insights",
+        "ROI-driven reporting",
+      ],
       color: "#7c3aed",
     },
     {
       icon: <FaTruck />,
       title: "Logistics & Supply Chain",
-      features: ["Real-time shipment tracking", "Supplier performance dashboards", "Route optimization analytics"],
+      features: [
+        "Real-time shipment tracking",
+        "Supplier performance dashboards",
+        "Route optimization analytics",
+      ],
       color: "#ea580c",
     },
     {
       icon: <FaGraduationCap />,
       title: "Education & E-Learning",
-      features: ["Student performance analytics", "Course engagement dashboards", "Institutional data insights"],
+      features: [
+        "Student performance analytics",
+        "Course engagement dashboards",
+        "Institutional data insights",
+      ],
       color: "#db2777",
     },
   ];
 
-  const pricingPlans = [
+  const pricingPlansINR = [
     {
       name: "Starter",
       price: "₹599",
@@ -126,13 +176,64 @@ const DataVisualization = () => {
         "Basic Email Support",
         "Real-time Data Updates",
         "Export to PDF/PNG",
-        'Basic Analytics'
+        "Basic Analytics",
       ],
       recommended: false,
     },
     {
       name: "Professional",
       price: "₹1500",
+      period: "/month",
+      description: "Ideal for growing teams and businesses",
+      features: [
+        "Unlimited Dashboards",
+        "50+ Advanced Chart Types",
+        "Database & API Integration",
+        "Team Collaboration Tools",
+        "Priority Support",
+        "Custom Visualization Types",
+        "Advanced Analytics",
+      ],
+      recommended: true,
+    },
+    {
+      name: "Enterprise",
+      price: "Custom",
+      period: "",
+      description: "For large organizations with complex needs",
+      features: [
+        "Custom Development",
+        "Dedicated Account Manager",
+        "On-premise Deployment",
+        "Advanced Security Compliance",
+        "24/7 Premium Support",
+        "White-label Solutions",
+        "Training & Onboarding",
+      ],
+      recommended: false,
+    },
+  ];
+
+  const pricingPlansUSD = [
+    {
+      name: "Starter",
+      price: "$7.99",
+      period: "/month",
+      description: "Perfect for small businesses and startups",
+      features: [
+        "Up to 3 Interactive Dashboards",
+        "20+ Chart Types Available",
+        "CSV & Excel Data Import",
+        "Basic Email Support",
+        "Real-time Data Updates",
+        "Export to PDF/PNG",
+        "Basic Analytics",
+      ],
+      recommended: false,
+    },
+    {
+      name: "Professional",
+      price: "$19.99",
       period: "/month",
       description: "Ideal for growing teams and businesses",
       features: [
@@ -197,6 +298,14 @@ const DataVisualization = () => {
     },
   ];
 
+  // Get current pricing plans based on currency
+  const pricingPlans = currency === "INR" ? pricingPlansINR : pricingPlansUSD;
+
+  // Toggle currency
+  const toggleCurrency = () => {
+    setCurrency(currency === "INR" ? "USD" : "INR");
+  };
+
   // Animation variants
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -216,7 +325,6 @@ const DataVisualization = () => {
     animate: { opacity: 1, scale: 1 },
   };
 
-  // Remove the TypeScript variant that was causing the error
   // Auto-slide functionality
   useEffect(() => {
     const interval = setInterval(() => {
@@ -229,7 +337,9 @@ const DataVisualization = () => {
   return (
     <>
       <Head>
-        <title>Data Visualization Solutions | Transform Data into Actionable Insights</title>
+        <title>
+          Data Visualization Solutions | Transform Data into Actionable Insights
+        </title>
         <meta
           name="description"
           content="Professional data visualization solutions with interactive dashboards, predictive analytics, and enterprise-grade security for data-driven decision making."
@@ -239,6 +349,27 @@ const DataVisualization = () => {
       <WhatsApp />
 
       <div className={styles.container}>
+        {/* Currency Converter Button - Fixed Position */}
+        <motion.button
+          className={styles.currencyConverter}
+          onClick={toggleCurrency}
+          disabled={isConverting}
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <FaMoneyBillWave className={styles.currencyIcon} />
+          {isConverting ? (
+            "Converting..."
+          ) : (
+            <>
+              Show in {currency === "INR" ? "USD" : "INR"}
+              <span className={styles.currencyBadge}>{currency}</span>
+            </>
+          )}
+        </motion.button>
+
         {/* Hero Section */}
         <section className={styles.hero}>
           <div className={styles.heroContainer}>
@@ -261,13 +392,16 @@ const DataVisualization = () => {
 
                 <motion.h1 variants={fadeInUp}>
                   Transform Data Into{" "}
-                  <span className={styles.gradientText}>Actionable Insights</span>
+                  <span className={styles.gradientText}>
+                    Actionable Insights
+                  </span>
                 </motion.h1>
 
                 <motion.p variants={fadeInUp}>
-                  Explore trends, track performance, and unlock hidden patterns with our 
-                  professional data visualization solutions. Make smarter decisions with 
-                  interactive dashboards and predictive analytics.
+                  Explore trends, track performance, and unlock hidden patterns
+                  with our professional data visualization solutions. Make
+                  smarter decisions with interactive dashboards and predictive
+                  analytics.
                 </motion.p>
 
                 <motion.div variants={fadeInUp} className={styles.heroStats}>
@@ -286,8 +420,8 @@ const DataVisualization = () => {
                 </motion.div>
 
                 <motion.div variants={fadeInUp} className={styles.heroActions}>
-                  <Link href="/register">
-                    <motion.button 
+                  <Link href="/register?userType=user">
+                    <motion.button
                       className={styles.primaryButton}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -296,7 +430,7 @@ const DataVisualization = () => {
                     </motion.button>
                   </Link>
                   <Link href="#features">
-                    <motion.button 
+                    <motion.button
                       className={styles.secondaryButton}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -314,20 +448,29 @@ const DataVisualization = () => {
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
                 <div className={styles.visualizationPreview}>
-                  <Image 
-                    src={data} 
+                  <Image
+                    src={data}
                     alt="Advanced Data Visualization Dashboard"
                     className={styles.heroImage}
                     priority
                   />
                   <div className={styles.floatingElements}>
-                    <div className={styles.floatingChart} style={{ top: '20%', left: '10%' }}>
+                    <div
+                      className={styles.floatingChart}
+                      style={{ top: "20%", left: "10%" }}
+                    >
                       <FaChartBar />
                     </div>
-                    <div className={styles.floatingChart} style={{ top: '60%', right: '15%' }}>
+                    <div
+                      className={styles.floatingChart}
+                      style={{ top: "60%", right: "15%" }}
+                    >
                       <FaChartPie />
                     </div>
-                    <div className={styles.floatingChart} style={{ bottom: '30%', left: '20%' }}>
+                    <div
+                      className={styles.floatingChart}
+                      style={{ bottom: "30%", left: "20%" }}
+                    >
                       <FaChartLine />
                     </div>
                   </div>
@@ -348,7 +491,10 @@ const DataVisualization = () => {
             >
               <span className={styles.sectionSubtitle}>Key Features</span>
               <h2>Powerful Visualization Capabilities</h2>
-              <p>From interactive dashboards to predictive analytics, we provide the tools to visualize and act on insights.</p>
+              <p>
+                From interactive dashboards to predictive analytics, we provide
+                the tools to visualize and act on insights.
+              </p>
             </motion.div>
 
             <motion.div
@@ -366,15 +512,18 @@ const DataVisualization = () => {
                   whileHover={{ y: -8 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <div 
+                  <div
                     className={styles.featureIcon}
-                    style={{ backgroundColor: `${feature.color}15`, color: feature.color }}
+                    style={{
+                      backgroundColor: `${feature.color}15`,
+                      color: feature.color,
+                    }}
                   >
                     {feature.icon}
                   </div>
                   <h3>{feature.title}</h3>
                   <p>{feature.desc}</p>
-                  <motion.div 
+                  <motion.div
                     className={styles.featureLine}
                     style={{ backgroundColor: feature.color }}
                     whileHover={{ width: "100%" }}
@@ -394,9 +543,14 @@ const DataVisualization = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <span className={styles.sectionSubtitle}>Industries We Serve</span>
+              <span className={styles.sectionSubtitle}>
+                Industries We Serve
+              </span>
               <h2>Tailored Solutions for Every Sector</h2>
-              <p>Our data visualization solutions empower diverse industries with insights that drive growth and efficiency.</p>
+              <p>
+                Our data visualization solutions empower diverse industries with
+                insights that drive growth and efficiency.
+              </p>
             </motion.div>
 
             <motion.div
@@ -414,13 +568,16 @@ const DataVisualization = () => {
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <div 
+                  <div
                     className={styles.industryHeader}
                     style={{ borderColor: industry.color }}
                   >
-                    <div 
+                    <div
                       className={styles.industryIcon}
-                      style={{ backgroundColor: `${industry.color}15`, color: industry.color }}
+                      style={{
+                        backgroundColor: `${industry.color}15`,
+                        color: industry.color,
+                      }}
                     >
                       {industry.icon}
                     </div>
@@ -457,7 +614,22 @@ const DataVisualization = () => {
             >
               <span className={styles.sectionSubtitle}>Pricing</span>
               <h2>Flexible Plans for Every Need</h2>
-              <p>Choose the perfect plan that grows with your business and data requirements.</p>
+              <p>
+                Choose the perfect plan that grows with your business and data
+                requirements.
+              </p>
+            </motion.div>
+
+            {/* Currency Display */}
+            <motion.div
+              className={styles.currencyDisplay}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <span className={styles.currentCurrency}>
+                Displaying prices in: <strong>{currency}</strong>
+              </span>
             </motion.div>
 
             <motion.div
@@ -470,7 +642,9 @@ const DataVisualization = () => {
               {pricingPlans.map((plan, index) => (
                 <motion.div
                   key={index}
-                  className={`${styles.pricingCard} ${plan.recommended ? styles.recommended : ''}`}
+                  className={`${styles.pricingCard} ${
+                    plan.recommended ? styles.recommended : ""
+                  }`}
                   variants={scaleIn}
                   whileHover={{ y: -10 }}
                 >
@@ -480,7 +654,7 @@ const DataVisualization = () => {
                       Most Popular
                     </div>
                   )}
-                  
+
                   <div className={styles.planHeader}>
                     <h3>{plan.name}</h3>
                     <div className={styles.planPrice}>
@@ -509,7 +683,7 @@ const DataVisualization = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Link href="/register" className={styles.planButton}>
+                    <Link href="/register?userType=user" className={styles.planButton}>
                       Get Started
                     </Link>
                   </motion.div>
@@ -530,7 +704,10 @@ const DataVisualization = () => {
             >
               <span className={styles.sectionSubtitle}>Testimonials</span>
               <h2>Trusted by Data-Driven Teams</h2>
-              <p>See how organizations are transforming their decision-making with our visualization solutions.</p>
+              <p>
+                See how organizations are transforming their decision-making
+                with our visualization solutions.
+              </p>
             </motion.div>
 
             <div className={styles.testimonialSlider}>
@@ -549,7 +726,11 @@ const DataVisualization = () => {
                         {[...Array(5)].map((_, i) => (
                           <FaStar
                             key={i}
-                            className={i < testimonials[currentTestimonial].rating ? styles.starFilled : styles.starEmpty}
+                            className={
+                              i < testimonials[currentTestimonial].rating
+                                ? styles.starFilled
+                                : styles.starEmpty
+                            }
                           />
                         ))}
                       </div>
@@ -572,7 +753,9 @@ const DataVisualization = () => {
                 {testimonials.map((_, index) => (
                   <button
                     key={index}
-                    className={`${styles.indicator} ${index === currentTestimonial ? styles.active : ''}`}
+                    className={`${styles.indicator} ${
+                      index === currentTestimonial ? styles.active : ""
+                    }`}
                     onClick={() => setCurrentTestimonial(index)}
                     aria-label={`Go to testimonial ${index + 1}`}
                   />
@@ -605,7 +788,8 @@ const DataVisualization = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 }}
               >
-                Start visualizing your data today and unlock insights that drive business growth.
+                Start visualizing your data today and unlock insights that drive
+                business growth.
               </motion.p>
               <motion.div
                 className={styles.ctaButtons}
@@ -614,8 +798,8 @@ const DataVisualization = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.4 }}
               >
-                <Link href="/register">
-                  <motion.button 
+                <Link href="/register?userType=user">
+                  <motion.button
                     className={styles.primaryButton}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -623,8 +807,8 @@ const DataVisualization = () => {
                     <FaRocket /> Start Free Trial
                   </motion.button>
                 </Link>
-                <Link href="/contact">
-                  <motion.button 
+                <Link href="/contact-us">
+                  <motion.button
                     className={styles.secondaryButton}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}

@@ -319,6 +319,16 @@ model FormData {
 
   @@map("formdata")
 }
+model WebDev {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String
+  serviceCategory String?
+  message         String?
+  phone           String?
+  createdAt       DateTime @default(now())
+  status          String   @default("Pending")
+}
 
 model JobApplication {
   id              Int      @id @default(autoincrement())

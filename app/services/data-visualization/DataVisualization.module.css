@@ -78,7 +78,7 @@
 }
 
 .hero h1 {
-  font-size: 3.5rem;
+  font-size: 3.1rem;
   font-weight: 700;
   line-height: 1.1;
   margin-bottom: 24px;
@@ -92,10 +92,10 @@
 }
 
 .hero p {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #cbd5e1;
   line-height: 1.6;
-  margin-bottom: 32px;
+  margin-bottom: 12px;
 }
 
 .heroStats {
@@ -956,4 +956,99 @@
       transparent 50%
     );
   pointer-events: none;
+}
+/* Currency Converter Button */
+.currencyConverter {
+  position: fixed;
+  top: 120px;
+  right: 30px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #66d6ea 0%, #18b8b0 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.currencyConverter:hover:not(:disabled) {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+}
+
+.currencyConverter:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.currencyIcon {
+  font-size: 1rem;
+}
+
+.currencyBadge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Currency Display in Pricing Section */
+.currencyDisplay {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.currentCurrency {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.currentCurrency strong {
+  color: #3b82f6;
+}
+
+/* Responsive Design for Currency Button */
+@media (max-width: 768px) {
+  .currencyConverter {
+    top: 100px;
+    right: 20px;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .currencyBadge {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .currencyConverter {
+    top: 90px;
+    right: 15px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .currencyIcon {
+    font-size: 0.8rem;
+  }
 }

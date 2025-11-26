@@ -2,7 +2,7 @@
 
 .container {
   max-width: 1200px;
-  margin: 10rem auto 4rem;
+  margin: 10rem auto 2rem;
   padding: 0 20px;
 }
 
@@ -234,11 +234,9 @@
   transform: translateY(-50%);
 }
 
-
-
 /* Section Styles */
 .section {
-  padding: 0px 0 40px;
+  padding: 0px 0 0px;
 }
 
 .sectionHeader {
@@ -282,6 +280,10 @@
 
 .founderImageWrapper {
   position: relative;
+}
+
+.FounderSection {
+  margin: -5rem 0 3rem;
 }
 
 .founderImageContainer {
@@ -422,6 +424,10 @@
 .expertiseTag:hover {
   background: #3b82f6;
   color: white;
+}
+
+.visionMissionSection {
+  margin: -4rem 0;
 }
 
 /* Story Section */
@@ -650,15 +656,16 @@
 /* CTA Section */
 .ctaSection {
   background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  padding: 100px 0;
+  padding: 1rem 0 2rem;
   text-align: center;
 }
 
 .ctaContent h2 {
   font-size: 2.5rem;
   font-weight: 700;
+  margin: 3rem 0 1rem 0;
+
   color: white;
-  margin-bottom: 16px;
 }
 
 .ctaContent p {
@@ -715,7 +722,6 @@
 @media (max-width: 1390px) {
   .heroSection {
     min-height: 90vh;
-   
   }
 }
 @media (max-width: 768px) {
@@ -774,4 +780,3 @@
     flex-direction: column;
   }
 }
-

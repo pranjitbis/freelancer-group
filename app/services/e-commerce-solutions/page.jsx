@@ -261,7 +261,8 @@ const EcommerceSolutions = () => {
   // Currency conversion function
   const convertPrice = (inrPrice) => {
     if (currency === "USD") {
-      const usdAmount = parseFloat(inrPrice.replace('₹', '').replace(',', '')) / exchangeRate;
+      const usdAmount =
+        parseFloat(inrPrice.replace("₹", "").replace(",", "")) / exchangeRate;
       return `$${usdAmount.toFixed(2)}`;
     }
     return inrPrice;
@@ -323,7 +324,7 @@ const EcommerceSolutions = () => {
       ],
       button: "Get Started",
       primary: false,
-      link: "/register",
+      link: "/register?userType=user",
     },
     {
       name: "Business",
@@ -343,7 +344,7 @@ const EcommerceSolutions = () => {
       ],
       button: "Get Started",
       primary: true,
-      link: "/register",
+      link: "/register?userType=user",
     },
     {
       name: "Enterprise",
@@ -363,7 +364,7 @@ const EcommerceSolutions = () => {
       ],
       button: "Get Started",
       primary: false,
-      link: "/register",
+      link: "/register?userType=user",
     },
   ];
 
@@ -555,9 +556,7 @@ const EcommerceSolutions = () => {
           <FaExchangeAlt className={styles.currencyIcon} />
           <span>{currency === "INR" ? "₹ INR" : "$ USD"}</span>
         </button>
-        <div className={styles.currencyNote}>
-          Prices shown in {currency}
-        </div>
+        <div className={styles.currencyNote}>Prices shown in {currency}</div>
       </motion.div>
 
       {/* Hero Section */}
@@ -571,9 +570,6 @@ const EcommerceSolutions = () => {
               variants={slideInLeft}
               transition={{ duration: 0.8 }}
             >
-              <div className={styles.heroBadge}>
-                Professional E-commerce Solutions
-              </div>
               <h1>Transform Your Online Business with Aroliya</h1>
               <p>
                 Complete e-commerce solutions to build, manage, and scale your
@@ -595,7 +591,7 @@ const EcommerceSolutions = () => {
                 </div>
               </div>
               <div className={styles.heroButtons}>
-                <Link href="/register">
+                <Link href="/register?userType=user">
                   <motion.button
                     className={styles.btnPrimary}
                     whileHover={{ scale: 1.05 }}
@@ -626,13 +622,11 @@ const EcommerceSolutions = () => {
 
       {/* Stats Section */}
       <section className={styles.stats}>
-        <div className={styles.container}>
-          <div className={styles.statsGrid}>
-            <StatCard number="500+" label="Stores Built" />
-            <StatCard number="40%" label="Average Growth" />
-            <StatCard number="24/7" label="Customer Support" />
-            <StatCard number="99.9%" label="Platform Uptime" />
-          </div>
+        <div className={styles.statsGrid}>
+          <StatCard number="500+" label="Stores Built" />
+          <StatCard number="40%" label="Average Growth" />
+          <StatCard number="24/7" label="Customer Support" />
+          <StatCard number="99.9%" label="Platform Uptime" />
         </div>
       </section>
 
@@ -703,35 +697,33 @@ const EcommerceSolutions = () => {
 
       {/* Benefits Section */}
       <section className={styles.benefits}>
-        <div className={styles.container}>
-          <div className={styles.sectionHeader}>
-            <h2>Why Choose Aroliya?</h2>
-            <p>Professional solutions that drive real results</p>
-          </div>
-          <div className={styles.benefitsGrid}>
-            {benefits.map((benefit, index) => (
+        <div className={styles.sectionHeader}>
+          <h2>Why Choose Aroliya?</h2>
+          <p>Professional solutions that drive real results</p>
+        </div>
+        <div className={styles.benefitsGrid}>
+          {benefits.map((benefit, index) => (
+            <motion.div
+              key={index}
+              className={styles.benefitCard}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+              variants={scaleIn}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+            >
               <motion.div
-                key={index}
-                className={styles.benefitCard}
-                initial="initial"
-                whileInView="animate"
-                viewport={{ once: true }}
-                variants={scaleIn}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
+                className={styles.benefitIcon}
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.3 }}
               >
-                <motion.div
-                  className={styles.benefitIcon}
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {benefit.icon}
-                </motion.div>
-                <h3>{benefit.title}</h3>
-                <p>{benefit.description}</p>
+                {benefit.icon}
               </motion.div>
-            ))}
-          </div>
+              <h3>{benefit.title}</h3>
+              <p>{benefit.description}</p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
@@ -764,35 +756,33 @@ const EcommerceSolutions = () => {
 
       {/* Features Section */}
       <section className={styles.features}>
-        <div className={styles.container}>
-          <div className={styles.sectionHeader}>
-            <h2>Platform Features</h2>
-            <p>Everything you need to succeed in e-commerce</p>
-          </div>
-          <div className={styles.featuresGrid}>
-            {features.map((feature, index) => (
+        <div className={styles.sectionHeader}>
+          <h2>Platform Features</h2>
+          <p>Everything you need to succeed in e-commerce</p>
+        </div>
+        <div className={styles.featuresGrid}>
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              className={styles.featureCard}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+              variants={fadeInUp}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+            >
               <motion.div
-                key={index}
-                className={styles.featureCard}
-                initial="initial"
-                whileInView="animate"
-                viewport={{ once: true }}
-                variants={fadeInUp}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
+                className={styles.featureIcon}
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
               >
-                <motion.div
-                  className={styles.featureIcon}
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  {feature.icon}
-                </motion.div>
-                <h3>{feature.title}</h3>
-                <p>{feature.desc}</p>
+                {feature.icon}
               </motion.div>
-            ))}
-          </div>
+              <h3>{feature.title}</h3>
+              <p>{feature.desc}</p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
@@ -897,7 +887,7 @@ const EcommerceSolutions = () => {
               professional e-commerce solutions. Start your journey today.
             </p>
             <div className={styles.ctaButtons}>
-              <Link href="/contact">
+              <Link href="/contact-us">
                 <motion.button
                   className={styles.ctaBtnPrimary}
                   whileHover={{ scale: 1.05 }}
@@ -905,9 +895,6 @@ const EcommerceSolutions = () => {
                 >
                   Get Started Today
                 </motion.button>
-              </Link>
-              <Link href="/demo">
-                <button className={styles.ctaBtnSecondary}>Request Demo</button>
               </Link>
             </div>
           </motion.div>

@@ -266,7 +266,7 @@ const ServiceDetail = () => {
                 </motion.div>
 
                 <motion.div variants={fadeInUp} className={styles.heroActions}>
-                  <Link href="#contact">
+                  <Link href="/register?userType=user">
                     <motion.button
                       className={styles.primaryButton}
                       whileHover={{ scale: 1.02 }}

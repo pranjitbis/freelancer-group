@@ -15,6 +15,7 @@ import {
   FiFileText,
   FiPocket,
 } from "react-icons/fi";
+import { RiGlobalLine } from "react-icons/ri";
 import { IoIosJournal, IoIosContact } from "react-icons/io";
 import { FcAssistant } from "react-icons/fc";
 import { MdDashboard } from "react-icons/md";
@@ -105,6 +106,11 @@ export default function AdminLayout({ children }) {
       path: "/wp-admin/wallet-management",
       icon: <FiPocket />,
       label: "Wallet Management",
+    },
+    {
+      path: "/wp-admin/web-dev",
+      icon: <RiGlobalLine />,
+      label: "Website Development",
     },
     { path: "/wp-admin/proposals", icon: <FiFileText />, label: "Proposals" },
   ];

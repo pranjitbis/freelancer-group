@@ -31,10 +31,10 @@ export default function Hero() {
               <div className={styles.welcomeSection}>
                 <h2>Welcome to Aroliya – </h2>
                 <p>
-                  India’s No. 1 Platform for Smart Online Services From online
+                  Asia’s No. 1 Platform for Smart Online Services – From online
                   form filling to travel & hotel bookings, web development, Data
-                  & AI and eCommerce solutions – Aroliya is your trusted partner
-                  for fast, reliable, and hassle-free digital services.
+                  & AI, and eCommerce solutions — Aroliya stands as your trusted
+                  partner for fast, reliable, and hassle-free digital services.
                 </p>
 
                 <div className={styles.heroButtons}>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Nav from "@/app/home/component/Nav/page";
 import Footer from "@/app/home/footer/page";
+import Link from "next/link";
 import {
   FaUserPlus,
   FaSearch,
@@ -466,22 +467,15 @@ const HowItWorks = () => {
                 : "Connect with top freelancers and get your projects completed efficiently and professionally."}
             </p>
             <div className={styles.ctaButtons}>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={styles.ctaButtonPrimary}
-              >
-                {activeTab === "freelancers"
-                  ? "Create Your Profile"
-                  : "Post a Project"}
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={styles.ctaButtonSecondary}
-              >
-                Learn More
-              </motion.button>
+              <Link href="/register?userType=user">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={styles.ctaButtonPrimary}
+                >
+                  Register Now
+                </motion.button>
+              </Link>
             </div>
           </motion.div>
         </section>

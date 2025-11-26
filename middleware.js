@@ -35,6 +35,10 @@ const PUBLIC_PATHS = [
   "/services/freelancer-hub/hire-freelancer",
   "/career",
   "/unauthorized",
+  "/how-its-work",
+  "/terms-and-conditions",
+  "/terms-and-privacy",
+  "/api/webdev",
 ];
 
 function redirectToLogin(request) {
