@@ -10,7 +10,7 @@
 .hero {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   color: white;
-  padding: 120px 0 80px;
+  padding: 80px 0 60px;
   position: relative;
   overflow: hidden;
 }
@@ -534,7 +534,6 @@
 
 /* Testimonials Section */
 .testimonials {
-  padding: 70px 0;
   background: #f8fafc;
 }
 
@@ -717,7 +716,7 @@
 
 /* Testimonials Section with Slider */
 .testimonials {
-  padding: 100px 0;
+  padding: 50px 0;
   background: #f8fafc;
   position: relative;
   overflow: hidden;

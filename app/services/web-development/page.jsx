@@ -448,7 +448,7 @@ const Services = () => {
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
                 <div className={styles.downloadCard}>
-                  <Link href="/register">
+                  <Link href="/register?userType=user">
                     <button>
                       <h3>Start Building</h3>
                     </button>

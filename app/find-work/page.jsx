@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import styles from "./FreelancerHub.module.css";
 import Nav from "../home/component/Nav/page";
 import Link from "next/link";
+import Footer from "../home/footer/page";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSearch,
@@ -984,6 +985,7 @@ export default function FreelancerHub() {
           </motion.div>
         )}
       </section>
+      <Footer />
     </div>
   );
 }

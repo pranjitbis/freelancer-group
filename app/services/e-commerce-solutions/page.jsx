@@ -561,7 +561,7 @@ const EcommerceSolutions = () => {
 
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className={styles.container}>
+        <div className={`${styles.container} ${styles.secondContainer}`}>
           <div className={styles.heroContent}>
             <motion.div
               className={styles.heroText}
